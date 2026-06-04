@@ -1,0 +1,7 @@
+node_modules
+dist
+.DS_Store
+*.log
+.vite
+# progress.json lives in the repo on purpose — that's the sync target.
+# It is NOT ignored.
