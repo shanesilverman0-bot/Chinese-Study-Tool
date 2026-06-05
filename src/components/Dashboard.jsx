@@ -1,9 +1,9 @@
 import React from 'react'
-import { SEED_VOCAB, BANDS, BAND_LABELS } from '../data/vocab.js'
+import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { isDue, State } from '../lib/fsrs.js'
 
 // Computes study stats from the progress object.
-function computeStats(progress) {
+function computeStats(progress, vocab) {
   const cards = Object.values(progress.cards)
   const now = new Date()
 
@@ -21,17 +21,16 @@ function computeStats(progress) {
   const days = new Set(log.map((r) => r.at.slice(0, 10)))
   let streak = 0
   const d = new Date()
-  // allow today to be empty if yesterday counted
   if (!days.has(d.toISOString().slice(0, 10))) d.setDate(d.getDate() - 1)
   while (days.has(d.toISOString().slice(0, 10))) {
     streak++
     d.setDate(d.getDate() - 1)
   }
 
-  // Per-band mastery.
+  // Per-band mastery, computed over the active vocab list.
   const byBand = {}
   for (const band of BANDS) {
-    const ids = SEED_VOCAB.filter((v) => v.band === band).map((v) => v.id)
+    const ids = vocab.filter((v) => v.band === band).map((v) => v.id)
     const masteredCount = ids.filter(
       (id) => progress.cards[id]?.state === State.Review && progress.cards[id]?.stability >= 21
     ).length
@@ -54,8 +53,8 @@ function Stat({ value, label, accent }) {
   )
 }
 
-export default function Dashboard({ progress, onStart }) {
-  const s = computeStats(progress)
+export default function Dashboard({ progress, vocab, onStart }) {
+  const s = computeStats(progress, vocab)
 
   return (
     <div className="brush-in flex flex-col gap-5">

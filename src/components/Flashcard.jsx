@@ -12,7 +12,7 @@ const RATINGS = [
   { key: 'easy', label: 'Easy', color: '#1a6b8a' },
 ]
 
-export default function Flashcard({ word, cardState, onRate, apiKey }) {
+export default function Flashcard({ word, cardState, onRate, tutorConfig }) {
   const [revealed, setRevealed] = useState(false)
   const [recording, setRecording] = useState(false)
   const [contour, setContour] = useState(null)
@@ -31,22 +31,30 @@ export default function Flashcard({ word, cardState, onRate, apiKey }) {
     setScore(null)
     setRecError('')
     setShowTutor(false)
+    // If a recording was somehow in flight, abandon it.
+    if (recCtrl.current) {
+      recCtrl.current.cancel?.()
+      recCtrl.current = null
+      setRecording(false)
+    }
   }, [word.id])
 
   async function toggleRecord() {
     if (recording) {
       try {
-        const result = recCtrl.current?.stop()
+        const result = await recCtrl.current?.stop()
+        recCtrl.current = null
         setRecording(false)
         if (result && result.voiced) {
           setContour(result.points)
           setScore(scoreAgainstTone(result.points, tone))
         } else {
-          setRecError("Didn't catch a clear voice — try again, a bit louder.")
+          setRecError(result?.reason || "Didn't catch a clear voice — try again, a bit louder.")
         }
       } catch (e) {
         setRecError(e.message)
         setRecording(false)
+        recCtrl.current = null
       }
       return
     }
@@ -57,7 +65,7 @@ export default function Flashcard({ word, cardState, onRate, apiKey }) {
       recCtrl.current = await startRecording()
       setRecording(true)
     } catch (e) {
-      setRecError('Microphone access denied or unavailable.')
+      setRecError(e.message || 'Microphone unavailable.')
     }
   }
 
@@ -82,22 +90,39 @@ export default function Flashcard({ word, cardState, onRate, apiKey }) {
         )}
       </div>
 
-      {/* Reveal / answer */}
-      {!revealed ? (
-        <button
-          onClick={() => setRevealed(true)}
-          className="mt-5 w-full rounded-2xl bg-ink py-4 font-sans text-base font-medium text-paper transition hover:bg-ink/85"
-        >
-          顯示答案 · Show answer
-        </button>
-      ) : (
-        <div className="mt-5 w-full brush-in">
-          <div className="rounded-2xl bg-mist/60 px-5 py-4 text-center">
+      {/* Answer: hidden behind a peek toggle, but NOT required for rating. */}
+      <div className="mt-4 w-full">
+        {revealed ? (
+          <div className="brush-in rounded-2xl bg-mist/60 px-5 py-4 text-center">
             <div className="font-mono text-lg text-cinnabar">{word.pinyin}</div>
             <div className="mt-1 font-sans text-lg text-ink/80">{word.english}</div>
           </div>
-        </div>
-      )}
+        ) : (
+          <button
+            onClick={() => setRevealed(true)}
+            className="w-full rounded-2xl border border-dashed border-ink/20 py-3 font-sans text-sm text-ink/50 transition hover:border-ink/40 hover:text-ink/70"
+          >
+            顯示答案 · Peek at answer (optional)
+          </button>
+        )}
+      </div>
+
+      {/* Rating row — ALWAYS available. Rate from memory without revealing. */}
+      <div className="mt-4 grid w-full grid-cols-4 gap-2">
+        {RATINGS.map((r) => (
+          <button
+            key={r.key}
+            onClick={() => onRate(r.key)}
+            className="flex flex-col items-center rounded-xl border py-3 transition active:scale-95"
+            style={{ borderColor: `${r.color}40` }}
+          >
+            <span className="font-sans text-sm font-medium" style={{ color: r.color }}>
+              {r.label}
+            </span>
+            <span className="mt-0.5 font-mono text-[10px] text-ink/40">{intervals[r.key]}</span>
+          </button>
+        ))}
+      </div>
 
       {/* Tone trainer */}
       <div className="mt-5 w-full rounded-2xl border border-ink/10 bg-white/40 p-4">
@@ -126,7 +151,7 @@ export default function Flashcard({ word, cardState, onRate, apiKey }) {
           <p className="mb-2 font-mono text-xs text-cinnabar">錄音中… 說出這個詞，再按停止</p>
         )}
 
-        {(contour || true) && <ToneCurve userPoints={contour} toneNumber={tone} score={score} />}
+        <ToneCurve userPoints={contour} toneNumber={tone} score={score} />
       </div>
 
       {/* AI tutor trigger */}
@@ -137,27 +162,8 @@ export default function Flashcard({ word, cardState, onRate, apiKey }) {
         ✦ 問老師 · Ask the AI tutor
       </button>
 
-      {/* Rating row — only after reveal */}
-      {revealed && (
-        <div className="mt-5 grid w-full grid-cols-4 gap-2 brush-in">
-          {RATINGS.map((r) => (
-            <button
-              key={r.key}
-              onClick={() => onRate(r.key)}
-              className="flex flex-col items-center rounded-xl border py-3 transition active:scale-95"
-              style={{ borderColor: `${r.color}40` }}
-            >
-              <span className="font-sans text-sm font-medium" style={{ color: r.color }}>
-                {r.label}
-              </span>
-              <span className="mt-0.5 font-mono text-[10px] text-ink/40">{intervals[r.key]}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
       {showTutor && (
-        <AITutor word={word} apiKey={apiKey} onClose={() => setShowTutor(false)} />
+        <AITutor word={word} tutorConfig={tutorConfig} onClose={() => setShowTutor(false)} />
       )}
     </div>
   )

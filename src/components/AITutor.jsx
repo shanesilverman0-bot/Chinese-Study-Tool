@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { askTutor, TUTOR_MODES } from '../lib/claude.js'
+import { askTutor, TUTOR_MODES } from '../lib/tutor.js'
 
-// Slide-up panel that queries Claude for help on the current word.
-export default function AITutor({ word, apiKey, onClose }) {
+// Slide-up panel that queries the configured AI provider for help on the word.
+export default function AITutor({ word, tutorConfig, onClose }) {
   const [loading, setLoading] = useState(false)
   const [answer, setAnswer] = useState('')
   const [error, setError] = useState('')
@@ -10,16 +10,12 @@ export default function AITutor({ word, apiKey, onClose }) {
   const [custom, setCustom] = useState('')
 
   async function run(modeKey, extra = '') {
-    if (!apiKey) {
-      setError('Add your Claude API key in Settings first.')
-      return
-    }
     setLoading(true)
     setError('')
     setAnswer('')
     setActiveMode(modeKey)
     try {
-      const text = await askTutor({ apiKey }, word, modeKey, extra)
+      const text = await askTutor(tutorConfig, word, modeKey, extra)
       setAnswer(text)
     } catch (e) {
       setError(e.message)

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { verifyAccess } from '../lib/github.js'
+import { PROVIDERS } from '../lib/tutor.js'
+import MicTest from './MicTest.jsx'
 
 function Field({ label, hint, children }) {
   return (
@@ -15,7 +17,16 @@ function Field({ label, hint, children }) {
 const inputCls =
   'w-full rounded-xl border border-ink/15 bg-white/60 px-3 py-2 font-mono text-sm text-ink outline-none focus:border-cinnabar'
 
-export default function Settings({ settings, updateSettings, syncState, pull, forcePush }) {
+export default function Settings({
+  settings,
+  updateSettings,
+  syncState,
+  pull,
+  forcePush,
+  vocabInfo,
+  vocabCount,
+  onReloadVocab,
+}) {
   const [verify, setVerify] = useState({ status: 'idle', message: '' })
 
   const gh = settings.github
@@ -139,23 +150,111 @@ export default function Settings({ settings, updateSettings, syncState, pull, fo
         </div>
       </section>
 
-      {/* Claude API */}
+      {/* AI tutor provider */}
       <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
-        <h3 className="mb-1 font-display text-base font-bold text-ink">Claude AI 老師 · Tutor</h3>
+        <h3 className="mb-1 font-display text-base font-bold text-ink">AI 老師 · Tutor</h3>
         <p className="mb-4 font-sans text-xs text-ink/50">
-          Powers the on-card tutor. Key is stored only in this browser and sent directly to
-          Anthropic.
+          Powers the on-card tutor. Keys are stored only in this browser and sent directly to the
+          provider you choose.
         </p>
-        <Field label="Anthropic API key">
-          <input
-            type="password"
-            className={inputCls}
-            value={settings.claudeApiKey}
-            onChange={(e) => updateSettings({ claudeApiKey: e.target.value })}
-            placeholder="sk-ant-…"
-          />
-        </Field>
+
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          {PROVIDERS.map((p) => (
+            <button
+              key={p.key}
+              onClick={() => updateSettings({ aiProvider: p.key })}
+              className={`rounded-xl border px-3 py-2.5 text-sm transition ${
+                settings.aiProvider === p.key
+                  ? 'border-cinnabar bg-cinnabar/5 text-ink'
+                  : 'border-ink/15 text-ink/60'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {settings.aiProvider === 'deepseek' ? (
+          <div className="flex flex-col gap-4">
+            <Field label="DeepSeek API key" hint="stored only in this browser">
+              <input
+                type="password"
+                className={inputCls}
+                value={settings.deepseekApiKey}
+                onChange={(e) => updateSettings({ deepseekApiKey: e.target.value })}
+                placeholder="sk-…"
+              />
+            </Field>
+            <Field label="Model" hint="deepseek-chat, deepseek-reasoner, or v4 ids">
+              <input
+                className={inputCls}
+                value={settings.deepseekModel}
+                onChange={(e) => updateSettings({ deepseekModel: e.target.value })}
+                placeholder="deepseek-chat"
+              />
+            </Field>
+            <p className="rounded-lg bg-gold/10 px-3 py-2 font-mono text-[11px] leading-relaxed text-ink/60">
+              ⚠ DeepSeek advises against direct browser calls. If you see a CORS/network error,
+              the request was blocked by the browser — route it through a proxy (see README) or use
+              Claude here instead.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <Field label="Anthropic API key" hint="stored only in this browser">
+              <input
+                type="password"
+                className={inputCls}
+                value={settings.claudeApiKey}
+                onChange={(e) => updateSettings({ claudeApiKey: e.target.value })}
+                placeholder="sk-ant-…"
+              />
+            </Field>
+            <Field label="Model">
+              <input
+                className={inputCls}
+                value={settings.claudeModel}
+                onChange={(e) => updateSettings({ claudeModel: e.target.value })}
+                placeholder="claude-sonnet-4-20250514"
+              />
+            </Field>
+          </div>
+        )}
       </section>
+
+      {/* Vocabulary */}
+      <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+        <h3 className="mb-1 font-display text-base font-bold text-ink">詞庫 · Vocabulary</h3>
+        <p className="mb-3 font-sans text-xs text-ink/50">
+          {vocabCount} words loaded. Drop <span className="font-mono">.json</span> packs into a{' '}
+          <span className="font-mono">vocab/</span> folder via the 檔案 / Files tab — they load
+          automatically.
+        </p>
+        {vocabInfo?.packs?.length > 0 && (
+          <ul className="mb-3 flex flex-col gap-1">
+            {vocabInfo.packs.map((p) => (
+              <li key={p.name} className="font-mono text-[11px] text-ink/55">
+                {p.name} — {p.added} added ({p.count} in pack)
+              </li>
+            ))}
+          </ul>
+        )}
+        {vocabInfo?.errors?.length > 0 &&
+          vocabInfo.errors.map((err, i) => (
+            <p key={i} className="mb-1 rounded-lg bg-cinnabar/10 px-3 py-2 font-mono text-[11px] text-seal">
+              {err}
+            </p>
+          ))}
+        <button
+          onClick={onReloadVocab}
+          className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-jade hover:text-jade"
+        >
+          Reload vocab packs
+        </button>
+      </section>
+
+      {/* Mic diagnostics */}
+      <MicTest />
 
       {/* Band selection */}
       <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">

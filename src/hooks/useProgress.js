@@ -11,7 +11,11 @@ const LOCAL_PROGRESS_KEY = 'tocfl.progress'
 
 const DEFAULT_SETTINGS = {
   github: { token: '', owner: '', repo: '', branch: 'main', path: 'progress.json' },
+  aiProvider: 'claude', // 'claude' | 'deepseek'
   claudeApiKey: '',
+  claudeModel: 'claude-sonnet-4-20250514',
+  deepseekApiKey: '',
+  deepseekModel: 'deepseek-chat',
   enabledBands: ['Novice'],
   unlockedBands: ['Novice'],
 }
@@ -36,30 +40,35 @@ function loadLocalProgress() {
 }
 
 // A fresh progress object covers every vocab id with an empty FSRS card.
-function freshProgress() {
+function freshProgress(vocab) {
   const cards = {}
-  for (const v of SEED_VOCAB) cards[v.id] = newCardState(v.id)
+  for (const v of vocab) cards[v.id] = newCardState(v.id)
   return { version: 1, cards, log: [], updatedAt: new Date().toISOString() }
 }
 
 // Merge stored progress with the current vocab list so newly added words get
 // card states without wiping existing review history.
-function reconcile(progress) {
-  const p = progress || freshProgress()
+function reconcile(progress, vocab) {
+  const p = progress || freshProgress(vocab)
   if (!p.cards) p.cards = {}
-  for (const v of SEED_VOCAB) {
+  for (const v of vocab) {
     if (!p.cards[v.id]) p.cards[v.id] = newCardState(v.id)
   }
   if (!p.log) p.log = []
   return p
 }
 
-export function useProgress() {
+export function useProgress(vocab = SEED_VOCAB) {
   const [settings, setSettings] = useState(loadSettings)
-  const [progress, setProgress] = useState(() => reconcile(loadLocalProgress()))
+  const [progress, setProgress] = useState(() => reconcile(loadLocalProgress(), vocab))
   const [syncState, setSyncState] = useState({ status: 'idle', message: '' })
   const shaRef = useRef(null)
   const saveTimer = useRef(null)
+
+  // When the vocab list grows (packs loaded), add cards for any new words.
+  useEffect(() => {
+    setProgress((prev) => reconcile(prev, vocab))
+  }, [vocab])
 
   // Persist settings locally whenever they change.
   useEffect(() => {
@@ -82,7 +91,7 @@ export function useProgress() {
       const { data, sha } = await fetchProgress(settings.github)
       shaRef.current = sha
       if (data) {
-        setProgress(reconcile(data))
+        setProgress(reconcile(data, vocab))
         setSyncState({ status: 'ok', message: 'Synced' })
       } else {
         setSyncState({ status: 'ok', message: 'No remote file yet — will create on first save' })
@@ -90,7 +99,7 @@ export function useProgress() {
     } catch (e) {
       setSyncState({ status: 'error', message: e.message })
     }
-  }, [githubReady, settings.github])
+  }, [githubReady, settings.github, vocab])
 
   // Push current progress to GitHub (debounced by caller via scheduleSync).
   const push = useCallback(
