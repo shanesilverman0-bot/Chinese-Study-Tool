@@ -225,39 +225,59 @@ export async function runAudioDiagnostics() {
   return report
 }
 
-// Open the mic and measure peak level for ~1.2s. Returns { peak, ok, error }.
+// Open the mic and measure peak level for ~3s. Returns { peak, ok, error }.
 export async function measureMicLevel(onLevel) {
+  let stream
+  let ctx
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+    })
     const AudioCtx = window.AudioContext || window.webkitAudioContext
-    const ctx = new AudioCtx()
+    ctx = new AudioCtx()
     if (ctx.state === 'suspended') await ctx.resume()
+
     const source = ctx.createMediaStreamSource(stream)
     const analyser = ctx.createAnalyser()
-    analyser.fftSize = 1024
-    source.connect(analyser) // analysis only — not connected to destination, so no feedback
+    analyser.fftSize = 2048
+
+    // CRITICAL: many browsers only process graph branches that reach the
+    // destination. Route analyser -> muted gain -> destination so the input is
+    // actually pulled (gain 0 keeps it silent — no feedback).
+    const mute = ctx.createGain()
+    mute.gain.value = 0
+    source.connect(analyser)
+    analyser.connect(mute)
+    mute.connect(ctx.destination)
+
     const buf = new Float32Array(analyser.fftSize)
     let peak = 0
     const start = performance.now()
+
     return await new Promise((resolve) => {
       const tick = () => {
         analyser.getFloatTimeDomainData(buf)
-        let rms = 0
-        for (let i = 0; i < buf.length; i++) rms += buf[i] * buf[i]
-        rms = Math.sqrt(rms / buf.length)
+        let sum = 0
+        for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i]
+        const rms = Math.sqrt(sum / buf.length)
         peak = Math.max(peak, rms)
         if (onLevel) onLevel(rms)
-        if (performance.now() - start < 1500) {
+        if (performance.now() - start < 3000) {
           requestAnimationFrame(tick)
         } else {
           stream.getTracks().forEach((t) => t.stop())
           ctx.close()
-          resolve({ peak, ok: peak > 0.005, error: '' })
+          // 0.002 RMS is a low bar — normal speech peaks far above this.
+          resolve({ peak, ok: peak > 0.002, error: '' })
         }
       }
       requestAnimationFrame(tick)
     })
   } catch (e) {
+    try {
+      stream?.getTracks().forEach((t) => t.stop())
+      ctx?.close()
+    } catch {}
     return { peak: 0, ok: false, error: e.message }
   }
 }

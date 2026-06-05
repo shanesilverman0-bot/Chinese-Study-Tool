@@ -23,13 +23,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - run: npm install
+      - run: npm ci
 
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
+          # Vite is configured to build into /docs
           path: docs
 
   deploy:
