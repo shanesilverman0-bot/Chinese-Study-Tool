@@ -53,14 +53,21 @@ function reconcile(progress, vocab) {
   const p = progress || freshProgress(vocab)
   if (!p.cards) p.cards = {}
 
-  // Migrate id-based cards to hanzi-based if needed (for backwards compat)
-  const vocabById = Object.fromEntries(vocab.map(v => [v.id, v]))
+  // Migrate id-based cards to hanzi-based if needed (for backwards compat).
+  // Never drop a card we can't map yet: vocab packs load AFTER the first
+  // reconcile, so an old id-keyed record whose word isn't loaded right now
+  // must be preserved under its original key and re-mapped on a later pass
+  // once the pack arrives. Dropping it would truncate progress.json.
+  const vocabById = Object.fromEntries(vocab.map((v) => [v.id, v]))
   const migratedCards = {}
   for (const [key, card] of Object.entries(p.cards)) {
     if (card.hanzi) {
       migratedCards[card.hanzi] = card
     } else if (vocabById[key]) {
       migratedCards[vocabById[key].hanzi] = { ...card, hanzi: vocabById[key].hanzi }
+    } else {
+      // Unmappable for now (pack not loaded) — keep it as-is.
+      migratedCards[key] = card
     }
   }
   p.cards = migratedCards

@@ -27,17 +27,7 @@ function computeStats(progress, vocab) {
     d.setDate(d.getDate() - 1)
   }
 
-  // Per-band mastery, computed over the active vocab list.
-  const byBand = {}
-  for (const band of BANDS) {
-    const bandVocab = vocab.filter((v) => v.band === band)
-    const masteredCount = bandVocab.filter(
-      (v) => progress.cards[v.hanzi]?.state === State.Review && progress.cards[v.hanzi]?.stability >= 21
-    ).length
-    byBand[band] = { total: bandVocab.length, mastered: masteredCount }
-  }
-
-  return { due, learned, mastered, retention, streak, byBand }
+  return { due, learned, mastered, retention, streak }
 }
 
 function Stat({ value, label, accent }) {
@@ -53,15 +43,28 @@ function Stat({ value, label, accent }) {
   )
 }
 
-function ComputeBandStats(vocab, progress, band) {
+// Bucket a band's cards into four mutually-exclusive groups so the stacked bar
+// segments sum to the band total. Order matters: unseen → due → mastered →
+// learned. Null-safe because vocab can grow a render before progress reconciles.
+function computeBandStats(vocab, progress, band) {
   const bandVocab = vocab.filter((v) => v.source === 'tocfl' && v.band === band)
   const now = new Date()
-  const mastered = bandVocab.filter(
-    (v) => progress.cards[v.hanzi]?.state === State.Review && progress.cards[v.hanzi]?.stability >= 21
-  ).length
-  const learned = bandVocab.filter((v) => progress.cards[v.hanzi]?.reps > 0).length
-  const due = bandVocab.filter((v) => isDue(progress.cards[v.hanzi], now)).length
-  const unseen = bandVocab.length - learned
+  let mastered = 0
+  let learned = 0
+  let due = 0
+  let unseen = 0
+  for (const v of bandVocab) {
+    const card = progress.cards[v.hanzi]
+    if (!card || card.reps === 0) {
+      unseen++ // no progress record yet
+    } else if (isDue(card, now)) {
+      due++ // reviewed before, due now
+    } else if (card.stability > 30) {
+      mastered++ // stable beyond 30 days
+    } else {
+      learned++ // reviewed, not due, not yet mastered
+    }
+  }
   return { mastered, learned, due, unseen, total: bandVocab.length }
 }
 
@@ -104,7 +107,12 @@ function FilterCard({
   const now = new Date()
 
   const filteredVocab = getFilteredVocab()
-  const dueInFiltered = filteredVocab.filter((v) => isDue(progress.cards[v.hanzi], now)).length
+  // New cards (reps === 0) are due from creation, so this also counts them as
+  // actionable — matching buildQueue. Guard against cards not yet reconciled.
+  const dueInFiltered = filteredVocab.filter((v) => {
+    const card = progress.cards[v.hanzi]
+    return card && isDue(card, now)
+  }).length
 
   return (
     <div className="rounded-2xl border border-ink/10 bg-white/50 p-5">
@@ -139,7 +147,7 @@ function FilterCard({
         {activeTab === 'tocfl' && (
           <div className="space-y-3">
             {BANDS.map((band) => {
-              const stats = ComputeBandStats(vocab, progress, band)
+              const stats = computeBandStats(vocab, progress, band)
               const isEnabled = filter.tocfl[band] === true
               return (
                 <label
@@ -228,7 +236,7 @@ function TOCFLMasteryPanel({ vocab, progress }) {
       {expanded && (
         <div className="mt-4 space-y-3">
           {BANDS.map((band) => {
-            const stats = ComputeBandStats(vocab, progress, band)
+            const stats = computeBandStats(vocab, progress, band)
             if (stats.total === 0) return null
             return (
               <div key={band}>
