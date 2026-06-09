@@ -123,25 +123,27 @@
     },
     "國": {
       "hanzi": "國",
-      "due": "2026-06-09T14:35:20.483Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-25T14:35:49.644Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 16,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-09T14:35:49.644Z"
     },
     "中國": {
       "hanzi": "中國",
-      "due": "2026-06-09T14:35:20.483Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-26T14:35:51.827Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 17,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-09T14:35:51.827Z"
     },
     "美國": {
       "hanzi": "美國",
@@ -78976,7 +78978,17 @@
       "hanzi": "人",
       "rating": "easy",
       "at": "2026-06-09T14:35:47.483Z"
+    },
+    {
+      "hanzi": "國",
+      "rating": "easy",
+      "at": "2026-06-09T14:35:49.648Z"
+    },
+    {
+      "hanzi": "中國",
+      "rating": "easy",
+      "at": "2026-06-09T14:35:51.832Z"
     }
   ],
-  "updatedAt": "2026-06-09T14:35:48.985Z"
+  "updatedAt": "2026-06-09T14:35:53.334Z"
 }
