@@ -1,5 +1,8 @@
 // Auto-generated from tocfl-cedict.csv — TOCFL 2022/2023 — 7517 entries
 // Bands: Novice (準備級), A (入門/基礎), B (進階/高階), C (流利級)
+
+export const BANDS = ['Novice', 'A', 'B', 'C'];
+
 export const vocab = [
   {
     "hanzi": "我",
