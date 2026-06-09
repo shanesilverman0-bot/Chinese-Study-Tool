@@ -39,14 +39,15 @@
     },
     "我們": {
       "hanzi": "我們",
-      "due": "2026-06-09T14:35:20.483Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-23T14:35:34.143Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 14,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-09T14:35:34.143Z"
     },
     "你們": {
       "hanzi": "你們",
@@ -78934,7 +78935,12 @@
       "hanzi": "他",
       "rating": "easy",
       "at": "2026-06-09T14:35:29.964Z"
+    },
+    {
+      "hanzi": "我們",
+      "rating": "easy",
+      "at": "2026-06-09T14:35:34.148Z"
     }
   ],
-  "updatedAt": "2026-06-09T14:35:31.467Z"
+  "updatedAt": "2026-06-09T14:35:35.649Z"
 }
