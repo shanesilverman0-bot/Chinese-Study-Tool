@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { speak, ttsSupported } from '../lib/speech.js'
 import { startRecording, scoreAgainstTone, primaryTone } from '../lib/pitch.js'
 import { previewIntervals } from '../lib/fsrs.js'
+import { cardKey } from '../lib/fsrs.js'
 import ToneCurve from './ToneCurve.jsx'
 import AITutor from './AITutor.jsx'
 
@@ -24,6 +25,12 @@ export default function Flashcard({ word, cardState, onRate, tutorConfig }) {
   const intervals = previewIntervals(cardState)
   const tone = primaryTone(word.tones)
 
+  // Stable identity for this word. Vocab entries have no `id`, so we key the
+  // per-card reset off the same hanzi+pinyin composite the rest of the app uses
+  // — otherwise the reset never re-fires and peek/recording/score leak from one
+  // card to the next.
+  const wordKey = cardKey(word)
+
   // Reset per-card UI when the word changes.
   useEffect(() => {
     setRevealed(false)
@@ -37,7 +44,7 @@ export default function Flashcard({ word, cardState, onRate, tutorConfig }) {
       recCtrl.current = null
       setRecording(false)
     }
-  }, [word.id])
+  }, [wordKey])
 
   async function toggleRecord() {
     if (recording) {
