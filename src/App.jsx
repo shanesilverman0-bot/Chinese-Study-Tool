@@ -4,7 +4,7 @@ import { loadVocab } from './lib/vocab.js'
 import { useProgress } from './hooks/useProgress.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
-import { isDue } from './lib/fsrs.js'
+import { isDue, cardKey } from './lib/fsrs.js'
 import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
@@ -35,10 +35,15 @@ export default function App() {
   } = useStudyFilter(vocab)
 
   const [view, setView] = useState('home') // home | review | settings | files
-  const [queue, setQueue] = useState([])
+  const [queue, setQueue] = useState([]) // holds composite card keys
   const [pos, setPos] = useState(0)
 
-  const vocabByHanzi = useMemo(() => Object.fromEntries(vocab.map((v) => [v.hanzi, v])), [vocab])
+  // Look up the word behind a card key. Keyed by hanzi+pinyin so homographs
+  // resolve to the correct word.
+  const vocabByKey = useMemo(
+    () => Object.fromEntries(vocab.map((v) => [cardKey(v), v])),
+    [vocab]
+  )
 
   const tutorConfig = useMemo(
     () => ({
@@ -87,11 +92,12 @@ export default function App() {
     const unseen = []
     const rest = []
     for (const v of filtered) {
-      const card = progress.cards[v.hanzi]
+      const key = cardKey(v)
+      const card = progress.cards[key]
       if (!card) continue
-      if (isDue(card, now)) due.push(v.hanzi)
-      else if (card.reps === 0) unseen.push(v.hanzi)
-      else rest.push(v.hanzi)
+      if (isDue(card, now)) due.push(key)
+      else if (card.reps === 0) unseen.push(key)
+      else rest.push(key)
     }
     const primary = [...due, ...unseen].slice(0, 40)
     if (primary.length > 0) return primary
@@ -106,13 +112,13 @@ export default function App() {
   }
 
   function handleRate(ratingKey) {
-    const hanzi = queue[pos]
-    rate(hanzi, ratingKey)
+    const key = queue[pos]
+    rate(key, ratingKey)
     if (pos + 1 < queue.length) setPos(pos + 1)
     else setView('home')
   }
 
-  const currentWord = queue[pos] ? vocabByHanzi[queue[pos]] : null
+  const currentWord = queue[pos] ? vocabByKey[queue[pos]] : null
   const currentCard = queue[pos] ? progress.cards[queue[pos]] : null
 
   return (
