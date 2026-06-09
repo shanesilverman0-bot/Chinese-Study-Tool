@@ -1,7 +1,6 @@
 // Spaced-repetition scheduling via ts-fsrs (FSRS algorithm).
 // Wraps the library so the rest of the app deals in plain card-state objects
 // that are easy to serialize into progress.json.
-
 import { createEmptyCard, fsrs, generatorParameters, Rating, State } from 'ts-fsrs'
 
 const params = generatorParameters({ enable_fuzz: true, maximum_interval: 36500 })
@@ -15,16 +14,30 @@ export const RATING = {
   easy: Rating.Easy,
 }
 
-// Create a fresh FSRS card record for a hanzi string.
-export function newCardState(hanzi) {
+// Stable per-word identity. The same hanzi can be several distinct words with
+// different readings (e.g. 行 xíng vs háng, 長 cháng vs zhǎng), so a card is
+// keyed by hanzi + pinyin, not hanzi alone. Everything that indexes
+// progress.cards goes through this helper so the key never drifts between
+// modules. The `|` separator never appears in a hanzi or a pinyin string.
+export function cardKey(word) {
+  if (!word) return ''
+  if (typeof word === 'string') return word // tolerate a bare key passed straight through
+  return `${word.hanzi}|${word.pinyin ?? ''}`
+}
+
+// Create a fresh FSRS card record for a vocab word ({ hanzi, pinyin }).
+export function newCardState(word) {
   const card = createEmptyCard(new Date())
-  return serializeCard(hanzi, card)
+  return serializeCard(word, card)
 }
 
 // FSRS card objects use Date instances; we store ISO strings in JSON.
-function serializeCard(hanzi, card) {
+// We persist hanzi + pinyin so each card is self-describing: its key can be
+// rebuilt from the card alone, without consulting the vocab list.
+function serializeCard(word, card) {
   return {
-    hanzi,
+    hanzi: word.hanzi,
+    pinyin: word.pinyin ?? '',
     due: card.due.toISOString(),
     stability: card.stability,
     difficulty: card.difficulty,
@@ -51,11 +64,13 @@ function deserializeCard(stored) {
   }
 }
 
-// Apply a rating and return the updated stored card-state.
+// Apply a rating and return the updated stored card-state. The stored record
+// already carries hanzi + pinyin, so we hand it straight back to serializeCard
+// to preserve the word's identity.
 export function reviewCard(stored, ratingKey, now = new Date()) {
   const card = deserializeCard(stored)
   const result = scheduler.next(card, now, RATING[ratingKey])
-  return serializeCard(stored.hanzi, result.card)
+  return serializeCard(stored, result.card)
 }
 
 // How long until each rating's next review — used to label the buttons
