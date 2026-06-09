@@ -67804,3 +67804,5 @@ export const vocab = [
     ]
   }
 ];
+
+export const SEED_VOCAB = vocab;
