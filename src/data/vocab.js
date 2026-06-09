@@ -3,6 +3,14 @@
 
 export const BANDS = ['Novice', 'A', 'B', 'C'];
 
+// Display labels for each band (TOCFL level names)
+export const BAND_LABELS = {
+  Novice: '準備級',
+  A: '入門/基礎',
+  B: '進階/高階',
+  C: '流利級',
+};
+
 export const vocab = [
   {
     "hanzi": "我",
