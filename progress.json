@@ -51,36 +51,39 @@
     },
     "你們": {
       "hanzi": "你們",
-      "due": "2026-06-09T14:35:20.483Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-28T14:35:35.759Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 19,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-09T14:35:35.759Z"
     },
     "他們": {
       "hanzi": "他們",
-      "due": "2026-06-09T14:35:20.483Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-28T14:35:37.327Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 19,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-09T14:35:37.327Z"
     },
     "您": {
       "hanzi": "您",
-      "due": "2026-06-09T14:35:20.483Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-26T14:35:42.561Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 17,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-09T14:35:42.561Z"
     },
     "誰": {
       "hanzi": "誰",
@@ -78940,7 +78943,22 @@
       "hanzi": "我們",
       "rating": "easy",
       "at": "2026-06-09T14:35:34.148Z"
+    },
+    {
+      "hanzi": "你們",
+      "rating": "easy",
+      "at": "2026-06-09T14:35:35.761Z"
+    },
+    {
+      "hanzi": "他們",
+      "rating": "easy",
+      "at": "2026-06-09T14:35:37.330Z"
+    },
+    {
+      "hanzi": "您",
+      "rating": "easy",
+      "at": "2026-06-09T14:35:42.566Z"
     }
   ],
-  "updatedAt": "2026-06-09T14:35:35.649Z"
+  "updatedAt": "2026-06-09T14:35:44.068Z"
 }
