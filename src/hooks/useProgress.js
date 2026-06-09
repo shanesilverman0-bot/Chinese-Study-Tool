@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SEED_VOCAB } from '../data/vocab.js'
-import { newCardState, reviewCard, isDue } from '../lib/fsrs.js'
+import { cardKey, newCardState, reviewCard, isDue } from '../lib/fsrs.js'
 import { fetchProgress, saveProgress } from '../lib/github.js'
 
 const SETTINGS_KEY = 'tocfl.settings'
@@ -39,42 +39,65 @@ function loadLocalProgress() {
   }
 }
 
-// A fresh progress object covers every vocab hanzi with an empty FSRS card.
+// A fresh progress object covers every vocab word with an empty FSRS card,
+// keyed by hanzi + pinyin so homographs (same character, different reading)
+// are tracked as the separate words they are.
 function freshProgress(vocab) {
   const cards = {}
-  for (const v of vocab) cards[v.hanzi] = newCardState(v.hanzi)
-  return { version: 1, cards, log: [], updatedAt: new Date().toISOString() }
+  for (const v of vocab) cards[cardKey(v)] = newCardState(v)
+  return { version: 2, cards, log: [], updatedAt: new Date().toISOString() }
 }
 
 // Merge stored progress with the current vocab list so newly added words get
-// card states without wiping existing review history. Also migrate old id-based
-// progress to hanzi-based for backwards compatibility.
+// card states without wiping existing review history, and re-key any legacy
+// records onto the composite hanzi+pinyin key.
+//
+// Never drop a card we can't map yet: vocab packs load AFTER the first
+// reconcile, so a record whose word isn't loaded right now is preserved under
+// its original key and re-mapped on a later pass once the pack arrives.
+// Dropping it would truncate progress.json.
 function reconcile(progress, vocab) {
   const p = progress || freshProgress(vocab)
   if (!p.cards) p.cards = {}
 
-  // Migrate id-based cards to hanzi-based if needed (for backwards compat).
-  // Never drop a card we can't map yet: vocab packs load AFTER the first
-  // reconcile, so an old id-keyed record whose word isn't loaded right now
-  // must be preserved under its original key and re-mapped on a later pass
-  // once the pack arrives. Dropping it would truncate progress.json.
-  const vocabById = Object.fromEntries(vocab.map((v) => [v.id, v]))
-  const migratedCards = {}
+  // Indexes for re-keying legacy records.
+  const vocabById = Object.fromEntries(
+    vocab.filter((v) => v.id != null).map((v) => [v.id, v])
+  )
+  const byHanzi = {}
+  for (const v of vocab) (byHanzi[v.hanzi] ||= []).push(v)
+
+  const migrated = {}
   for (const [key, card] of Object.entries(p.cards)) {
-    if (card.hanzi) {
-      migratedCards[card.hanzi] = card
+    if (card.hanzi && card.pinyin != null && card.pinyin !== '') {
+      // Already self-describing (hanzi + pinyin) — key directly from the card.
+      migrated[cardKey(card)] = card
+    } else if (card.hanzi) {
+      // Legacy hanzi-only card (pre-pinyin schema). Disambiguate by reading
+      // when the hanzi maps to exactly one word; otherwise keep it untouched
+      // rather than guess and mis-attribute review history.
+      const matches = byHanzi[card.hanzi] || []
+      if (matches.length === 1) {
+        const w = matches[0]
+        migrated[cardKey(w)] = { ...card, hanzi: w.hanzi, pinyin: w.pinyin ?? '' }
+      } else {
+        migrated[key] = card
+      }
     } else if (vocabById[key]) {
-      migratedCards[vocabById[key].hanzi] = { ...card, hanzi: vocabById[key].hanzi }
+      // Very old id-keyed card.
+      const w = vocabById[key]
+      migrated[cardKey(w)] = { ...card, hanzi: w.hanzi, pinyin: w.pinyin ?? '' }
     } else {
-      // Unmappable for now (pack not loaded) — keep it as-is.
-      migratedCards[key] = card
+      // Unmappable for now (pack not loaded) — keep as-is for a later pass.
+      migrated[key] = card
     }
   }
-  p.cards = migratedCards
+  p.cards = migrated
 
-  // Ensure all vocab has a card
+  // Ensure every current vocab word has a card under its composite key.
   for (const v of vocab) {
-    if (!p.cards[v.hanzi]) p.cards[v.hanzi] = newCardState(v.hanzi)
+    const k = cardKey(v)
+    if (!p.cards[k]) p.cards[k] = newCardState(v)
   }
 
   if (!p.log) p.log = []
@@ -157,23 +180,27 @@ export function useProgress(vocab = SEED_VOCAB) {
   )
 
   // Rate a card; update FSRS state + append to log; schedule a sync.
-  // Can accept either hanzi (string) or a vocab entry object with id/hanzi.
+  // Accepts the composite card key (string) or a vocab/word object, from which
+  // the key is derived.
   const rate = useCallback(
-    (cardKey, ratingKey) => {
-      let hanzi = cardKey
-      if (typeof cardKey === 'object' && cardKey.hanzi) {
-        hanzi = cardKey.hanzi
-      }
+    (wordOrKey, ratingKey) => {
+      const key = typeof wordOrKey === 'string' ? wordOrKey : cardKey(wordOrKey)
       setProgress((prev) => {
-        const card = prev.cards[hanzi]
+        const card = prev.cards[key]
         if (!card) return prev
         const updated = reviewCard(card, ratingKey)
         const next = {
           ...prev,
-          cards: { ...prev.cards, [hanzi]: updated },
+          cards: { ...prev.cards, [key]: updated },
           log: [
             ...prev.log,
-            { hanzi, rating: ratingKey, at: new Date().toISOString() },
+            {
+              key,
+              hanzi: card.hanzi,
+              pinyin: card.pinyin,
+              rating: ratingKey,
+              at: new Date().toISOString(),
+            },
           ].slice(-5000),
         }
         scheduleSync(next)
