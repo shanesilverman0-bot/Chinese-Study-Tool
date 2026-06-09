@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { BANDS, BAND_LABELS } from '../data/vocab.js'
-import { isDue, State } from '../lib/fsrs.js'
+import { isDue, State, cardKey } from '../lib/fsrs.js'
 
 // Computes study stats from the progress object.
 function computeStats(progress, vocab) {
@@ -54,7 +54,7 @@ function computeBandStats(vocab, progress, band) {
   let due = 0
   let unseen = 0
   for (const v of bandVocab) {
-    const card = progress.cards[v.hanzi]
+    const card = progress.cards[cardKey(v)]
     if (!card || card.reps === 0) {
       unseen++ // no progress record yet
     } else if (isDue(card, now)) {
@@ -110,7 +110,7 @@ function FilterCard({
   // New cards (reps === 0) are due from creation, so this also counts them as
   // actionable — matching buildQueue. Guard against cards not yet reconciled.
   const dueInFiltered = filteredVocab.filter((v) => {
-    const card = progress.cards[v.hanzi]
+    const card = progress.cards[cardKey(v)]
     return card && isDue(card, now)
   }).length
 
@@ -267,7 +267,7 @@ function computeCcccListStats(vocab, progress, book, chapter, list) {
   const now = new Date()
   let mastered = 0, learned = 0, due = 0, unseen = 0
   for (const v of listVocab) {
-    const card = progress.cards[v.hanzi]
+    const card = progress.cards[cardKey(v)]
     if (!card || card.reps === 0) unseen++
     else if (isDue(card, now)) due++
     else if (card.stability > 30) mastered++
@@ -311,7 +311,7 @@ function CCCCMasteryPanel({ vocab, progress }) {
                 const now = new Date()
                 let bm = 0, bl = 0, bd = 0, bu = 0
                 for (const v of bookVocab) {
-                  const card = progress.cards[v.hanzi]
+                  const card = progress.cards[cardKey(v)]
                   if (!card || card.reps === 0) bu++
                   else if (isDue(card, now)) bd++
                   else if (card.stability > 30) bm++
@@ -340,7 +340,7 @@ function CCCCMasteryPanel({ vocab, progress }) {
                           const lists = [...new Set(chVocab.map((v) => v.list))].sort((a, b) => a - b)
                           let cm = 0, cl = 0, cd = 0, cu = 0
                           for (const v of chVocab) {
-                            const card = progress.cards[v.hanzi]
+                            const card = progress.cards[cardKey(v)]
                             if (!card || card.reps === 0) cu++
                             else if (isDue(card, now)) cd++
                             else if (card.stability > 30) cm++
