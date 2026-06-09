@@ -16,7 +16,15 @@ function loadFilter() {
   try {
     const raw = localStorage.getItem(FILTER_KEY)
     if (!raw) return structuredClone(DEFAULT_FILTER)
-    return { ...structuredClone(DEFAULT_FILTER), ...JSON.parse(raw) }
+    const stored = JSON.parse(raw)
+    // Deep-merge tocfl so per-band defaults apply to bands absent from storage
+    // (e.g. a returning user who never saw the new UI gets sane defaults).
+    return {
+      ...structuredClone(DEFAULT_FILTER),
+      ...stored,
+      tocfl: { ...DEFAULT_FILTER.tocfl, ...(stored.tocfl || {}) },
+      cccc: { ...(stored.cccc || {}) },
+    }
   } catch {
     return structuredClone(DEFAULT_FILTER)
   }
