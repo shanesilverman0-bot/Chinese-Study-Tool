@@ -11,7 +11,7 @@ export const BAND_LABELS = {
   C: '流利級',
 };
 
-export const vocab = [
+const RAW = [
   {
     "hanzi": "我",
     "pinyin": "wǒ",
@@ -67812,5 +67812,10 @@ export const vocab = [
     ]
   }
 ];
+
+// Every seed entry is a TOCFL word. The UI filters cards by `v.source`
+// (see Dashboard.jsx: `v.source === 'tocfl'`), so tag them here. Spreading
+// `v` last lets any future entry override the default if it ever needs to.
+export const vocab = RAW.map((v) => ({ source: 'tocfl', ...v }));
 
 export const SEED_VOCAB = vocab;
