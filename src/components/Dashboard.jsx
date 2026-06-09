@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useMemo } from 'react'
 import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { isDue, State } from '../lib/fsrs.js'
 
@@ -30,11 +30,11 @@ function computeStats(progress, vocab) {
   // Per-band mastery, computed over the active vocab list.
   const byBand = {}
   for (const band of BANDS) {
-    const ids = vocab.filter((v) => v.band === band).map((v) => v.id)
-    const masteredCount = ids.filter(
-      (id) => progress.cards[id]?.state === State.Review && progress.cards[id]?.stability >= 21
+    const bandVocab = vocab.filter((v) => v.band === band)
+    const masteredCount = bandVocab.filter(
+      (v) => progress.cards[v.hanzi]?.state === State.Review && progress.cards[v.hanzi]?.stability >= 21
     ).length
-    byBand[band] = { total: ids.length, mastered: masteredCount }
+    byBand[band] = { total: bandVocab.length, mastered: masteredCount }
   }
 
   return { due, learned, mastered, retention, streak, byBand }
@@ -53,7 +53,213 @@ function Stat({ value, label, accent }) {
   )
 }
 
-export default function Dashboard({ progress, vocab, onStart }) {
+function ComputeBandStats(vocab, progress, band) {
+  const bandVocab = vocab.filter((v) => v.source === 'tocfl' && v.band === band)
+  const now = new Date()
+  const mastered = bandVocab.filter(
+    (v) => progress.cards[v.hanzi]?.state === State.Review && progress.cards[v.hanzi]?.stability >= 21
+  ).length
+  const learned = bandVocab.filter((v) => progress.cards[v.hanzi]?.reps > 0).length
+  const due = bandVocab.filter((v) => isDue(progress.cards[v.hanzi], now)).length
+  const unseen = bandVocab.length - learned
+  return { mastered, learned, due, unseen, total: bandVocab.length }
+}
+
+function BandProgressBar({ mastered, learned, due, unseen }) {
+  const total = mastered + learned + due + unseen
+  if (total === 0) return null
+  const masteredPct = (mastered / total) * 100
+  const learnedPct = (learned / total) * 100
+  const duePct = (due / total) * 100
+  const unseenPct = (unseen / total) * 100
+
+  return (
+    <div className="mt-2 flex h-3 overflow-hidden rounded-full bg-ink/10">
+      {mastered > 0 && (
+        <div style={{ width: `${masteredPct}%`, backgroundColor: '#1D9E75' }} title={`${mastered} mastered`} />
+      )}
+      {learned > 0 && (
+        <div style={{ width: `${learnedPct}%`, backgroundColor: '#378ADD' }} title={`${learned} learned`} />
+      )}
+      {due > 0 && (
+        <div style={{ width: `${duePct}%`, backgroundColor: '#E24B4A' }} title={`${due} due`} />
+      )}
+      {unseen > 0 && (
+        <div style={{ width: `${unseenPct}%`, backgroundColor: '#e8e0d2' }} title={`${unseen} unseen`} />
+      )}
+    </div>
+  )
+}
+
+function FilterCard({
+  filter,
+  toggleTocflBand,
+  toggleCcccList,
+  vocab,
+  progress,
+  getFilteredVocab,
+  onStart,
+}) {
+  const [activeTab, setActiveTab] = useState('tocfl')
+  const now = new Date()
+
+  const filteredVocab = getFilteredVocab()
+  const dueInFiltered = filteredVocab.filter((v) => isDue(progress.cards[v.hanzi], now)).length
+
+  return (
+    <div className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-3 font-display text-sm font-bold tracking-wide text-ink/70">
+        學習篩選 · Study filter
+      </h3>
+
+      <div className="mb-4 flex gap-2 border-b border-ink/10">
+        <button
+          onClick={() => setActiveTab('tocfl')}
+          className={`px-3 py-2 font-sans text-sm transition ${
+            activeTab === 'tocfl'
+              ? 'border-b-2 border-cinnabar text-ink font-semibold'
+              : 'text-ink/60 hover:text-ink'
+          }`}
+        >
+          TOCFL 等級
+        </button>
+        <button
+          onClick={() => setActiveTab('cccc')}
+          className={`px-3 py-2 font-sans text-sm transition ${
+            activeTab === 'cccc'
+              ? 'border-b-2 border-cinnabar text-ink font-semibold'
+              : 'text-ink/60 hover:text-ink'
+          }`}
+        >
+          當代中文
+        </button>
+      </div>
+
+      <div className="mb-5 flex flex-col gap-2">
+        {activeTab === 'tocfl' && (
+          <div className="space-y-3">
+            {BANDS.map((band) => {
+              const stats = ComputeBandStats(vocab, progress, band)
+              const isEnabled = filter.tocfl[band] === true
+              return (
+                <label
+                  key={band}
+                  className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-ink/5"
+                >
+                  <input
+                    type="checkbox"
+                    checked={isEnabled}
+                    onChange={() => toggleTocflBand(band)}
+                    className="h-4 w-4 cursor-pointer rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-sans text-sm font-medium text-ink">
+                        {BAND_LABELS[band]}
+                      </span>
+                      <span className="font-mono text-xs text-ink/60">
+                        {stats.total} cards
+                      </span>
+                    </div>
+                    <div className="mt-1 flex gap-2">
+                      <span className="font-mono text-xs text-ink/50">
+                        ✓ {stats.mastered}
+                      </span>
+                      <span className="font-mono text-xs text-ink/50">
+                        ~ {stats.learned}
+                      </span>
+                      {stats.due > 0 && (
+                        <span className="font-mono text-xs font-medium text-cinnabar">
+                          ○ {stats.due}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </label>
+              )
+            })}
+          </div>
+        )}
+
+        {activeTab === 'cccc' && (
+          <div className="text-center py-6 text-ink/50">
+            <p className="font-sans text-sm">
+              Upload vocab packs via Settings → Vocab Packs
+            </p>
+          </div>
+        )}
+      </div>
+
+      <button
+        onClick={onStart}
+        className={`w-full rounded-xl py-3 font-display font-bold text-paper transition ${
+          dueInFiltered > 0
+            ? 'bg-cinnabar hover:bg-seal'
+            : 'bg-ink/20 text-ink/60 cursor-not-allowed'
+        }`}
+      >
+        {dueInFiltered > 0
+          ? `開始複習 · Review ${dueInFiltered} cards`
+          : dueInFiltered === 0 && filteredVocab.length > 0
+            ? '沒有待複習 · No cards due'
+            : '未選擇 · Nothing selected'}
+      </button>
+    </div>
+  )
+}
+
+function TOCFLMasteryPanel({ vocab, progress }) {
+  const [expanded, setExpanded] = useState(true)
+
+  if (!vocab.some((v) => v.source === 'tocfl')) return null
+
+  return (
+    <div className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <div
+        className="flex cursor-pointer items-center justify-between"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <h3 className="font-display text-sm font-bold tracking-wide text-ink/70">
+          TOCFL 掌握度 · Level mastery
+        </h3>
+        <span className="font-mono text-xs text-ink/40">{expanded ? '−' : '+'}</span>
+      </div>
+
+      {expanded && (
+        <div className="mt-4 space-y-3">
+          {BANDS.map((band) => {
+            const stats = ComputeBandStats(vocab, progress, band)
+            if (stats.total === 0) return null
+            return (
+              <div key={band}>
+                <div className="mb-1 flex items-baseline justify-between">
+                  <span className="font-sans text-sm text-ink/80">
+                    {BAND_LABELS[band]}{' '}
+                    <span className="font-mono text-xs text-ink/40">{band}</span>
+                  </span>
+                  <span className="font-mono text-xs text-ink/50">
+                    {stats.mastered} · {stats.learned} · {stats.due} · {stats.unseen}
+                  </span>
+                </div>
+                <BandProgressBar {...stats} />
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function Dashboard({
+  progress,
+  vocab,
+  filter,
+  toggleTocflBand,
+  toggleCcccList,
+  getFilteredVocab,
+  onStart,
+}) {
   const s = computeStats(progress, vocab)
 
   return (
@@ -65,43 +271,17 @@ export default function Dashboard({ progress, vocab, onStart }) {
         <Stat value={s.retention == null ? '—' : `${s.retention}%`} label="retention" accent="#1a6b8a" />
       </div>
 
-      <div className="rounded-2xl border border-ink/10 bg-white/50 p-5">
-        <h3 className="mb-3 font-display text-sm font-bold tracking-wide text-ink/70">
-          TOCFL 等級進度 · Level mastery
-        </h3>
-        <div className="flex flex-col gap-3">
-          {BANDS.map((band) => {
-            const b = s.byBand[band]
-            const pct = b.total ? Math.round((b.mastered / b.total) * 100) : 0
-            return (
-              <div key={band}>
-                <div className="mb-1 flex items-baseline justify-between">
-                  <span className="font-sans text-sm text-ink/80">
-                    {BAND_LABELS[band]}{' '}
-                    <span className="font-mono text-xs text-ink/40">{band}</span>
-                  </span>
-                  <span className="font-mono text-xs text-ink/50">
-                    {b.mastered}/{b.total}
-                  </span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-ink/10">
-                  <div
-                    className="h-full rounded-full bg-cinnabar transition-all"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+      <TOCFLMasteryPanel vocab={vocab} progress={progress} />
 
-      <button
-        onClick={onStart}
-        className="rounded-2xl bg-cinnabar py-4 font-display text-lg font-bold text-paper transition hover:bg-seal"
-      >
-        {s.due > 0 ? `開始複習 · Review ${s.due} cards` : '自由練習 · Practice'}
-      </button>
+      <FilterCard
+        filter={filter}
+        toggleTocflBand={toggleTocflBand}
+        toggleCcccList={toggleCcccList}
+        vocab={vocab}
+        progress={progress}
+        getFilteredVocab={getFilteredVocab}
+        onStart={onStart}
+      />
     </div>
   )
 }

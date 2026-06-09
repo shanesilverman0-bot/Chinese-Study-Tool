@@ -39,21 +39,37 @@ function loadLocalProgress() {
   }
 }
 
-// A fresh progress object covers every vocab id with an empty FSRS card.
+// A fresh progress object covers every vocab hanzi with an empty FSRS card.
 function freshProgress(vocab) {
   const cards = {}
-  for (const v of vocab) cards[v.id] = newCardState(v.id)
+  for (const v of vocab) cards[v.hanzi] = newCardState(v.hanzi)
   return { version: 1, cards, log: [], updatedAt: new Date().toISOString() }
 }
 
 // Merge stored progress with the current vocab list so newly added words get
-// card states without wiping existing review history.
+// card states without wiping existing review history. Also migrate old id-based
+// progress to hanzi-based for backwards compatibility.
 function reconcile(progress, vocab) {
   const p = progress || freshProgress(vocab)
   if (!p.cards) p.cards = {}
-  for (const v of vocab) {
-    if (!p.cards[v.id]) p.cards[v.id] = newCardState(v.id)
+
+  // Migrate id-based cards to hanzi-based if needed (for backwards compat)
+  const vocabById = Object.fromEntries(vocab.map(v => [v.id, v]))
+  const migratedCards = {}
+  for (const [key, card] of Object.entries(p.cards)) {
+    if (card.hanzi) {
+      migratedCards[card.hanzi] = card
+    } else if (vocabById[key]) {
+      migratedCards[vocabById[key].hanzi] = { ...card, hanzi: vocabById[key].hanzi }
+    }
   }
+  p.cards = migratedCards
+
+  // Ensure all vocab has a card
+  for (const v of vocab) {
+    if (!p.cards[v.hanzi]) p.cards[v.hanzi] = newCardState(v.hanzi)
+  }
+
   if (!p.log) p.log = []
   return p
 }
@@ -134,17 +150,23 @@ export function useProgress(vocab = SEED_VOCAB) {
   )
 
   // Rate a card; update FSRS state + append to log; schedule a sync.
+  // Can accept either hanzi (string) or a vocab entry object with id/hanzi.
   const rate = useCallback(
-    (vocabId, ratingKey) => {
+    (cardKey, ratingKey) => {
+      let hanzi = cardKey
+      if (typeof cardKey === 'object' && cardKey.hanzi) {
+        hanzi = cardKey.hanzi
+      }
       setProgress((prev) => {
-        const card = prev.cards[vocabId]
+        const card = prev.cards[hanzi]
+        if (!card) return prev
         const updated = reviewCard(card, ratingKey)
         const next = {
           ...prev,
-          cards: { ...prev.cards, [vocabId]: updated },
+          cards: { ...prev.cards, [hanzi]: updated },
           log: [
             ...prev.log,
-            { vocabId, rating: ratingKey, at: new Date().toISOString() },
+            { hanzi, rating: ratingKey, at: new Date().toISOString() },
           ].slice(-5000),
         }
         scheduleSync(next)

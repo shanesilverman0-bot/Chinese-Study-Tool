@@ -46,6 +46,7 @@ function normalizeEntry(raw, idx, packName) {
   const band = BANDS.includes(raw.band) ? raw.band : raw.level && BANDS.includes(raw.level) ? raw.level : 'Novice'
   const tones = Array.isArray(raw.tones) && raw.tones.length ? raw.tones : tonesFromPinyin(pinyin)
   const id = raw.id || `${packName}-${idx}-${hashHanzi(hanzi)}`
+  const source = raw.source || 'tocfl'
   return {
     id,
     hanzi,
@@ -53,6 +54,7 @@ function normalizeEntry(raw, idx, packName) {
     english: raw.english || raw.definition || raw.meaning || '',
     band,
     tones,
+    source,
   }
 }
 

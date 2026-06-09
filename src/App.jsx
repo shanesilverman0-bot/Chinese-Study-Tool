@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { SEED_VOCAB } from './data/vocab.js'
 import { loadVocab } from './lib/vocab.js'
 import { useProgress } from './hooks/useProgress.js'
+import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
 import { isDue } from './lib/fsrs.js'
 import Dashboard from './components/Dashboard.jsx'
@@ -25,11 +26,19 @@ export default function App() {
     githubReady,
   } = useProgress(vocab)
 
+  const {
+    filter,
+    toggleTocflBand,
+    toggleCcccList,
+    getFilteredVocab,
+    resetFilter,
+  } = useStudyFilter(vocab)
+
   const [view, setView] = useState('home') // home | review | settings | files
   const [queue, setQueue] = useState([])
   const [pos, setPos] = useState(0)
 
-  const vocabById = useMemo(() => Object.fromEntries(vocab.map((v) => [v.id, v])), [vocab])
+  const vocabByHanzi = useMemo(() => Object.fromEntries(vocab.map((v) => [v.hanzi, v])), [vocab])
 
   const tutorConfig = useMemo(
     () => ({
@@ -70,20 +79,19 @@ export default function App() {
     reloadVocab()
   }, [reloadVocab])
 
-  // Build a review queue: due cards in enabled bands first, then unseen, capped.
+  // Build a review queue: due cards first, then unseen, from filtered vocab, capped.
   const buildQueue = () => {
-    const enabled = new Set(settings.enabledBands)
-    const inScope = vocab.filter((v) => enabled.has(v.band))
+    const filtered = getFilteredVocab()
     const now = new Date()
     const due = []
     const unseen = []
     const rest = []
-    for (const v of inScope) {
-      const card = progress.cards[v.id]
+    for (const v of filtered) {
+      const card = progress.cards[v.hanzi]
       if (!card) continue
-      if (isDue(card, now)) due.push(v.id)
-      else if (card.reps === 0) unseen.push(v.id)
-      else rest.push(v.id)
+      if (isDue(card, now)) due.push(v.hanzi)
+      else if (card.reps === 0) unseen.push(v.hanzi)
+      else rest.push(v.hanzi)
     }
     const primary = [...due, ...unseen].slice(0, 40)
     if (primary.length > 0) return primary
@@ -98,13 +106,13 @@ export default function App() {
   }
 
   function handleRate(ratingKey) {
-    const vocabId = queue[pos]
-    rate(vocabId, ratingKey)
+    const hanzi = queue[pos]
+    rate(hanzi, ratingKey)
     if (pos + 1 < queue.length) setPos(pos + 1)
     else setView('home')
   }
 
-  const currentWord = queue[pos] ? vocabById[queue[pos]] : null
+  const currentWord = queue[pos] ? vocabByHanzi[queue[pos]] : null
   const currentCard = queue[pos] ? progress.cards[queue[pos]] : null
 
   return (
@@ -134,7 +142,15 @@ export default function App() {
         <main className="flex-1 px-3 pb-6">
           <div className="min-h-full rounded-3xl paper-texture px-4 py-6 shadow-xl sm:px-6">
             {view === 'home' && (
-              <Dashboard progress={progress} vocab={vocab} onStart={startReview} />
+              <Dashboard
+                progress={progress}
+                vocab={vocab}
+                filter={filter}
+                toggleTocflBand={toggleTocflBand}
+                toggleCcccList={toggleCcccList}
+                getFilteredVocab={getFilteredVocab}
+                onStart={startReview}
+              />
             )}
 
             {view === 'review' && currentWord && (

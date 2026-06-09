@@ -15,16 +15,16 @@ export const RATING = {
   easy: Rating.Easy,
 }
 
-// Create a fresh FSRS card record for a vocab id.
-export function newCardState(vocabId) {
+// Create a fresh FSRS card record for a hanzi string.
+export function newCardState(hanzi) {
   const card = createEmptyCard(new Date())
-  return serializeCard(vocabId, card)
+  return serializeCard(hanzi, card)
 }
 
 // FSRS card objects use Date instances; we store ISO strings in JSON.
-function serializeCard(vocabId, card) {
+function serializeCard(hanzi, card) {
   return {
-    vocabId,
+    hanzi,
     due: card.due.toISOString(),
     stability: card.stability,
     difficulty: card.difficulty,
@@ -55,7 +55,7 @@ function deserializeCard(stored) {
 export function reviewCard(stored, ratingKey, now = new Date()) {
   const card = deserializeCard(stored)
   const result = scheduler.next(card, now, RATING[ratingKey])
-  return serializeCard(stored.vocabId, result.card)
+  return serializeCard(stored.hanzi, result.card)
 }
 
 // How long until each rating's next review — used to label the buttons
