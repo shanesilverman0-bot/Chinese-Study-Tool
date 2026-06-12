@@ -177,3 +177,7 @@ export function filterByBand(vocab, bands) {
 
 // ─── BANDS constant (used by Settings UI) ────────────────────────────────────
 export const BANDS = ['Novice', 'A', 'B', 'C']
+
+// ─── Backward-compat alias ───────────────────────────────────────────────────
+// App.jsx imports `loadVocab`; keep that name working alongside loadVocabPack.
+export const loadVocab = loadVocabPack
