@@ -5,6 +5,8 @@ import { useProgress } from './hooks/useProgress.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
 import { isDue, cardKey } from './lib/fsrs.js'
+import { filterVocab } from './lib/vocab.js'
+import DangdaiFilter from './components/DangdaiFilter.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
@@ -33,6 +35,8 @@ export default function App() {
     getFilteredVocab,
     resetFilter,
   } = useStudyFilter(vocab)
+
+  const [dangdaiFilter, setDangdaiFilter] = useState({ book: null, lesson: null, part: null })
 
   const [view, setView] = useState('home') // home | review | settings | files
   const [queue, setQueue] = useState([]) // holds composite card keys
@@ -86,8 +90,8 @@ export default function App() {
 
   // Build a review queue: due cards first, then unseen, from filtered vocab, capped.
   const buildQueue = () => {
-    const filtered = getFilteredVocab()
-    const now = new Date()
+  const filtered = filterVocab(getFilteredVocab(), dangdaiFilter)    
+  const now = new Date()
     const due = []
     const unseen = []
     const rest = []
