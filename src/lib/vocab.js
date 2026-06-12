@@ -221,10 +221,14 @@ export async function loadVocabPacksFromGitHub(githubConfig, seenHanzi) {
         : null
       if (!rawArr) throw new Error(`${f.name}: expected a JSON array or { "vocab": [...] } or { "words": [...] }`)
       const words = rawArr.map(normalizeEntry)
+      const seenInThisPack = new Set()
       let added = 0
       for (const w of words) {
-        if (!w.hanzi || seen.has(w.hanzi)) continue
-        seen.add(w.hanzi)
+        if (!w.hanzi) continue
+        const key = `${w.hanzi}|${w.pinyin}`
+        if (seenInThisPack.has(key)) continue   // exact dupe within this file — skip
+        seenInThisPack.add(key)
+        if (seen.has(w.hanzi)) continue          // already in TOCFL seed vocab — skip
         result.vocab.push({ ...w, source: 'cccc' })
         added++
       }
