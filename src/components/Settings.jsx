@@ -31,7 +31,6 @@ export default function Settings({
   vocab,
   dangdaiFilter,
   setDangdaiFilter,
-  settings,
 }) {
   const [verify, setVerify] = useState({ status: 'idle', message: '' })
 
