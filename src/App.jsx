@@ -191,6 +191,10 @@ export default function App() {
 
             {view === 'settings' && (
               <Settings
+                vocab={vocab}
+                dangdaiFilter={dangdaiFilter}
+                setDangdaiFilter={setDangdaiFilter}
+                progress={progress}
                 settings={settings}
                 updateSettings={updateSettings}
                 syncState={syncState}
