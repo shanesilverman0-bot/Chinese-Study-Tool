@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { SEED_VOCAB } from './data/vocab.js'
-import { loadVocab } from './lib/vocab.js'
+import { loadVocabPacksFromGitHub, filterVocab } from './lib/vocab.js'
 import { useProgress } from './hooks/useProgress.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
 import { isDue, cardKey } from './lib/fsrs.js'
-import { filterVocab } from './lib/vocab.js'
 import DangdaiFilter from './components/DangdaiFilter.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
@@ -36,7 +35,7 @@ export default function App() {
     resetFilter,
   } = useStudyFilter(vocab)
 
-  const [dangdaiFilter, setDangdaiFilter] = useState({ book: null, lesson: null, part: null })
+  const [dangdaiFilter, setDangdaiFilter] = useState({ book: null, chapter: null, list: null })
 
   const [view, setView] = useState('home') // home | review | settings | files
   const [queue, setQueue] = useState([]) // holds composite card keys
@@ -73,8 +72,9 @@ export default function App() {
         return
       }
       try {
-        const res = await loadVocab(settings.github)
-        setVocab(res.vocab)
+        const seenHanzi = new Set(SEED_VOCAB.map((v) => v.hanzi))
+        const res = await loadVocabPacksFromGitHub(settings.github, seenHanzi)
+        setVocab([...SEED_VOCAB, ...res.vocab])
         setVocabInfo({ packs: res.packs, errors: res.errors })
       } catch (e) {
         setVocabInfo({ packs: [], errors: [e.message] })

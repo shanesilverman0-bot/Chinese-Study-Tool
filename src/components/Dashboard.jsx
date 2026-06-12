@@ -47,7 +47,10 @@ function Stat({ value, label, accent }) {
 // segments sum to the band total. Order matters: unseen → due → mastered →
 // learned. Null-safe because vocab can grow a render before progress reconciles.
 function computeBandStats(vocab, progress, band) {
-  const bandVocab = vocab.filter((v) => v.source === 'tocfl' && v.band === band)
+  const bandVocab = vocab.filter(
+    (v) => v.source === 'tocfl' &&
+           (Array.isArray(v.band) ? v.band.includes(band) : v.band === band)
+  )
   const now = new Date()
   let mastered = 0
   let learned = 0

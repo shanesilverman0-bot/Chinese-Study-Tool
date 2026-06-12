@@ -1,15 +1,15 @@
 // src/components/DangdaiFilter.jsx
 // Study filter UI for CCCC (dangdai) vocab packs.
-// Renders a collapsible Book → Lesson → Part selector tree.
+// Renders a collapsible Book → Chapter → List selector tree.
 //
 // Props:
 //   vocab        — full normalized vocab array from loaded pack(s)
-//   filter       — current filter: { book, lesson, part } (nulls = all)
+//   filter       — current filter: { book, chapter, list } (nulls = all)
 //   onChange     — (newFilter) => void
 //   progress     — progress.cards map (for due/seen counts per node)
 
 import React, { useMemo, useState } from 'react'
-import { getPackStructure, filterVocab } from '../lib/vocab.js'
+import { filterVocab } from '../lib/vocab.js'
 
 // Count cards that are due, seen (not due), and unseen for a vocab slice.
 function countCards(vocab, progressCards) {
@@ -50,37 +50,37 @@ function NodeCounts({ counts }) {
 export default function DangdaiFilter({ vocab, filter, onChange, progress }) {
   const [expandedBooks, setExpandedBooks] = useState(new Set())
 
-  // Build tree: book → lessons → parts
+  // Build tree: book → chapters → lists
   const tree = useMemo(() => {
     const books = {}
     for (const v of vocab) {
       if (v.book == null) continue
       const b = v.book
       if (!books[b]) books[b] = {}
-      const l = v.lesson ?? 0
-      if (!books[b][l]) books[b][l] = new Set()
-      if (v.part) books[b][l].add(v.part)
+      const c = v.chapter ?? 0
+      if (!books[b][c]) books[b][c] = new Set()
+      if (v.list) books[b][c].add(v.list)
     }
     // Sort
     return Object.entries(books)
       .sort(([a],[b]) => Number(a) - Number(b))
-      .map(([book, lessons]) => ({
+      .map(([book, chapters]) => ({
         book: Number(book),
-        lessons: Object.entries(lessons)
+        chapters: Object.entries(chapters)
           .sort(([a],[b]) => Number(a) - Number(b))
-          .map(([lesson, parts]) => ({
-            lesson: Number(lesson) || null,
-            parts: [...parts].sort(),
+          .map(([chapter, lists]) => ({
+            chapter: Number(chapter) || null,
+            lists: [...lists].sort(),
           }))
       }))
   }, [vocab])
 
   const progressCards = progress?.cards
 
-  const isActive = (b, l, p) =>
+  const isActive = (b, c, l) =>
     filter.book === b &&
-    (l == null || filter.lesson === l) &&
-    (p == null || filter.part === p)
+    (c == null || filter.chapter === c) &&
+    (l == null || filter.list === l)
 
   const handleBookClick = (book) => {
     setExpandedBooks(prev => {
@@ -90,11 +90,11 @@ export default function DangdaiFilter({ vocab, filter, onChange, progress }) {
     })
   }
 
-  const handleSelect = (book, lesson, part) => {
-    onChange({ book, lesson: lesson ?? null, part: part ?? null })
+  const handleSelect = (book, chapter, list) => {
+    onChange({ book, chapter: chapter ?? null, list: list ?? null })
   }
 
-  const clearFilter = () => onChange({ book: null, lesson: null, part: null })
+  const clearFilter = () => onChange({ book: null, chapter: null, list: null })
 
   return (
     <div className="w-full">
@@ -114,11 +114,11 @@ export default function DangdaiFilter({ vocab, filter, onChange, progress }) {
       </button>
 
       {/* Book tree */}
-      {tree.map(({ book, lessons }) => {
+      {tree.map(({ book, chapters }) => {
         const bookVocab = filterVocab(vocab, { book })
         const bookCounts = countCards(bookVocab, progressCards)
         const expanded = expandedBooks.has(book)
-        const bookActive = filter.book === book && filter.lesson == null
+        const bookActive = filter.book === book && filter.chapter == null
 
         return (
           <div key={book} className="mb-1">
@@ -144,52 +144,52 @@ export default function DangdaiFilter({ vocab, filter, onChange, progress }) {
               </button>
             </div>
 
-            {/* Lessons */}
-            {expanded && lessons.map(({ lesson, parts }) => {
-              const lessonVocab = filterVocab(vocab, { book, lesson })
-              const lessonCounts = countCards(lessonVocab, progressCards)
-              const lessonActive = filter.book === book && filter.lesson === lesson && filter.part == null
+            {/* Chapters */}
+            {expanded && chapters.map(({ chapter, lists }) => {
+              const chapterVocab = filterVocab(vocab, { book, chapter })
+              const chapterCounts = countCards(chapterVocab, progressCards)
+              const chapterActive = filter.book === book && filter.chapter === chapter && filter.list == null
 
               return (
-                <div key={lesson} className="ml-5 mt-0.5">
-                  {/* Lesson row */}
+                <div key={chapter} className="ml-5 mt-0.5">
+                  {/* Chapter row */}
                   <button
-                    onClick={() => handleSelect(book, lesson, null)}
+                    onClick={() => handleSelect(book, chapter, null)}
                     className={`w-full flex items-center gap-1 px-2 py-1 rounded-lg text-sm transition-colors ${
-                      lessonActive
+                      chapterActive
                         ? 'bg-blue-500 text-white'
                         : 'text-slate-400 hover:bg-slate-700'
                     }`}
                   >
-                    <span>Lesson {lesson}</span>
-                    <span className="text-xs opacity-60">({lessonVocab.length})</span>
-                    {lessonActive && <NodeCounts counts={lessonCounts} />}
+                    <span>Ch. {chapter}</span>
+                    <span className="text-xs opacity-60">({chapterVocab.length})</span>
+                    {chapterActive && <NodeCounts counts={chapterCounts} />}
                   </button>
 
-                  {/* Parts I / II */}
-                  {parts.length > 0 && (
+                  {/* Lists */}
+                  {lists.length > 0 && (
                     <div className="ml-3 mt-0.5 flex gap-1">
-                      {parts.map((part) => {
-                        const partVocab = filterVocab(vocab, { book, lesson, part })
-                        const partCounts = countCards(partVocab, progressCards)
-                        const partActive = isActive(book, lesson, part)
+                      {lists.map((list) => {
+                        const listVocab = filterVocab(vocab, { book, chapter, list })
+                        const listCounts = countCards(listVocab, progressCards)
+                        const listActive = isActive(book, chapter, list)
 
                         return (
                           <button
-                            key={part}
-                            onClick={() => handleSelect(book, lesson, part)}
+                            key={list}
+                            onClick={() => handleSelect(book, chapter, list)}
                             className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs transition-colors ${
-                              partActive
+                              listActive
                                 ? 'bg-blue-400 text-white'
                                 : 'text-slate-500 hover:bg-slate-700'
                             }`}
                           >
-                            Part {part}
-                            <span className="opacity-60">({partVocab.length})</span>
-                            {partActive && (
+                            List {list}
+                            <span className="opacity-60">({listVocab.length})</span>
+                            {listActive && (
                               <span className="flex gap-0.5">
-                                {partCounts.due > 0 && (
-                                  <span style={{ color: '#ef4444' }}>{partCounts.due}</span>
+                                {listCounts.due > 0 && (
+                                  <span style={{ color: '#ef4444' }}>{listCounts.due}</span>
                                 )}
                               </span>
                             )}
