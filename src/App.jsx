@@ -5,7 +5,6 @@ import { useProgress } from './hooks/useProgress.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
 import { isDue, cardKey } from './lib/fsrs.js'
-import DangdaiFilter from './components/DangdaiFilter.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
@@ -30,12 +29,19 @@ export default function App() {
   const {
     filter,
     toggleTocflBand,
-    toggleCcccList,
-    getFilteredVocab,
-    resetFilter,
   } = useStudyFilter(vocab)
 
   const [dangdaiFilter, setDangdaiFilter] = useState({ book: null, chapter: null, list: null })
+
+  const filteredVocab = useMemo(() => {
+    const tocflVocab = vocab.filter(
+      (v) => v.source === 'tocfl' && filter.tocfl[v.band] === true
+    )
+    const ccccVocab = dangdaiFilter.book != null
+      ? filterVocab(vocab.filter((v) => v.source === 'cccc'), dangdaiFilter)
+      : []
+    return [...tocflVocab, ...ccccVocab]
+  }, [vocab, filter.tocfl, dangdaiFilter])
 
   const [view, setView] = useState('home') // home | review | settings | files
   const [queue, setQueue] = useState([]) // holds composite card keys
@@ -90,12 +96,11 @@ export default function App() {
 
   // Build a review queue: due cards first, then unseen, from filtered vocab, capped.
   const buildQueue = () => {
-  const filtered = filterVocab(getFilteredVocab(), dangdaiFilter)    
-  const now = new Date()
+    const now = new Date()
     const due = []
     const unseen = []
     const rest = []
-    for (const v of filtered) {
+    for (const v of filteredVocab) {
       const key = cardKey(v)
       const card = progress.cards[key]
       if (!card) continue
@@ -157,8 +162,9 @@ export default function App() {
                 vocab={vocab}
                 filter={filter}
                 toggleTocflBand={toggleTocflBand}
-                toggleCcccList={toggleCcccList}
-                getFilteredVocab={getFilteredVocab}
+                filteredVocab={filteredVocab}
+                dangdaiFilter={dangdaiFilter}
+                setDangdaiFilter={setDangdaiFilter}
                 onStart={startReview}
               />
             )}
@@ -191,10 +197,6 @@ export default function App() {
 
             {view === 'settings' && (
               <Settings
-                vocab={vocab}
-                dangdaiFilter={dangdaiFilter}
-                setDangdaiFilter={setDangdaiFilter}
-                progress={progress}
                 settings={settings}
                 updateSettings={updateSettings}
                 syncState={syncState}

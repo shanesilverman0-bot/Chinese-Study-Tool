@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { isDue, State, cardKey } from '../lib/fsrs.js'
+import DangdaiFilter from './DangdaiFilter.jsx'
 
 // Computes study stats from the progress object.
 function computeStats(progress, vocab) {
@@ -100,18 +101,16 @@ function BandProgressBar({ mastered, learned, due, unseen }) {
 function FilterCard({
   filter,
   toggleTocflBand,
-  toggleCcccList,
   vocab,
   progress,
-  getFilteredVocab,
+  filteredVocab,
+  dangdaiFilter,
+  setDangdaiFilter,
   onStart,
 }) {
   const [activeTab, setActiveTab] = useState('tocfl')
   const now = new Date()
 
-  const filteredVocab = getFilteredVocab()
-  // New cards (reps === 0) are due from creation, so this also counts them as
-  // actionable — matching buildQueue. Guard against cards not yet reconciled.
   const dueInFiltered = filteredVocab.filter((v) => {
     const card = progress.cards[cardKey(v)]
     return card && isDue(card, now)
@@ -193,11 +192,18 @@ function FilterCard({
         )}
 
         {activeTab === 'cccc' && (
-          <div className="text-center py-6 text-ink/50">
-            <p className="font-sans text-sm">
-              Upload vocab packs via Settings → Vocab Packs
-            </p>
-          </div>
+          vocab.some((v) => v.source === 'cccc') ? (
+            <DangdaiFilter
+              vocab={vocab.filter((v) => v.source === 'cccc')}
+              filter={dangdaiFilter}
+              onChange={setDangdaiFilter}
+              progress={progress}
+            />
+          ) : (
+            <div className="text-center py-6 text-ink/50">
+              <p className="font-sans text-sm">Upload vocab packs via Settings → Vocab Packs</p>
+            </div>
+          )
         )}
       </div>
 
@@ -400,8 +406,9 @@ export default function Dashboard({
   vocab,
   filter,
   toggleTocflBand,
-  toggleCcccList,
-  getFilteredVocab,
+  filteredVocab,
+  dangdaiFilter,
+  setDangdaiFilter,
   onStart,
 }) {
   const s = computeStats(progress, vocab)
@@ -422,10 +429,11 @@ export default function Dashboard({
       <FilterCard
         filter={filter}
         toggleTocflBand={toggleTocflBand}
-        toggleCcccList={toggleCcccList}
         vocab={vocab}
         progress={progress}
-        getFilteredVocab={getFilteredVocab}
+        filteredVocab={filteredVocab}
+        dangdaiFilter={dangdaiFilter}
+        setDangdaiFilter={setDangdaiFilter}
         onStart={onStart}
       />
     </div>

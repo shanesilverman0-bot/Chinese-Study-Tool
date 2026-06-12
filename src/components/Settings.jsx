@@ -3,7 +3,6 @@ import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { verifyAccess } from '../lib/github.js'
 import { PROVIDERS } from '../lib/tutor.js'
 import MicTest from './MicTest.jsx'
-import DangdaiFilter from './DangdaiFilter.jsx'
 
 
 function Field({ label, hint, children }) {
@@ -28,9 +27,6 @@ export default function Settings({
   vocabInfo,
   vocabCount,
   onReloadVocab,
-  vocab,
-  dangdaiFilter,
-  setDangdaiFilter,
 }) {
   const [verify, setVerify] = useState({ status: 'idle', message: '' })
 
@@ -261,21 +257,7 @@ export default function Settings({
       {/* Mic diagnostics */}
       <MicTest />
 
-      {/* CCCC study filter */}
-      <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
-        <h3 className="mb-3 font-display text-base font-bold text-ink">當代中文 · Chapter Filter</h3>
-        <p className="mb-3 font-sans text-xs text-ink/50">
-          Filter study sessions to a specific book, lesson, or vocabulary set.
-        </p>
-        <DangdaiFilter
-          vocab={vocab}
-          filter={dangdaiFilter}
-          onChange={setDangdaiFilter}
-          progress={progress}
-        />
-      </section>
-
-      {/* Band selection */}      
+      {/* Band selection */}
       <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
         <h3 className="mb-3 font-display text-base font-bold text-ink">學習等級 · Study levels</h3>
         <div className="flex flex-col gap-2">
