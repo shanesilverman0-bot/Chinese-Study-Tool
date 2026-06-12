@@ -1,31 +1,67 @@
-// Runtime vocab loader. The app ships with a seed list (src/data/vocab.js) and
-// can additionally auto-discover vocab "packs" — JSON files dropped into a
-// `vocab/` folder in the synced repo. Each pack is fetched, normalized, and
-// merged with the seed (deduped by hanzi). This is how uploaded wordlists
-// appear in the app without a rebuild.
+// src/lib/vocab.js
+// Runtime vocab-pack loader + pinyin → tones derivation.
+//
+// Vocab pack JSON schema (dangdai-aligned):
+//   {
+//     name: string,
+//     description?: string,
+//     vocab: [
+//       {
+//         // character fields (aliases supported)
+//         hanzi / traditional / word: string,
+//
+//         // pronunciation (tone marks, not numbers)
+//         pinyin / reading: string,
+//
+//         // translation
+//         english / definition / meaning: string,
+//
+//         // TOCFL band(s) — string OR array of strings
+//         // e.g. "A" or ["A","B"] for cross-band words
+//         band?: string | string[],
+//
+//         // CCCC textbook location (all optional but used for study filtering)
+//         book?:   number,   // 1–6
+//         lesson?: number,   // 1–N
+//         part?:   string,   // "I" or "II"
+//
+//         // Part of speech (passed through from dangdai.csv)
+//         pos?: string,
+//
+//         // Pre-computed tones (optional; auto-derived from pinyin if absent)
+//         tones?: number[],  // 1=flat 2=rising 3=dip 4=falling 5=neutral
+//       }
+//     ]
+//   }
+//
+// The dangdai.csv columns map directly:
+//   traditional → hanzi
+//   pinyin      → pinyin
+//   english     → english
+//   book        → book   (number)
+//   lesson      → lesson (number)
+//   part        → part   ("I" | "II")
+//   pos         → pos
+//
+// Band is derived from book number if not explicit:
+//   book 1–2 → "A"
+//   book 3–4 → "B"
+//   book 5–6 → "C"
 
-import { SEED_VOCAB, BANDS } from '../data/vocab.js'
-import { listDir, readFileContent } from './github.js'
-
-const VOCAB_DIR = 'vocab'
-
-// Map tone-marked vowels to tone numbers, for deriving `tones` from pinyin
-// when a pack omits it.
+// ─── Tone mark tables ────────────────────────────────────────────────────────
+// IMPORTANT: each string contains exactly the vowels with that tone diacritic.
+// Walk the pinyin string left-to-right; the first tone-marked character in each
+// syllable gives that syllable's tone. This handles both spaced ("nǐ hǎo") and
+// unspaced ("duìbuqǐ") pinyin correctly.
 const TONE_MARKS = {
-  1: 'āēīōūǖ',
-  2: 'áéíóúǘ',
-  3: 'ǎěǐǒǔǚ',
-  4: 'àèìòùǜ',
+  1: 'āēīōūǖĀĒĪŌŪ',
+  2: 'áéíóúǘÁÉÍÓÚ',
+  3: 'ǎěǐǒǔǚǍĚǏǑǓ',
+  4: 'àèìòùǜÀÈÌÒÙ',
 }
 
 export function tonesFromPinyin(pinyin) {
-  if (!pinyin) return [1]
-  // Walk left-to-right and record each tone mark in the order it appears.
-  // Pinyin has at most one tone mark per syllable, so this yields per-syllable
-  // tones in positional order even when syllables aren't space-separated
-  // (e.g. "duìbùqǐ" -> [4,4,3]). Toneless trailing syllables (neutral tone)
-  // simply aren't represented, which is fine: only the leading tone drives the
-  // visualizer reference contour.
+  if (!pinyin) return [5]
   const tones = []
   for (const ch of pinyin) {
     for (const tone of [1, 2, 3, 4]) {
@@ -38,77 +74,106 @@ export function tonesFromPinyin(pinyin) {
   return tones.length ? tones : [5]
 }
 
-// Normalize one raw pack entry into the app's card shape.
-function normalizeEntry(raw, idx, packName) {
-  const hanzi = raw.hanzi || raw.traditional || raw.word || ''
-  if (!hanzi) return null
-  const pinyin = raw.pinyin || raw.reading || ''
-  const band = BANDS.includes(raw.band) ? raw.band : raw.level && BANDS.includes(raw.level) ? raw.level : 'Novice'
-  const tones = Array.isArray(raw.tones) && raw.tones.length ? raw.tones : tonesFromPinyin(pinyin)
-  const id = raw.id || `${packName}-${idx}-${hashHanzi(hanzi)}`
-  const source = raw.source || 'tocfl'
+// Primary tone for reference contour selection: first non-neutral tone, or
+// the first tone if all are neutral.
+export function primaryTone(tones) {
+  if (!tones || !tones.length) return 1
+  return tones.find((t) => t !== 5) ?? tones[0]
+}
+
+// ─── Band derivation from CCCC book number ───────────────────────────────────
+const BOOK_TO_BAND = { 1: 'A', 2: 'A', 3: 'B', 4: 'B', 5: 'C', 6: 'C' }
+
+function deriveBand(entry) {
+  // Explicit band field wins (may already be an array)
+  if (entry.band) {
+    return Array.isArray(entry.band) ? entry.band : [entry.band]
+  }
+  // Derive from book number
+  if (entry.book) {
+    const b = BOOK_TO_BAND[Number(entry.book)]
+    if (b) return [b]
+  }
+  return ['A'] // fallback
+}
+
+// ─── Field alias resolution ───────────────────────────────────────────────────
+function normalizeEntry(raw) {
+  const hanzi = raw.hanzi ?? raw.traditional ?? raw.word ?? ''
+  const pinyin = raw.pinyin ?? raw.reading ?? ''
+  const english = raw.english ?? raw.definition ?? raw.meaning ?? ''
+  const tones = raw.tones ?? tonesFromPinyin(pinyin)
+  const band = deriveBand(raw)
+
+  const entry = { hanzi, pinyin, english, tones, band }
+
+  // CCCC location fields — preserve if present
+  if (raw.book   != null) entry.book   = Number(raw.book)
+  if (raw.lesson != null) entry.lesson = Number(raw.lesson)
+  if (raw.part   != null) entry.part   = String(raw.part)   // "I" | "II"
+  if (raw.pos    != null) entry.pos    = String(raw.pos)
+
+  return entry
+}
+
+// ─── Unique vocab ID ──────────────────────────────────────────────────────────
+// Stable across loads: hanzi + pinyin so homophones with different meanings
+// don't collide, and same word in two packs shares progress.
+export function vocabId(entry) {
+  return `${entry.hanzi}|${entry.pinyin}`
+}
+
+// ─── Pack loader ──────────────────────────────────────────────────────────────
+// loadVocabPack(json) — accepts the raw parsed JSON object and returns a
+// normalized pack with a flat vocab array ready for the review loop.
+export function loadVocabPack(json) {
+  if (!json || !Array.isArray(json.vocab)) {
+    throw new Error('Invalid vocab pack: missing "vocab" array')
+  }
   return {
-    id,
-    hanzi,
-    pinyin,
-    english: raw.english || raw.definition || raw.meaning || '',
-    band,
-    tones,
-    source,
+    name: json.name ?? 'Unnamed Pack',
+    description: json.description ?? '',
+    vocab: json.vocab.map(normalizeEntry),
   }
 }
 
-function hashHanzi(s) {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
-  return h.toString(36)
-}
+// ─── Study filter helpers ─────────────────────────────────────────────────────
+// These are used by the UI to build the Book → Lesson → Part selector tree.
 
-// Parse a pack file's text. Accepts either a JSON array, or { words: [...] }.
-function parsePack(text, packName) {
-  let data
-  try {
-    data = JSON.parse(text)
-  } catch (e) {
-    throw new Error(`${packName}: not valid JSON (${e.message})`)
-  }
-  const arr = Array.isArray(data) ? data : Array.isArray(data.words) ? data.words : null
-  if (!arr) throw new Error(`${packName}: expected a JSON array or { "words": [...] }`)
-  return arr.map((r, i) => normalizeEntry(r, i, packName)).filter(Boolean)
-}
-
-// Fetch and merge all packs from vocab/. Returns { vocab, packs, errors }.
-export async function loadVocab(github) {
-  const result = { vocab: [...SEED_VOCAB], packs: [], errors: [] }
-  const ready = github?.token && github?.owner && github?.repo
-  if (!ready) return result
-
-  let entries = []
-  try {
-    entries = await listDir(github, VOCAB_DIR)
-  } catch (e) {
-    result.errors.push(`Could not list ${VOCAB_DIR}/: ${e.message}`)
-    return result
-  }
-
-  const jsonFiles = entries.filter((e) => e.type === 'file' && e.name.toLowerCase().endsWith('.json'))
-  const seen = new Set(SEED_VOCAB.map((v) => v.hanzi))
-
-  for (const f of jsonFiles) {
-    try {
-      const text = await readFileContent(github, f.path)
-      const words = parsePack(text, f.name)
-      let added = 0
-      for (const w of words) {
-        if (seen.has(w.hanzi)) continue
-        seen.add(w.hanzi)
-        result.vocab.push(w)
-        added++
-      }
-      result.packs.push({ name: f.name, count: words.length, added })
-    } catch (e) {
-      result.errors.push(e.message)
+// Returns all unique (book, lesson, part) combos in a pack, sorted.
+export function getPackStructure(pack) {
+  const seen = new Map()
+  for (const v of pack.vocab) {
+    if (v.book == null) continue
+    const key = `${v.book}|${v.lesson ?? ''}|${v.part ?? ''}`
+    if (!seen.has(key)) {
+      seen.set(key, { book: v.book, lesson: v.lesson ?? null, part: v.part ?? null })
     }
   }
-  return result
+  return [...seen.values()].sort((a, b) =>
+    a.book !== b.book ? a.book - b.book :
+    a.lesson !== b.lesson ? (a.lesson ?? 0) - (b.lesson ?? 0) :
+    (a.part ?? '') < (b.part ?? '') ? -1 : 1
+  )
 }
+
+// Filters vocab by any combination of book / lesson / part.
+// Pass null to skip that level of filtering.
+export function filterVocab(vocab, { book = null, lesson = null, part = null } = {}) {
+  return vocab.filter((v) => {
+    if (book   != null && v.book   !== book)   return false
+    if (lesson != null && v.lesson !== lesson) return false
+    if (part   != null && v.part   !== part)   return false
+    return true
+  })
+}
+
+// Filters vocab by band membership (entry.band is always an array now).
+export function filterByBand(vocab, bands) {
+  if (!bands || bands.length === 0) return vocab
+  const set = new Set(bands)
+  return vocab.filter((v) => v.band.some((b) => set.has(b)))
+}
+
+// ─── BANDS constant (used by Settings UI) ────────────────────────────────────
+export const BANDS = ['Novice', 'A', 'B', 'C']
