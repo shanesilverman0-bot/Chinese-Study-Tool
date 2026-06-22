@@ -54412,14 +54412,15 @@
     "撞|zhuàng": {
       "hanzi": "撞",
       "pinyin": "zhuàng",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T07:47:38.659Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T07:37:38.659Z"
     },
     "轉告|zhuǎngào": {
       "hanzi": "轉告",
@@ -112872,7 +112873,14 @@
       "pinyin": "shòushāng",
       "rating": "hard",
       "at": "2026-06-22T07:37:22.948Z"
+    },
+    {
+      "key": "撞|zhuàng",
+      "hanzi": "撞",
+      "pinyin": "zhuàng",
+      "rating": "good",
+      "at": "2026-06-22T07:37:38.662Z"
     }
   ],
-  "updatedAt": "2026-06-22T07:37:24.450Z"
+  "updatedAt": "2026-06-22T07:37:40.164Z"
 }
