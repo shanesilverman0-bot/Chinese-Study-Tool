@@ -8402,14 +8402,15 @@
     "病人|bìngrén": {
       "hanzi": "病人",
       "pinyin": "bìngrén",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:24:10.938Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:14:10.938Z"
     },
     "頭髮|tóufǎ/fǎ": {
       "hanzi": "頭髮",
@@ -112993,7 +112994,14 @@
       "pinyin": "kāidāo",
       "rating": "hard",
       "at": "2026-06-22T13:11:54.813Z"
+    },
+    {
+      "key": "病人|bìngrén",
+      "hanzi": "病人",
+      "pinyin": "bìngrén",
+      "rating": "good",
+      "at": "2026-06-22T13:14:10.945Z"
     }
   ],
-  "updatedAt": "2026-06-22T13:11:56.314Z"
+  "updatedAt": "2026-06-22T13:14:12.447Z"
 }
