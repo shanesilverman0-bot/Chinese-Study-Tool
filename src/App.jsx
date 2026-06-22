@@ -194,6 +194,8 @@ export default function App() {
                   word={currentWord}
                   cardState={currentCard}
                   onRate={handleRate}
+                  onPrev={pos > 0 ? () => setPos(pos - 1) : undefined}
+                  onNext={pos + 1 < queue.length ? () => setPos(pos + 1) : undefined}
                   tutorConfig={tutorConfig}
                 />
               </div>

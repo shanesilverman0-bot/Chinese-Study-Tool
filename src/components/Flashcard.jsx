@@ -13,7 +13,7 @@ const RATINGS = [
   { key: 'easy', label: 'Easy', color: '#1a6b8a' },
 ]
 
-export default function Flashcard({ word, cardState, onRate, tutorConfig }) {
+export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig }) {
   const [revealed, setRevealed] = useState(false)
   const [recording, setRecording] = useState(false)
   const [contour, setContour] = useState(null)
@@ -21,6 +21,35 @@ export default function Flashcard({ word, cardState, onRate, tutorConfig }) {
   const [recError, setRecError] = useState('')
   const [showTutor, setShowTutor] = useState(false)
   const recCtrl = useRef(null)
+
+  // Keep refs current so the keyboard listener (registered once) always calls
+  // the latest callbacks without needing to re-register on every render.
+  const onRateRef = useRef(onRate)
+  const onPrevRef = useRef(onPrev)
+  const onNextRef = useRef(onNext)
+  onRateRef.current = onRate
+  onPrevRef.current = onPrev
+  onNextRef.current = onNext
+
+  useEffect(() => {
+    function handleKey(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+      switch (e.key) {
+        case ' ':
+          e.preventDefault()
+          setRevealed((r) => !r)
+          break
+        case '1': onRateRef.current('again'); break
+        case '2': onRateRef.current('hard'); break
+        case '3': onRateRef.current('good'); break
+        case '4': onRateRef.current('easy'); break
+        case 'ArrowLeft': onPrevRef.current?.(); break
+        case 'ArrowRight': onNextRef.current?.(); break
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
 
   const intervals = previewIntervals(cardState)
   const tone = primaryTone(word.tones)
