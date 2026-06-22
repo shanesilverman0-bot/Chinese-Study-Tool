@@ -8450,14 +8450,15 @@
     "臉|liǎn": {
       "hanzi": "臉",
       "pinyin": "liǎn",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T07:47:13.908Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T07:37:13.908Z"
     },
     "心|xīn": {
       "hanzi": "心",
@@ -24242,14 +24243,15 @@
     "受傷|shòushāng": {
       "hanzi": "受傷",
       "pinyin": "shòushāng",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T07:42:22.942Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T07:37:22.942Z"
     },
     "輸|shū": {
       "hanzi": "輸",
@@ -112856,7 +112858,21 @@
       "pinyin": "zhùyuàn",
       "rating": "good",
       "at": "2026-06-22T07:37:09.083Z"
+    },
+    {
+      "key": "臉|liǎn",
+      "hanzi": "臉",
+      "pinyin": "liǎn",
+      "rating": "good",
+      "at": "2026-06-22T07:37:13.914Z"
+    },
+    {
+      "key": "受傷|shòushāng",
+      "hanzi": "受傷",
+      "pinyin": "shòushāng",
+      "rating": "hard",
+      "at": "2026-06-22T07:37:22.948Z"
     }
   ],
-  "updatedAt": "2026-06-22T07:37:10.585Z"
+  "updatedAt": "2026-06-22T07:37:24.450Z"
 }
