@@ -40,7 +40,16 @@ export default function App() {
     const ccccVocab = dangdaiFilter.book != null
       ? filterVocab(vocab.filter((v) => v.source === 'cccc'), dangdaiFilter)
       : []
-    return [...tocflVocab, ...ccccVocab]
+    // Deduplicate by composite key — a word may exist as both a tocfl and a
+    // cccc entry when it appears in both SEED_VOCAB and a dangdai pack.
+    // Without this, the same card key ends up in the review queue twice.
+    const seenKeys = new Set()
+    return [...tocflVocab, ...ccccVocab].filter((v) => {
+      const k = cardKey(v)
+      if (seenKeys.has(k)) return false
+      seenKeys.add(k)
+      return true
+    })
   }, [vocab, filter.tocfl, dangdaiFilter])
 
   const [view, setView] = useState('home') // home | review | settings | files
@@ -78,8 +87,7 @@ export default function App() {
         return
       }
       try {
-        const seenHanzi = new Set(SEED_VOCAB.map((v) => v.hanzi))
-        const res = await loadVocabPacksFromGitHub(settings.github, seenHanzi)
+        const res = await loadVocabPacksFromGitHub(settings.github)
         setVocab([...SEED_VOCAB, ...res.vocab])
         setVocabInfo({ packs: res.packs, errors: res.errors })
       } catch (e) {
