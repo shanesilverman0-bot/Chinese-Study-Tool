@@ -23,8 +23,11 @@ function b64decode(str) {
 }
 
 // Returns { data, sha } or { data: null, sha: null } if the file doesn't exist.
-// GitHub's Contents API inlines base64 content only for files ≤ 1 MB; for
-// larger files it returns content: "" and provides a download_url instead.
+// GitHub's Contents API inlines base64 content only for files ≤ 1 MB. For
+// larger files it returns content: "". We fall back to the Git Blobs API
+// (api.github.com), which is CORS-safe with our auth headers and handles
+// files up to 100 MB. raw.githubusercontent.com is NOT used — it rejects
+// CORS preflights when called from a browser.
 export async function fetchProgress({ token, owner, repo, branch = 'main', path = 'progress.json' }) {
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`
   const res = await fetch(url, { headers: headers(token) })
@@ -34,17 +37,17 @@ export async function fetchProgress({ token, owner, repo, branch = 'main', path 
 
   let text
   if (json.content) {
+    // File is ≤ 1 MB — content is inlined as base64.
     text = b64decode(json.content.replace(/\n/g, ''))
-  } else if (json.download_url) {
-    // File is over 1 MB — fetch raw content via the pre-authenticated download_url.
-    // Do NOT send Authorization here: the URL already embeds a short-lived token,
-    // and adding an Authorization header triggers a CORS preflight that
-    // raw.githubusercontent.com rejects with "Load failed".
-    const raw = await fetch(json.download_url)
-    if (!raw.ok) throw new Error(`GitHub raw fetch failed (${raw.status})`)
-    text = await raw.text()
   } else {
-    throw new Error('GitHub returned no content for progress.json')
+    // File is > 1 MB — use the Git Blobs API with the blob sha we already have.
+    const blobRes = await fetch(
+      `${API}/repos/${owner}/${repo}/git/blobs/${json.sha}`,
+      { headers: headers(token) }
+    )
+    if (!blobRes.ok) throw new Error(`GitHub blob fetch failed (${blobRes.status})`)
+    const blob = await blobRes.json()
+    text = b64decode(blob.content.replace(/\n/g, ''))
   }
 
   return { data: JSON.parse(text), sha: json.sha }
