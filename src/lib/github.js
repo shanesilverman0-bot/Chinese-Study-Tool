@@ -37,7 +37,10 @@ export async function fetchProgress({ token, owner, repo, branch = 'main', path 
     text = b64decode(json.content.replace(/\n/g, ''))
   } else if (json.download_url) {
     // File is over 1 MB — fetch raw content via the pre-authenticated download_url.
-    const raw = await fetch(json.download_url, { headers: headers(token) })
+    // Do NOT send Authorization here: the URL already embeds a short-lived token,
+    // and adding an Authorization header triggers a CORS preflight that
+    // raw.githubusercontent.com rejects with "Load failed".
+    const raw = await fetch(json.download_url)
     if (!raw.ok) throw new Error(`GitHub raw fetch failed (${raw.status})`)
     text = await raw.text()
   } else {
