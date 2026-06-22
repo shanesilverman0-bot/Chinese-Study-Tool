@@ -33,25 +33,50 @@ export async function fetchProgress({ token, owner, repo, branch = 'main', path 
   return { data: JSON.parse(content), sha: json.sha }
 }
 
-// Commit progress back. Pass the sha from the last fetch to update in place;
-// omit it to create the file.
+// Commit progress back. Always fetches the current sha from GitHub before
+// writing so the request never fails with 422 "sha wasn't supplied" on an
+// existing file. The caller may pass a cached sha, but it is not used — the
+// fresh GET is the authoritative source to handle concurrent pushes from
+// multiple devices.
 export async function saveProgress(
   { token, owner, repo, branch = 'main', path = 'progress.json' },
   data,
-  sha
+  _sha  // ignored — we always fetch fresh to avoid 422 on existing file
 ) {
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`
-  const body = {
-    message: `chore: update study progress ${new Date().toISOString()}`,
-    content: b64encode(JSON.stringify(data, null, 2)),
-    branch,
+
+  async function fetchCurrentSha() {
+    const r = await fetch(`${url}?ref=${branch}`, { headers: headers(token) })
+    if (r.status === 404) return undefined
+    if (!r.ok) throw new Error(`GitHub fetch failed (${r.status}): ${await r.text()}`)
+    return (await r.json()).sha
   }
-  if (sha) body.sha = sha
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: { ...headers(token), 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
+
+  async function putFile(sha) {
+    const body = {
+      message: `chore: update study progress ${new Date().toISOString()}`,
+      content: b64encode(JSON.stringify(data, null, 2)),
+      branch,
+    }
+    if (sha) body.sha = sha
+    return fetch(url, {
+      method: 'PUT',
+      headers: { ...headers(token), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  }
+
+  const sha = await fetchCurrentSha()
+  let res = await putFile(sha)
+
+  // 409 = our sha is already stale (another device pushed between our GET and
+  // PUT). Re-fetch the latest sha and retry once; if it still fails, surface
+  // the error clearly rather than silently dropping the write.
+  if (res.status === 409) {
+    const freshSha = await fetchCurrentSha()
+    res = await putFile(freshSha)
+  }
+
   if (!res.ok) throw new Error(`GitHub save failed (${res.status}): ${await res.text()}`)
   const json = await res.json()
   return { sha: json.content.sha }
