@@ -15,19 +15,31 @@ const RATINGS = [
 
 export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig }) {
   const [revealed, setRevealed] = useState(false)
+  const [activeRating, setActiveRating] = useState(null)
   const [recording, setRecording] = useState(false)
   const [contour, setContour] = useState(null)
   const [score, setScore] = useState(null)
   const [recError, setRecError] = useState('')
   const [showTutor, setShowTutor] = useState(false)
   const recCtrl = useRef(null)
+  const rateTimer = useRef(null)
+
+  // Flash the pressed button for one beat, then advance.
+  function handleRate(key) {
+    clearTimeout(rateTimer.current)
+    setActiveRating(key)
+    rateTimer.current = setTimeout(() => {
+      setActiveRating(null)
+      onRate(key)
+    }, 180)
+  }
 
   // Keep refs current so the keyboard listener (registered once) always calls
   // the latest callbacks without needing to re-register on every render.
-  const onRateRef = useRef(onRate)
+  const onRateRef = useRef(handleRate)
   const onPrevRef = useRef(onPrev)
   const onNextRef = useRef(onNext)
-  onRateRef.current = onRate
+  onRateRef.current = handleRate
   onPrevRef.current = onPrev
   onNextRef.current = onNext
 
@@ -63,6 +75,8 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
   // Reset per-card UI when the word changes.
   useEffect(() => {
     setRevealed(false)
+    setActiveRating(null)
+    clearTimeout(rateTimer.current)
     setContour(null)
     setScore(null)
     setRecError('')
@@ -145,19 +159,34 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
 
       {/* Rating row — ALWAYS available. Rate from memory without revealing. */}
       <div className="mt-4 grid w-full grid-cols-4 gap-2">
-        {RATINGS.map((r) => (
-          <button
-            key={r.key}
-            onClick={() => onRate(r.key)}
-            className="flex flex-col items-center rounded-xl border py-3 transition active:scale-95"
-            style={{ borderColor: `${r.color}40` }}
-          >
-            <span className="font-sans text-sm font-medium" style={{ color: r.color }}>
-              {r.label}
-            </span>
-            <span className="mt-0.5 font-mono text-[10px] text-ink/40">{intervals[r.key]}</span>
-          </button>
-        ))}
+        {RATINGS.map((r) => {
+          const active = activeRating === r.key
+          return (
+            <button
+              key={r.key}
+              onClick={() => handleRate(r.key)}
+              className="flex flex-col items-center rounded-xl border py-3 active:scale-95"
+              style={{
+                borderColor: active ? r.color : `${r.color}40`,
+                backgroundColor: active ? r.color : undefined,
+                transition: 'background-color 0.06s, border-color 0.06s',
+              }}
+            >
+              <span
+                className="font-sans text-sm font-medium"
+                style={{ color: active ? '#fff' : r.color }}
+              >
+                {r.label}
+              </span>
+              <span
+                className="mt-0.5 font-mono text-[10px]"
+                style={{ color: active ? 'rgba(255,255,255,0.65)' : undefined }}
+              >
+                {active ? '' : intervals[r.key]}
+              </span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Tone trainer */}
