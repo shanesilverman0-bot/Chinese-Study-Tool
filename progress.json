@@ -17213,14 +17213,15 @@
     "打仗|dǎzhàng": {
       "hanzi": "打仗",
       "pinyin": "dǎzhàng",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:31:50.576Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:30:50.576Z"
     },
     "得|dé": {
       "hanzi": "得",
@@ -20717,27 +20718,28 @@
     "軍隊|jūnduì": {
       "hanzi": "軍隊",
       "pinyin": "jūnduì",
-      "due": "2026-06-22T13:28:30.791Z",
-      "stability": 0.20168903,
-      "difficulty": 8.08279701,
+      "due": "2026-06-22T13:35:31.690Z",
+      "stability": 0.10105196,
+      "difficulty": 8.67978303,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 2,
+      "reps": 3,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-06-22T13:23:30.791Z"
+      "last_review": "2026-06-22T13:30:31.690Z"
     },
     "軍人|jūnrén": {
       "hanzi": "軍人",
       "pinyin": "jūnrén",
-      "due": "2026-06-17T13:07:45.815Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:36:12.868Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:31:12.868Z"
     },
     "卡車|kǎchē": {
       "hanzi": "卡車",
@@ -21594,15 +21596,15 @@
     "利益|lìyì": {
       "hanzi": "利益",
       "pinyin": "lìyì",
-      "due": "2026-06-22T13:25:46.772Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-06-24T13:30:26.066Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:20:46.772Z"
+      "state": 2,
+      "last_review": "2026-06-22T13:30:26.066Z"
     },
     "旅客|lǚkè": {
       "hanzi": "旅客",
@@ -23889,15 +23891,15 @@
     "商業|shāngyè": {
       "hanzi": "商業",
       "pinyin": "shāngyè",
-      "due": "2026-06-22T13:25:39.544Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-06-24T13:30:20.900Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:20:39.544Z"
+      "state": 2,
+      "last_review": "2026-06-22T13:30:20.900Z"
     },
     "上當|shàngdàng": {
       "hanzi": "上當",
@@ -24167,14 +24169,15 @@
     "甚至|shènzhì": {
       "hanzi": "甚至",
       "pinyin": "shènzhì",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:31:46.007Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:30:46.007Z"
     },
     "收穫|shōuhuò": {
       "hanzi": "收穫",
@@ -45536,14 +45539,15 @@
     "少數|shǎoshù": {
       "hanzi": "少數",
       "pinyin": "shǎoshù",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:31:55.670Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:30:55.670Z"
     },
     "稍微|shāowéi": {
       "hanzi": "稍微",
@@ -66528,14 +66532,15 @@
     "將軍|jiāngjūn": {
       "hanzi": "將軍",
       "pinyin": "jiāngjūn",
-      "due": "2026-06-17T13:07:45.818Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:36:06.839Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:31:06.839Z"
     },
     "獎勵|jiǎnglì": {
       "hanzi": "獎勵",
@@ -94359,38 +94364,41 @@
     "城牆|chéngqiáng": {
       "hanzi": "城牆",
       "pinyin": "chéngqiáng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-07T13:30:38.847Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 15,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-22T13:30:38.847Z"
     },
     "頭髮|tóufǎ": {
       "hanzi": "頭髮",
       "pinyin": "tóufǎ",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-07T13:30:42.284Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 15,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-22T13:30:42.284Z"
     },
     "開墾|kāikěn": {
       "hanzi": "開墾",
       "pinyin": "kāikěn",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:41:01.186Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:31:01.186Z"
     },
     "血統|xiětǒng": {
       "hanzi": "血統",
@@ -113132,7 +113140,84 @@
       "pinyin": "màoyì",
       "rating": "hard",
       "at": "2026-06-22T13:30:10.098Z"
+    },
+    {
+      "key": "商業|shāngyè",
+      "hanzi": "商業",
+      "pinyin": "shāngyè",
+      "rating": "good",
+      "at": "2026-06-22T13:30:20.910Z"
+    },
+    {
+      "key": "利益|lìyì",
+      "hanzi": "利益",
+      "pinyin": "lìyì",
+      "rating": "good",
+      "at": "2026-06-22T13:30:26.073Z"
+    },
+    {
+      "key": "軍隊|jūnduì",
+      "hanzi": "軍隊",
+      "pinyin": "jūnduì",
+      "rating": "again",
+      "at": "2026-06-22T13:30:31.697Z"
+    },
+    {
+      "key": "城牆|chéngqiáng",
+      "hanzi": "城牆",
+      "pinyin": "chéngqiáng",
+      "rating": "easy",
+      "at": "2026-06-22T13:30:38.858Z"
+    },
+    {
+      "key": "頭髮|tóufǎ",
+      "hanzi": "頭髮",
+      "pinyin": "tóufǎ",
+      "rating": "easy",
+      "at": "2026-06-22T13:30:42.294Z"
+    },
+    {
+      "key": "甚至|shènzhì",
+      "hanzi": "甚至",
+      "pinyin": "shènzhì",
+      "rating": "again",
+      "at": "2026-06-22T13:30:46.013Z"
+    },
+    {
+      "key": "打仗|dǎzhàng",
+      "hanzi": "打仗",
+      "pinyin": "dǎzhàng",
+      "rating": "again",
+      "at": "2026-06-22T13:30:50.584Z"
+    },
+    {
+      "key": "少數|shǎoshù",
+      "hanzi": "少數",
+      "pinyin": "shǎoshù",
+      "rating": "again",
+      "at": "2026-06-22T13:30:55.679Z"
+    },
+    {
+      "key": "開墾|kāikěn",
+      "hanzi": "開墾",
+      "pinyin": "kāikěn",
+      "rating": "good",
+      "at": "2026-06-22T13:31:01.194Z"
+    },
+    {
+      "key": "將軍|jiāngjūn",
+      "hanzi": "將軍",
+      "pinyin": "jiāngjūn",
+      "rating": "hard",
+      "at": "2026-06-22T13:31:06.847Z"
+    },
+    {
+      "key": "軍人|jūnrén",
+      "hanzi": "軍人",
+      "pinyin": "jūnrén",
+      "rating": "hard",
+      "at": "2026-06-22T13:31:12.877Z"
     }
   ],
-  "updatedAt": "2026-06-22T13:30:11.600Z"
+  "updatedAt": "2026-06-22T13:31:14.378Z"
 }
