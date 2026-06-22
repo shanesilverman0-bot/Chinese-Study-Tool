@@ -94338,14 +94338,15 @@
     "重建|chóngjiàn": {
       "hanzi": "重建",
       "pinyin": "chóngjiàn",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:30:02.229Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:20:02.229Z"
     },
     "城牆|chéngqiáng": {
       "hanzi": "城牆",
@@ -113025,7 +113026,14 @@
       "pinyin": "jiàn",
       "rating": "hard",
       "at": "2026-06-22T13:17:06.520Z"
+    },
+    {
+      "key": "重建|chóngjiàn",
+      "hanzi": "重建",
+      "pinyin": "chóngjiàn",
+      "rating": "good",
+      "at": "2026-06-22T13:20:02.235Z"
     }
   ],
-  "updatedAt": "2026-06-22T13:17:08.023Z"
+  "updatedAt": "2026-06-22T13:20:03.739Z"
 }
