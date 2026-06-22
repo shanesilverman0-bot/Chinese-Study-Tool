@@ -37676,14 +37676,15 @@
     "建|jiàn": {
       "hanzi": "建",
       "pinyin": "jiàn",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:22:06.512Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:17:06.512Z"
     },
     "箭|jiàn": {
       "hanzi": "箭",
@@ -113017,7 +113018,14 @@
       "pinyin": "jǐnjí",
       "rating": "good",
       "at": "2026-06-22T13:14:24.524Z"
+    },
+    {
+      "key": "建|jiàn",
+      "hanzi": "建",
+      "pinyin": "jiàn",
+      "rating": "hard",
+      "at": "2026-06-22T13:17:06.520Z"
     }
   ],
-  "updatedAt": "2026-06-22T13:14:26.026Z"
+  "updatedAt": "2026-06-22T13:17:08.023Z"
 }
