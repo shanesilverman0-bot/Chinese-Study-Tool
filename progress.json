@@ -21823,15 +21823,15 @@
     "貿易|màoyì": {
       "hanzi": "貿易",
       "pinyin": "màoyì",
-      "due": "2026-06-22T13:25:28.235Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-06-22T13:40:10.090Z",
+      "stability": 0.99424621,
+      "difficulty": 7.04050155,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-06-22T13:20:28.235Z"
+      "last_review": "2026-06-22T13:30:10.090Z"
     },
     "馬桶|mǎtǒng": {
       "hanzi": "馬桶",
@@ -113125,7 +113125,14 @@
       "pinyin": "shāo",
       "rating": "good",
       "at": "2026-06-22T13:24:26.378Z"
+    },
+    {
+      "key": "貿易|màoyì",
+      "hanzi": "貿易",
+      "pinyin": "màoyì",
+      "rating": "hard",
+      "at": "2026-06-22T13:30:10.098Z"
     }
   ],
-  "updatedAt": "2026-06-22T13:24:27.880Z"
+  "updatedAt": "2026-06-22T13:30:11.600Z"
 }
