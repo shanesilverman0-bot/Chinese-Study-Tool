@@ -61,7 +61,7 @@ export function useStudyFilter(vocab) {
 
   const getFilteredVocab = useCallback(() => {
     if (!vocab) return []
-    return vocab.filter((v) => {
+    const filtered = vocab.filter((v) => {
       if (v.source === 'tocfl') {
         return filter.tocfl[v.band] === true
       }
@@ -70,6 +70,15 @@ export function useStudyFilter(vocab) {
         return filter.cccc[key] === true
       }
       return false
+    })
+    // Deduplicate by composite key — the same word may have both a tocfl and a
+    // cccc entry when TOCFL and dangdai filters overlap.
+    const seen = new Set()
+    return filtered.filter((v) => {
+      const k = `${v.hanzi}|${v.pinyin}`
+      if (seen.has(k)) return false
+      seen.add(k)
+      return true
     })
   }, [vocab, filter])
 

@@ -187,10 +187,12 @@ export const BANDS = ['Novice', 'A', 'B', 'C']
 
 // ─── GitHub vocab pack loader ─────────────────────────────────────────────────
 // Reads all .json files from the vocab/ folder in the user's repo, normalizes
-// them, deduplicates against seenHanzi, tags each entry source:'cccc', and
-// returns { vocab, packs, errors }. vocab contains only the new entries —
-// callers prepend SEED_VOCAB.
-export async function loadVocabPacksFromGitHub(githubConfig, seenHanzi) {
+// them, tags each entry source:'cccc', and returns { vocab, packs, errors }.
+// vocab contains ALL cccc entries (including those whose hanzi overlaps with
+// SEED_VOCAB) so that chapter-level filtering can find every word in a lesson.
+// Callers prepend SEED_VOCAB and deduplicate by composite key when building
+// the study queue.
+export async function loadVocabPacksFromGitHub(githubConfig) {
   const result = { vocab: [], packs: [], errors: [] }
   const { token, owner, repo } = githubConfig || {}
   if (!(token && owner && repo)) return result
@@ -204,7 +206,6 @@ export async function loadVocabPacksFromGitHub(githubConfig, seenHanzi) {
   }
 
   const jsonFiles = entries.filter((e) => e.type === 'file' && e.name.toLowerCase().endsWith('.json'))
-  const seen = seenHanzi instanceof Set ? seenHanzi : new Set()
 
   for (const f of jsonFiles) {
     try {
@@ -228,7 +229,6 @@ export async function loadVocabPacksFromGitHub(githubConfig, seenHanzi) {
         const key = `${w.hanzi}|${w.pinyin}`
         if (seenInThisPack.has(key)) continue   // exact dupe within this file — skip
         seenInThisPack.add(key)
-        if (seen.has(w.hanzi)) continue          // already in TOCFL seed vocab — skip
         result.vocab.push({ ...w, source: 'cccc' })
         added++
       }
