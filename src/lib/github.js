@@ -23,14 +23,28 @@ function b64decode(str) {
 }
 
 // Returns { data, sha } or { data: null, sha: null } if the file doesn't exist.
+// GitHub's Contents API inlines base64 content only for files ≤ 1 MB; for
+// larger files it returns content: "" and provides a download_url instead.
 export async function fetchProgress({ token, owner, repo, branch = 'main', path = 'progress.json' }) {
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`
   const res = await fetch(url, { headers: headers(token) })
   if (res.status === 404) return { data: null, sha: null }
   if (!res.ok) throw new Error(`GitHub fetch failed (${res.status}): ${await res.text()}`)
   const json = await res.json()
-  const content = b64decode(json.content.replace(/\n/g, ''))
-  return { data: JSON.parse(content), sha: json.sha }
+
+  let text
+  if (json.content) {
+    text = b64decode(json.content.replace(/\n/g, ''))
+  } else if (json.download_url) {
+    // File is over 1 MB — fetch raw content via the pre-authenticated download_url.
+    const raw = await fetch(json.download_url, { headers: headers(token) })
+    if (!raw.ok) throw new Error(`GitHub raw fetch failed (${raw.status})`)
+    text = await raw.text()
+  } else {
+    throw new Error('GitHub returned no content for progress.json')
+  }
+
+  return { data: JSON.parse(text), sha: json.sha }
 }
 
 // Commit progress back. Always fetches the current sha from GitHub before
