@@ -9952,14 +9952,15 @@
     "孫子|sūnzi": {
       "hanzi": "孫子",
       "pinyin": "sūnzi",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:41:58.190Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:31:58.190Z"
     },
     "關係|guānxì": {
       "hanzi": "關係",
@@ -22702,14 +22703,15 @@
     "平原|píngyuán": {
       "hanzi": "平原",
       "pinyin": "píngyuán",
-      "due": "2026-06-17T13:07:45.815Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:41:20.613Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:31:20.613Z"
     },
     "品質|pǐnzhí": {
       "hanzi": "品質",
@@ -23399,14 +23401,15 @@
     "人口|rénkǒu": {
       "hanzi": "人口",
       "pinyin": "rénkǒu",
-      "due": "2026-06-17T13:07:45.815Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:31:23.853Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 14,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-22T13:31:23.853Z"
     },
     "人類|rénlèi": {
       "hanzi": "人類",
@@ -41024,14 +41027,15 @@
     "領土|lǐngtǔ": {
       "hanzi": "領土",
       "pinyin": "lǐngtǔ",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:37:04.447Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:32:04.447Z"
     },
     "零下|língxià": {
       "hanzi": "零下",
@@ -42344,14 +42348,15 @@
     "男性|nánxìng": {
       "hanzi": "男性",
       "pinyin": "nánxìng",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:42:15.257Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:32:15.257Z"
     },
     "難以|nányǐ": {
       "hanzi": "難以",
@@ -94403,26 +94408,28 @@
     "血統|xiětǒng": {
       "hanzi": "血統",
       "pinyin": "xiětǒng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-06-22T13:32:29.104Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-06-22T13:31:29.104Z"
     },
     "嘍|lou": {
       "hanzi": "嘍",
       "pinyin": "lou",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:31:34.211Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 14,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-06-22T13:31:34.211Z"
     },
     "紅毛城|Hóngmáo chéng": {
       "hanzi": "紅毛城",
@@ -113217,7 +113224,56 @@
       "pinyin": "jūnrén",
       "rating": "hard",
       "at": "2026-06-22T13:31:12.877Z"
+    },
+    {
+      "key": "平原|píngyuán",
+      "hanzi": "平原",
+      "pinyin": "píngyuán",
+      "rating": "good",
+      "at": "2026-06-22T13:31:20.621Z"
+    },
+    {
+      "key": "人口|rénkǒu",
+      "hanzi": "人口",
+      "pinyin": "rénkǒu",
+      "rating": "easy",
+      "at": "2026-06-22T13:31:23.862Z"
+    },
+    {
+      "key": "血統|xiětǒng",
+      "hanzi": "血統",
+      "pinyin": "xiětǒng",
+      "rating": "again",
+      "at": "2026-06-22T13:31:29.112Z"
+    },
+    {
+      "key": "嘍|lou",
+      "hanzi": "嘍",
+      "pinyin": "lou",
+      "rating": "easy",
+      "at": "2026-06-22T13:31:34.218Z"
+    },
+    {
+      "key": "孫子|sūnzi",
+      "hanzi": "孫子",
+      "pinyin": "sūnzi",
+      "rating": "good",
+      "at": "2026-06-22T13:31:58.198Z"
+    },
+    {
+      "key": "領土|lǐngtǔ",
+      "hanzi": "領土",
+      "pinyin": "lǐngtǔ",
+      "rating": "hard",
+      "at": "2026-06-22T13:32:04.455Z"
+    },
+    {
+      "key": "男性|nánxìng",
+      "hanzi": "男性",
+      "pinyin": "nánxìng",
+      "rating": "good",
+      "at": "2026-06-22T13:32:15.265Z"
     }
   ],
-  "updatedAt": "2026-06-22T13:31:14.378Z"
+  "updatedAt": "2026-06-22T13:32:16.767Z"
 }
