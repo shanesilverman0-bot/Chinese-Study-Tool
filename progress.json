@@ -13724,14 +13724,15 @@
     "困難|kùnnán": {
       "hanzi": "困難",
       "pinyin": "kùnnán",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:38:14.163Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:14.163Z"
     },
     "百貨公司|bǎihuògōngsī": {
       "hanzi": "百貨公司",
@@ -26881,14 +26882,15 @@
     "以及|yǐjí": {
       "hanzi": "以及",
       "pinyin": "yǐjí",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:33:47.584Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:47.584Z"
     },
     "以來|yǐlái": {
       "hanzi": "以來",
@@ -28118,14 +28120,15 @@
     "主婦|zhǔfù": {
       "hanzi": "主婦",
       "pinyin": "zhǔfù",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:29:32.514Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:32.514Z"
     },
     "主管|zhǔguǎn": {
       "hanzi": "主管",
@@ -37769,14 +37772,15 @@
     "煎|jiān": {
       "hanzi": "煎",
       "pinyin": "jiān",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:38:35.916Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:35.916Z"
     },
     "剪刀|jiǎndāo": {
       "hanzi": "剪刀",
@@ -66994,14 +66998,15 @@
     "節儉|jiéjiǎn": {
       "hanzi": "節儉",
       "pinyin": "jiéjiǎn",
-      "due": "2026-06-17T13:07:45.818Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:29:20.627Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:20.627Z"
     },
     "竭力|jiélì": {
       "hanzi": "竭力",
@@ -94669,50 +94674,54 @@
     "不斷|búduàn": {
       "hanzi": "不斷",
       "pinyin": "búduàn",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:37:53.955Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:27:53.955Z"
     },
     "遷移|qiānyí": {
       "hanzi": "遷移",
       "pinyin": "qiānyí",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:38:04.857Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:04.857Z"
     },
     "多半|duōbàn": {
       "hanzi": "多半",
       "pinyin": "duōbàn",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:38:10.896Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:10.896Z"
     },
     "菜色|càisè": {
       "hanzi": "菜色",
       "pinyin": "càisè",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:33:40.864Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:40.864Z"
     },
     "美味|měiwèi": {
       "hanzi": "美味",
@@ -113717,7 +113726,70 @@
       "pinyin": "zhànzhēng",
       "rating": "again",
       "at": "2026-07-01T07:27:47.323Z"
+    },
+    {
+      "key": "不斷|búduàn",
+      "hanzi": "不斷",
+      "pinyin": "búduàn",
+      "rating": "good",
+      "at": "2026-07-01T07:27:53.958Z"
+    },
+    {
+      "key": "遷移|qiānyí",
+      "hanzi": "遷移",
+      "pinyin": "qiānyí",
+      "rating": "good",
+      "at": "2026-07-01T07:28:04.859Z"
+    },
+    {
+      "key": "多半|duōbàn",
+      "hanzi": "多半",
+      "pinyin": "duōbàn",
+      "rating": "good",
+      "at": "2026-07-01T07:28:10.898Z"
+    },
+    {
+      "key": "困難|kùnnán",
+      "hanzi": "困難",
+      "pinyin": "kùnnán",
+      "rating": "good",
+      "at": "2026-07-01T07:28:14.165Z"
+    },
+    {
+      "key": "節儉|jiéjiǎn",
+      "hanzi": "節儉",
+      "pinyin": "jiéjiǎn",
+      "rating": "again",
+      "at": "2026-07-01T07:28:20.628Z"
+    },
+    {
+      "key": "主婦|zhǔfù",
+      "hanzi": "主婦",
+      "pinyin": "zhǔfù",
+      "rating": "again",
+      "at": "2026-07-01T07:28:32.517Z"
+    },
+    {
+      "key": "煎|jiān",
+      "hanzi": "煎",
+      "pinyin": "jiān",
+      "rating": "good",
+      "at": "2026-07-01T07:28:35.917Z"
+    },
+    {
+      "key": "菜色|càisè",
+      "hanzi": "菜色",
+      "pinyin": "càisè",
+      "rating": "hard",
+      "at": "2026-07-01T07:28:40.866Z"
+    },
+    {
+      "key": "以及|yǐjí",
+      "hanzi": "以及",
+      "pinyin": "yǐjí",
+      "rating": "hard",
+      "at": "2026-07-01T07:28:47.586Z"
     }
   ],
-  "updatedAt": "2026-07-01T07:27:48.825Z"
+  "updatedAt": "2026-07-01T07:28:49.087Z"
 }
