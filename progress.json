@@ -11274,14 +11274,15 @@
     "餐桌|cānzhuō": {
       "hanzi": "餐桌",
       "pinyin": "cānzhuō",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:35:24.536Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:24.536Z"
     },
     "打開|dǎkāi": {
       "hanzi": "打開",
@@ -94529,74 +94530,80 @@
     "清朝|Qīng cháo": {
       "hanzi": "清朝",
       "pinyin": "Qīng cháo",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:34:29.910Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:24:29.910Z"
     },
     "大清帝國|Dàqīng dìguó": {
       "hanzi": "大清帝國",
       "pinyin": "Dàqīng dìguó",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:34:41.976Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:24:41.976Z"
     },
     "輪到|lúndào": {
       "hanzi": "輪到",
       "pinyin": "lúndào",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:34:45.625Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:24:45.625Z"
     },
     "十七世紀初|shíqī shìjì chū": {
       "hanzi": "十七世紀初",
       "pinyin": "shíqī shìjì chū",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:34:58.897Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:24:58.897Z"
     },
     "打敗|dǎ bài": {
       "hanzi": "打敗",
       "pinyin": "dǎ bài",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:35:02.459Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:02.459Z"
     },
     "十七世紀末|shíqī shìjì mò": {
       "hanzi": "十七世紀末",
       "pinyin": "shíqī shìjì mò",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:35:13.914Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:13.914Z"
     },
     "中式|Zhōngshì": {
       "hanzi": "中式",
@@ -113557,7 +113564,56 @@
       "pinyin": "Zhōngnán Měizhōu",
       "rating": "good",
       "at": "2026-07-01T07:24:19.123Z"
+    },
+    {
+      "key": "清朝|Qīng cháo",
+      "hanzi": "清朝",
+      "pinyin": "Qīng cháo",
+      "rating": "good",
+      "at": "2026-07-01T07:24:29.912Z"
+    },
+    {
+      "key": "大清帝國|Dàqīng dìguó",
+      "hanzi": "大清帝國",
+      "pinyin": "Dàqīng dìguó",
+      "rating": "good",
+      "at": "2026-07-01T07:24:41.978Z"
+    },
+    {
+      "key": "輪到|lúndào",
+      "hanzi": "輪到",
+      "pinyin": "lúndào",
+      "rating": "good",
+      "at": "2026-07-01T07:24:45.626Z"
+    },
+    {
+      "key": "十七世紀初|shíqī shìjì chū",
+      "hanzi": "十七世紀初",
+      "pinyin": "shíqī shìjì chū",
+      "rating": "good",
+      "at": "2026-07-01T07:24:58.900Z"
+    },
+    {
+      "key": "打敗|dǎ bài",
+      "hanzi": "打敗",
+      "pinyin": "dǎ bài",
+      "rating": "good",
+      "at": "2026-07-01T07:25:02.462Z"
+    },
+    {
+      "key": "十七世紀末|shíqī shìjì mò",
+      "hanzi": "十七世紀末",
+      "pinyin": "shíqī shìjì mò",
+      "rating": "good",
+      "at": "2026-07-01T07:25:13.917Z"
+    },
+    {
+      "key": "餐桌|cānzhuō",
+      "hanzi": "餐桌",
+      "pinyin": "cānzhuō",
+      "rating": "good",
+      "at": "2026-07-01T07:25:24.537Z"
     }
   ],
-  "updatedAt": "2026-07-01T07:24:20.625Z"
+  "updatedAt": "2026-07-01T07:25:26.038Z"
 }
