@@ -9953,15 +9953,15 @@
     "孫子|sūnzi": {
       "hanzi": "孫子",
       "pinyin": "sūnzi",
-      "due": "2026-06-22T13:41:58.190Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-07-04T07:22:02.126Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 9,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:31:58.190Z"
+      "state": 2,
+      "last_review": "2026-07-01T07:22:02.126Z"
     },
     "關係|guānxì": {
       "hanzi": "關係",
@@ -39084,15 +39084,15 @@
     "禁止|jìnzhǐ": {
       "hanzi": "禁止",
       "pinyin": "jìnzhǐ",
-      "due": "2026-06-22T13:33:18.614Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
-      "elapsed_days": 0,
+      "due": "2026-07-01T07:33:01.557Z",
+      "stability": 0.33807815,
+      "difficulty": 7.6297166,
+      "elapsed_days": 9,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-06-22T13:32:18.614Z"
+      "last_review": "2026-07-01T07:23:01.557Z"
     },
     "機票|jīpiào": {
       "hanzi": "機票",
@@ -41030,15 +41030,15 @@
     "領土|lǐngtǔ": {
       "hanzi": "領土",
       "pinyin": "lǐngtǔ",
-      "due": "2026-06-22T13:37:04.447Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-07-03T07:22:14.197Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
+      "elapsed_days": 9,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:32:04.447Z"
+      "state": 2,
+      "last_review": "2026-07-01T07:22:14.197Z"
     },
     "零下|língxià": {
       "hanzi": "零下",
@@ -42351,15 +42351,15 @@
     "男性|nánxìng": {
       "hanzi": "男性",
       "pinyin": "nánxìng",
-      "due": "2026-06-22T13:42:15.257Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-07-01T07:32:19.933Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 9,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-06-22T13:32:15.257Z"
+      "last_review": "2026-07-01T07:22:19.933Z"
     },
     "難以|nányǐ": {
       "hanzi": "難以",
@@ -94412,15 +94412,15 @@
     "血統|xiětǒng": {
       "hanzi": "血統",
       "pinyin": "xiětǒng",
-      "due": "2026-06-22T13:32:29.104Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-07-02T07:21:55.775Z",
+      "stability": 0.5666983,
+      "difficulty": 7.17663617,
+      "elapsed_days": 9,
+      "scheduled_days": 1,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:31:29.104Z"
+      "state": 2,
+      "last_review": "2026-07-01T07:21:55.775Z"
     },
     "嘍|lou": {
       "hanzi": "嘍",
@@ -113479,7 +113479,42 @@
       "pinyin": "píngyuán",
       "rating": "hard",
       "at": "2026-07-01T07:21:31.790Z"
+    },
+    {
+      "key": "血統|xiětǒng",
+      "hanzi": "血統",
+      "pinyin": "xiětǒng",
+      "rating": "good",
+      "at": "2026-07-01T07:21:55.777Z"
+    },
+    {
+      "key": "孫子|sūnzi",
+      "hanzi": "孫子",
+      "pinyin": "sūnzi",
+      "rating": "good",
+      "at": "2026-07-01T07:22:02.128Z"
+    },
+    {
+      "key": "領土|lǐngtǔ",
+      "hanzi": "領土",
+      "pinyin": "lǐngtǔ",
+      "rating": "good",
+      "at": "2026-07-01T07:22:14.199Z"
+    },
+    {
+      "key": "男性|nánxìng",
+      "hanzi": "男性",
+      "pinyin": "nánxìng",
+      "rating": "hard",
+      "at": "2026-07-01T07:22:19.936Z"
+    },
+    {
+      "key": "禁止|jìnzhǐ",
+      "hanzi": "禁止",
+      "pinyin": "jìnzhǐ",
+      "rating": "hard",
+      "at": "2026-07-01T07:23:01.560Z"
     }
   ],
-  "updatedAt": "2026-07-01T07:21:33.291Z"
+  "updatedAt": "2026-07-01T07:23:03.062Z"
 }
