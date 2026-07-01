@@ -20733,15 +20733,15 @@
     "軍人|jūnrén": {
       "hanzi": "軍人",
       "pinyin": "jūnrén",
-      "due": "2026-06-22T13:36:12.868Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-07-03T07:21:23.434Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
+      "elapsed_days": 9,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:31:12.868Z"
+      "state": 2,
+      "last_review": "2026-07-01T07:21:23.434Z"
     },
     "卡車|kǎchē": {
       "hanzi": "卡車",
@@ -22704,15 +22704,15 @@
     "平原|píngyuán": {
       "hanzi": "平原",
       "pinyin": "píngyuán",
-      "due": "2026-06-22T13:41:20.613Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-07-01T07:31:31.787Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 9,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-06-22T13:31:20.613Z"
+      "last_review": "2026-07-01T07:21:31.787Z"
     },
     "品質|pǐnzhí": {
       "hanzi": "品質",
@@ -45548,15 +45548,15 @@
     "少數|shǎoshù": {
       "hanzi": "少數",
       "pinyin": "shǎoshù",
-      "due": "2026-06-22T13:31:55.670Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
-      "elapsed_days": 0,
+      "due": "2026-07-01T07:25:38.843Z",
+      "stability": 0.20168903,
+      "difficulty": 8.08279701,
+      "elapsed_days": 9,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-06-22T13:30:55.670Z"
+      "last_review": "2026-07-01T07:20:38.843Z"
     },
     "稍微|shāowéi": {
       "hanzi": "稍微",
@@ -66541,15 +66541,15 @@
     "將軍|jiāngjūn": {
       "hanzi": "將軍",
       "pinyin": "jiāngjūn",
-      "due": "2026-06-22T13:36:06.839Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-07-03T07:21:16.950Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
+      "elapsed_days": 9,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:31:06.839Z"
+      "state": 2,
+      "last_review": "2026-07-01T07:21:16.950Z"
     },
     "獎勵|jiǎnglì": {
       "hanzi": "獎勵",
@@ -94399,15 +94399,15 @@
     "開墾|kāikěn": {
       "hanzi": "開墾",
       "pinyin": "kāikěn",
-      "due": "2026-06-22T13:41:01.186Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-07-06T07:21:09.369Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 9,
+      "scheduled_days": 5,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-06-22T13:31:01.186Z"
+      "state": 2,
+      "last_review": "2026-07-01T07:21:09.369Z"
     },
     "血統|xiětǒng": {
       "hanzi": "血統",
@@ -113444,7 +113444,42 @@
       "pinyin": "dǎzhàng",
       "rating": "hard",
       "at": "2026-07-01T07:20:32.681Z"
+    },
+    {
+      "key": "少數|shǎoshù",
+      "hanzi": "少數",
+      "pinyin": "shǎoshù",
+      "rating": "again",
+      "at": "2026-07-01T07:20:38.844Z"
+    },
+    {
+      "key": "開墾|kāikěn",
+      "hanzi": "開墾",
+      "pinyin": "kāikěn",
+      "rating": "good",
+      "at": "2026-07-01T07:21:09.372Z"
+    },
+    {
+      "key": "將軍|jiāngjūn",
+      "hanzi": "將軍",
+      "pinyin": "jiāngjūn",
+      "rating": "good",
+      "at": "2026-07-01T07:21:16.952Z"
+    },
+    {
+      "key": "軍人|jūnrén",
+      "hanzi": "軍人",
+      "pinyin": "jūnrén",
+      "rating": "good",
+      "at": "2026-07-01T07:21:23.437Z"
+    },
+    {
+      "key": "平原|píngyuán",
+      "hanzi": "平原",
+      "pinyin": "píngyuán",
+      "rating": "hard",
+      "at": "2026-07-01T07:21:31.790Z"
     }
   ],
-  "updatedAt": "2026-07-01T07:20:34.183Z"
+  "updatedAt": "2026-07-01T07:21:33.291Z"
 }
