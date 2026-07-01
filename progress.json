@@ -9018,14 +9018,15 @@
     "點心|diǎnxīn": {
       "hanzi": "點心",
       "pinyin": "diǎnxīn",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:34:09.438Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:29:09.438Z"
     },
     "冰淇淋|bīngqílín": {
       "hanzi": "冰淇淋",
@@ -11732,14 +11733,15 @@
     "深|shēn": {
       "hanzi": "深",
       "pinyin": "shēn",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:39:24.884Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:29:24.884Z"
     },
     "淺|qiǎn": {
       "hanzi": "淺",
@@ -51814,14 +51816,15 @@
     "飲食|yǐnshí": {
       "hanzi": "飲食",
       "pinyin": "yǐnshí",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:39:21.627Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:29:21.627Z"
     },
     "印刷|yìnshuā": {
       "hanzi": "印刷",
@@ -94726,50 +94729,54 @@
     "美味|měiwèi": {
       "hanzi": "美味",
       "pinyin": "měiwèi",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:38:59.304Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:28:59.304Z"
     },
     "日式|Rìshì": {
       "hanzi": "日式",
       "pinyin": "Rìshì",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:34:12.820Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:29:12.820Z"
     },
     "蔣介石|Jiǎng Jièshí": {
       "hanzi": "蔣介石",
       "pinyin": "Jiǎng Jièshí",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:39:34.693Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:29:34.693Z"
     },
     "國共內戰|Guó Gòng nèizhàn": {
       "hanzi": "國共內戰",
       "pinyin": "Guó Gòng nèizhàn",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:34:47.160Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:29:47.160Z"
     },
     "客家人|Kèjiā rén": {
       "hanzi": "客家人",
@@ -113789,7 +113796,56 @@
       "pinyin": "yǐjí",
       "rating": "hard",
       "at": "2026-07-01T07:28:47.586Z"
+    },
+    {
+      "key": "美味|měiwèi",
+      "hanzi": "美味",
+      "pinyin": "měiwèi",
+      "rating": "good",
+      "at": "2026-07-01T07:28:59.306Z"
+    },
+    {
+      "key": "點心|diǎnxīn",
+      "hanzi": "點心",
+      "pinyin": "diǎnxīn",
+      "rating": "hard",
+      "at": "2026-07-01T07:29:09.441Z"
+    },
+    {
+      "key": "日式|Rìshì",
+      "hanzi": "日式",
+      "pinyin": "Rìshì",
+      "rating": "hard",
+      "at": "2026-07-01T07:29:12.823Z"
+    },
+    {
+      "key": "飲食|yǐnshí",
+      "hanzi": "飲食",
+      "pinyin": "yǐnshí",
+      "rating": "good",
+      "at": "2026-07-01T07:29:21.630Z"
+    },
+    {
+      "key": "深|shēn",
+      "hanzi": "深",
+      "pinyin": "shēn",
+      "rating": "good",
+      "at": "2026-07-01T07:29:24.885Z"
+    },
+    {
+      "key": "蔣介石|Jiǎng Jièshí",
+      "hanzi": "蔣介石",
+      "pinyin": "Jiǎng Jièshí",
+      "rating": "good",
+      "at": "2026-07-01T07:29:34.696Z"
+    },
+    {
+      "key": "國共內戰|Guó Gòng nèizhàn",
+      "hanzi": "國共內戰",
+      "pinyin": "Guó Gòng nèizhàn",
+      "rating": "hard",
+      "at": "2026-07-01T07:29:47.163Z"
     }
   ],
-  "updatedAt": "2026-07-01T07:28:49.087Z"
+  "updatedAt": "2026-07-01T07:29:48.664Z"
 }
