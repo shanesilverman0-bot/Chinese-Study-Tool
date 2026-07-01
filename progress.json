@@ -5210,14 +5210,15 @@
     "菜單|càidān": {
       "hanzi": "菜單",
       "pinyin": "càidān",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:37:11.184Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:27:11.184Z"
     },
     "巧克力|qiǎokèlì": {
       "hanzi": "巧克力",
@@ -14841,14 +14842,15 @@
     "接著|jiēzhe": {
       "hanzi": "接著",
       "pinyin": "jiēzhe",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:37:39.340Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:27:39.340Z"
     },
     "結果|jiéguǒ": {
       "hanzi": "結果",
@@ -23442,14 +23444,15 @@
     "人民|rénmín": {
       "hanzi": "人民",
       "pinyin": "rénmín",
-      "due": "2026-06-17T13:07:45.815Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:36:57.897Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:26:57.897Z"
     },
     "人人|rénrén": {
       "hanzi": "人人",
@@ -27730,14 +27733,15 @@
     "戰爭|zhànzhēng": {
       "hanzi": "戰爭",
       "pinyin": "zhànzhēng",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:28:47.321Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:27:47.321Z"
     },
     "掌握|zhǎngwò": {
       "hanzi": "掌握",
@@ -47713,14 +47717,15 @@
     "攤子|tānzi": {
       "hanzi": "攤子",
       "pinyin": "tānzi",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:32:05.530Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:27:05.530Z"
     },
     "逃|táo": {
       "hanzi": "逃",
@@ -71765,14 +71770,15 @@
     "內戰|nèizhàn": {
       "hanzi": "內戰",
       "pinyin": "nèizhàn",
-      "due": "2026-06-17T13:07:45.818Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:31:48.560Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:26:48.560Z"
     },
     "內政|nèizhèng": {
       "hanzi": "內政",
@@ -94650,14 +94656,15 @@
     "蘿蔔|luóbo": {
       "hanzi": "蘿蔔",
       "pinyin": "luóbo",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:37:16.315Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:27:16.315Z"
     },
     "不斷|búduàn": {
       "hanzi": "不斷",
@@ -113661,7 +113668,56 @@
       "pinyin": "dòujiāng",
       "rating": "good",
       "at": "2026-07-01T07:26:42.712Z"
+    },
+    {
+      "key": "內戰|nèizhàn",
+      "hanzi": "內戰",
+      "pinyin": "nèizhàn",
+      "rating": "hard",
+      "at": "2026-07-01T07:26:48.563Z"
+    },
+    {
+      "key": "人民|rénmín",
+      "hanzi": "人民",
+      "pinyin": "rénmín",
+      "rating": "good",
+      "at": "2026-07-01T07:26:57.900Z"
+    },
+    {
+      "key": "攤子|tānzi",
+      "hanzi": "攤子",
+      "pinyin": "tānzi",
+      "rating": "hard",
+      "at": "2026-07-01T07:27:05.532Z"
+    },
+    {
+      "key": "菜單|càidān",
+      "hanzi": "菜單",
+      "pinyin": "càidān",
+      "rating": "good",
+      "at": "2026-07-01T07:27:11.186Z"
+    },
+    {
+      "key": "蘿蔔|luóbo",
+      "hanzi": "蘿蔔",
+      "pinyin": "luóbo",
+      "rating": "good",
+      "at": "2026-07-01T07:27:16.317Z"
+    },
+    {
+      "key": "接著|jiēzhe",
+      "hanzi": "接著",
+      "pinyin": "jiēzhe",
+      "rating": "good",
+      "at": "2026-07-01T07:27:39.342Z"
+    },
+    {
+      "key": "戰爭|zhànzhēng",
+      "hanzi": "戰爭",
+      "pinyin": "zhànzhēng",
+      "rating": "again",
+      "at": "2026-07-01T07:27:47.323Z"
     }
   ],
-  "updatedAt": "2026-07-01T07:26:44.213Z"
+  "updatedAt": "2026-07-01T07:27:48.825Z"
 }
