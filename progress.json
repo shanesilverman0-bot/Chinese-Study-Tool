@@ -14167,14 +14167,15 @@
     "套|tào": {
       "hanzi": "套",
       "pinyin": "tào",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:35:31.232Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:31.232Z"
     },
     "沙拉|shālā": {
       "hanzi": "沙拉",
@@ -14323,14 +14324,15 @@
     "豆漿|dòujiāng": {
       "hanzi": "豆漿",
       "pinyin": "dòujiāng",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:36:42.710Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:26:42.710Z"
     },
     "可樂|kělè": {
       "hanzi": "可樂",
@@ -83271,14 +83273,15 @@
     "油條|yóutiáo": {
       "hanzi": "油條",
       "pinyin": "yóutiáo",
-      "due": "2026-06-17T13:07:45.819Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:35:41.455Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:41.455Z"
     },
     "友愛|yǒu'ài": {
       "hanzi": "友愛",
@@ -94608,38 +94611,41 @@
     "中式|Zhōngshì": {
       "hanzi": "中式",
       "pinyin": "Zhōngshì",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:35:27.318Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:27.318Z"
     },
     "燒餅|shāobǐng": {
       "hanzi": "燒餅",
       "pinyin": "shāobǐng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:30:37.089Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:37.089Z"
     },
     "飯糰|fàntuán": {
       "hanzi": "飯糰",
       "pinyin": "fàntuán",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-01T07:35:45.311Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-01T07:25:45.311Z"
     },
     "蘿蔔|luóbo": {
       "hanzi": "蘿蔔",
@@ -113613,7 +113619,49 @@
       "pinyin": "cānzhuō",
       "rating": "good",
       "at": "2026-07-01T07:25:24.537Z"
+    },
+    {
+      "key": "中式|Zhōngshì",
+      "hanzi": "中式",
+      "pinyin": "Zhōngshì",
+      "rating": "good",
+      "at": "2026-07-01T07:25:27.321Z"
+    },
+    {
+      "key": "套|tào",
+      "hanzi": "套",
+      "pinyin": "tào",
+      "rating": "good",
+      "at": "2026-07-01T07:25:31.235Z"
+    },
+    {
+      "key": "燒餅|shāobǐng",
+      "hanzi": "燒餅",
+      "pinyin": "shāobǐng",
+      "rating": "hard",
+      "at": "2026-07-01T07:25:37.091Z"
+    },
+    {
+      "key": "油條|yóutiáo",
+      "hanzi": "油條",
+      "pinyin": "yóutiáo",
+      "rating": "good",
+      "at": "2026-07-01T07:25:41.457Z"
+    },
+    {
+      "key": "飯糰|fàntuán",
+      "hanzi": "飯糰",
+      "pinyin": "fàntuán",
+      "rating": "good",
+      "at": "2026-07-01T07:25:45.313Z"
+    },
+    {
+      "key": "豆漿|dòujiāng",
+      "hanzi": "豆漿",
+      "pinyin": "dòujiāng",
+      "rating": "good",
+      "at": "2026-07-01T07:26:42.712Z"
     }
   ],
-  "updatedAt": "2026-07-01T07:25:26.038Z"
+  "updatedAt": "2026-07-01T07:26:44.213Z"
 }
