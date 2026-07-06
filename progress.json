@@ -11286,14 +11286,15 @@
     "餐桌|cānzhuō": {
       "hanzi": "餐桌",
       "pinyin": "cānzhuō",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:28:17.949Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:23:17.949Z"
     },
     "打開|dǎkāi": {
       "hanzi": "打開",
@@ -114926,7 +114927,14 @@
       "pinyin": "rénjì guānxì",
       "rating": "good",
       "at": "2026-07-06T13:20:58.611Z"
+    },
+    {
+      "key": "餐桌|cānzhuō",
+      "hanzi": "餐桌",
+      "pinyin": "cānzhuō",
+      "rating": "hard",
+      "at": "2026-07-06T13:23:17.955Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:21:00.113Z"
+  "updatedAt": "2026-07-06T13:23:19.458Z"
 }
