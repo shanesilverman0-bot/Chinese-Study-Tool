@@ -14183,14 +14183,15 @@
     "套|tào": {
       "hanzi": "套",
       "pinyin": "tào",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:33:27.033Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:23:27.033Z"
     },
     "沙拉|shālā": {
       "hanzi": "沙拉",
@@ -83369,14 +83370,15 @@
     "油條|yóutiáo": {
       "hanzi": "油條",
       "pinyin": "yóutiáo",
-      "due": "2026-06-17T13:07:45.819Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:33:38.132Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:23:38.132Z"
     },
     "友愛|yǒu'ài": {
       "hanzi": "友愛",
@@ -94760,26 +94762,28 @@
     "中式|Zhōngshì": {
       "hanzi": "中式",
       "pinyin": "Zhōngshì",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:33:22.549Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:23:22.549Z"
     },
     "燒餅|shāobǐng": {
       "hanzi": "燒餅",
       "pinyin": "shāobǐng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:33:33.099Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:23:33.099Z"
     },
     "飯糰|fàntuán": {
       "hanzi": "飯糰",
@@ -114934,7 +114938,35 @@
       "pinyin": "cānzhuō",
       "rating": "hard",
       "at": "2026-07-06T13:23:17.955Z"
+    },
+    {
+      "key": "中式|Zhōngshì",
+      "hanzi": "中式",
+      "pinyin": "Zhōngshì",
+      "rating": "good",
+      "at": "2026-07-06T13:23:22.556Z"
+    },
+    {
+      "key": "套|tào",
+      "hanzi": "套",
+      "pinyin": "tào",
+      "rating": "good",
+      "at": "2026-07-06T13:23:27.041Z"
+    },
+    {
+      "key": "燒餅|shāobǐng",
+      "hanzi": "燒餅",
+      "pinyin": "shāobǐng",
+      "rating": "good",
+      "at": "2026-07-06T13:23:33.107Z"
+    },
+    {
+      "key": "油條|yóutiáo",
+      "hanzi": "油條",
+      "pinyin": "yóutiáo",
+      "rating": "good",
+      "at": "2026-07-06T13:23:38.138Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:23:19.458Z"
+  "updatedAt": "2026-07-06T13:23:39.640Z"
 }
