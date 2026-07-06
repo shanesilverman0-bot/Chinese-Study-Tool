@@ -9026,14 +9026,15 @@
     "點心|diǎnxīn": {
       "hanzi": "點心",
       "pinyin": "diǎnxīn",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:35:37.848Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:37.848Z"
     },
     "冰淇淋|bīngqílín": {
       "hanzi": "冰淇淋",
@@ -13740,14 +13741,15 @@
     "困難|kùnnán": {
       "hanzi": "困難",
       "pinyin": "kùnnán",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:35:05.415Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:05.415Z"
     },
     "百貨公司|bǎihuògōngsī": {
       "hanzi": "百貨公司",
@@ -26931,14 +26933,15 @@
     "以及|yǐjí": {
       "hanzi": "以及",
       "pinyin": "yǐjí",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:30:27.432Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:27.432Z"
     },
     "以來|yǐlái": {
       "hanzi": "以來",
@@ -28169,14 +28172,15 @@
     "主婦|zhǔfù": {
       "hanzi": "主婦",
       "pinyin": "zhǔfù",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:30:15.916Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:15.916Z"
     },
     "主管|zhǔguǎn": {
       "hanzi": "主管",
@@ -37838,14 +37842,15 @@
     "煎|jiān": {
       "hanzi": "煎",
       "pinyin": "jiān",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:35:18.814Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:18.814Z"
     },
     "剪刀|jiǎndāo": {
       "hanzi": "剪刀",
@@ -67088,14 +67093,15 @@
     "節儉|jiéjiǎn": {
       "hanzi": "節儉",
       "pinyin": "jiéjiǎn",
-      "due": "2026-06-17T13:07:45.818Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:35:10.298Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:10.298Z"
     },
     "竭力|jiélì": {
       "hanzi": "竭力",
@@ -94847,50 +94853,54 @@
     "多半|duōbàn": {
       "hanzi": "多半",
       "pinyin": "duōbàn",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:34:50.216Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:24:50.216Z"
     },
     "菜色|càisè": {
       "hanzi": "菜色",
       "pinyin": "càisè",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:35:22.549Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:22.549Z"
     },
     "美味|měiwèi": {
       "hanzi": "美味",
       "pinyin": "měiwèi",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:35:32.215Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:32.215Z"
     },
     "日式|Rìshì": {
       "hanzi": "日式",
       "pinyin": "Rìshì",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:35:40.482Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:25:40.482Z"
     },
     "蔣介石|Jiǎng Jièshí": {
       "hanzi": "蔣介石",
@@ -115054,7 +115064,77 @@
       "pinyin": "qiānyí",
       "rating": "hard",
       "at": "2026-07-06T13:24:41.305Z"
+    },
+    {
+      "key": "多半|duōbàn",
+      "hanzi": "多半",
+      "pinyin": "duōbàn",
+      "rating": "good",
+      "at": "2026-07-06T13:24:50.223Z"
+    },
+    {
+      "key": "困難|kùnnán",
+      "hanzi": "困難",
+      "pinyin": "kùnnán",
+      "rating": "good",
+      "at": "2026-07-06T13:25:05.422Z"
+    },
+    {
+      "key": "節儉|jiéjiǎn",
+      "hanzi": "節儉",
+      "pinyin": "jiéjiǎn",
+      "rating": "good",
+      "at": "2026-07-06T13:25:10.303Z"
+    },
+    {
+      "key": "主婦|zhǔfù",
+      "hanzi": "主婦",
+      "pinyin": "zhǔfù",
+      "rating": "hard",
+      "at": "2026-07-06T13:25:15.924Z"
+    },
+    {
+      "key": "煎|jiān",
+      "hanzi": "煎",
+      "pinyin": "jiān",
+      "rating": "good",
+      "at": "2026-07-06T13:25:18.818Z"
+    },
+    {
+      "key": "菜色|càisè",
+      "hanzi": "菜色",
+      "pinyin": "càisè",
+      "rating": "good",
+      "at": "2026-07-06T13:25:22.552Z"
+    },
+    {
+      "key": "以及|yǐjí",
+      "hanzi": "以及",
+      "pinyin": "yǐjí",
+      "rating": "hard",
+      "at": "2026-07-06T13:25:27.439Z"
+    },
+    {
+      "key": "美味|měiwèi",
+      "hanzi": "美味",
+      "pinyin": "měiwèi",
+      "rating": "good",
+      "at": "2026-07-06T13:25:32.223Z"
+    },
+    {
+      "key": "點心|diǎnxīn",
+      "hanzi": "點心",
+      "pinyin": "diǎnxīn",
+      "rating": "good",
+      "at": "2026-07-06T13:25:37.858Z"
+    },
+    {
+      "key": "日式|Rìshì",
+      "hanzi": "日式",
+      "pinyin": "Rìshì",
+      "rating": "good",
+      "at": "2026-07-06T13:25:40.488Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:24:42.806Z"
+  "updatedAt": "2026-07-06T13:25:41.990Z"
 }
