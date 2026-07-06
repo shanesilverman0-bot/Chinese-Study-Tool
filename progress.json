@@ -11745,14 +11745,15 @@
     "深|shēn": {
       "hanzi": "深",
       "pinyin": "shēn",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-08T13:26:24.948Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-07-06T13:26:24.948Z"
     },
     "淺|qiǎn": {
       "hanzi": "淺",
@@ -51904,14 +51905,15 @@
     "飲食|yǐnshí": {
       "hanzi": "飲食",
       "pinyin": "yǐnshí",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:31:19.881Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:26:19.881Z"
     },
     "印刷|yìnshuā": {
       "hanzi": "印刷",
@@ -94892,7 +94894,33 @@
     "日式|Rìshì": {
       "hanzi": "日式",
       "pinyin": "Rìshì",
-      "due": "2026-07-06T13:35:40.482Z",
+      "due": "2026-07-09T13:25:44.299Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 0,
+      "scheduled_days": 3,
+      "reps": 2,
+      "lapses": 0,
+      "state": 2,
+      "last_review": "2026-07-06T13:25:44.299Z"
+    },
+    "蔣介石|Jiǎng Jièshí": {
+      "hanzi": "蔣介石",
+      "pinyin": "Jiǎng Jièshí",
+      "due": "2026-07-10T13:26:40.382Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 0,
+      "scheduled_days": 4,
+      "reps": 2,
+      "lapses": 0,
+      "state": 2,
+      "last_review": "2026-07-06T13:26:40.382Z"
+    },
+    "國共內戰|Guó Gòng nèizhàn": {
+      "hanzi": "國共內戰",
+      "pinyin": "Guó Gòng nèizhàn",
+      "due": "2026-07-06T13:36:48.982Z",
       "stability": 3.173,
       "difficulty": 5.28243442,
       "elapsed_days": 0,
@@ -94900,31 +94928,7 @@
       "reps": 1,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T13:25:40.482Z"
-    },
-    "蔣介石|Jiǎng Jièshí": {
-      "hanzi": "蔣介石",
-      "pinyin": "Jiǎng Jièshí",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
-      "lapses": 0,
-      "state": 0
-    },
-    "國共內戰|Guó Gòng nèizhàn": {
-      "hanzi": "國共內戰",
-      "pinyin": "Guó Gòng nèizhàn",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
-      "lapses": 0,
-      "state": 0
+      "last_review": "2026-07-06T13:26:48.982Z"
     },
     "客家人|Kèjiā rén": {
       "hanzi": "客家人",
@@ -115134,7 +115138,56 @@
       "pinyin": "Rìshì",
       "rating": "good",
       "at": "2026-07-06T13:25:40.488Z"
+    },
+    {
+      "key": "日式|Rìshì",
+      "hanzi": "日式",
+      "pinyin": "Rìshì",
+      "rating": "good",
+      "at": "2026-07-06T13:25:44.307Z"
+    },
+    {
+      "key": "飲食|yǐnshí",
+      "hanzi": "飲食",
+      "pinyin": "yǐnshí",
+      "rating": "hard",
+      "at": "2026-07-06T13:26:19.885Z"
+    },
+    {
+      "key": "深|shēn",
+      "hanzi": "深",
+      "pinyin": "shēn",
+      "rating": "hard",
+      "at": "2026-07-06T13:26:22.838Z"
+    },
+    {
+      "key": "深|shēn",
+      "hanzi": "深",
+      "pinyin": "shēn",
+      "rating": "good",
+      "at": "2026-07-06T13:26:24.954Z"
+    },
+    {
+      "key": "蔣介石|Jiǎng Jièshí",
+      "hanzi": "蔣介石",
+      "pinyin": "Jiǎng Jièshí",
+      "rating": "good",
+      "at": "2026-07-06T13:26:31.854Z"
+    },
+    {
+      "key": "蔣介石|Jiǎng Jièshí",
+      "hanzi": "蔣介石",
+      "pinyin": "Jiǎng Jièshí",
+      "rating": "good",
+      "at": "2026-07-06T13:26:40.389Z"
+    },
+    {
+      "key": "國共內戰|Guó Gòng nèizhàn",
+      "hanzi": "國共內戰",
+      "pinyin": "Guó Gòng nèizhàn",
+      "rating": "good",
+      "at": "2026-07-06T13:26:48.989Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:25:41.990Z"
+  "updatedAt": "2026-07-06T13:26:50.491Z"
 }
