@@ -36676,14 +36676,15 @@
     "合理|hélǐ": {
       "hanzi": "合理",
       "pinyin": "hélǐ",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:27:56.151Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:17:56.151Z"
     },
     "河流|héliú": {
       "hanzi": "河流",
@@ -94319,15 +94320,15 @@
     "醫美|yīměi": {
       "hanzi": "醫美",
       "pinyin": "yīměi",
-      "due": "2026-07-06T13:22:52.487Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
+      "due": "2026-07-11T13:13:02.605Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 5,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T13:12:52.487Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:13:02.605Z"
     },
     "職場|zhíchǎng": {
       "hanzi": "職場",
@@ -114671,7 +114672,21 @@
       "pinyin": "yīměi",
       "rating": "good",
       "at": "2026-07-06T13:12:52.497Z"
+    },
+    {
+      "key": "醫美|yīměi",
+      "hanzi": "醫美",
+      "pinyin": "yīměi",
+      "rating": "good",
+      "at": "2026-07-06T13:13:02.613Z"
+    },
+    {
+      "key": "合理|hélǐ",
+      "hanzi": "合理",
+      "pinyin": "hélǐ",
+      "rating": "good",
+      "at": "2026-07-06T13:17:56.160Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:12:53.998Z"
+  "updatedAt": "2026-07-06T13:17:57.662Z"
 }
