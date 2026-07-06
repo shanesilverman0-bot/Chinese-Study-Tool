@@ -17467,14 +17467,15 @@
     "調查|diàochá": {
       "hanzi": "調查",
       "pinyin": "diàochá",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:19:27.775Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:27.775Z"
     },
     "東北|dōngběi": {
       "hanzi": "東北",
@@ -21948,14 +21949,15 @@
     "迷人|mírén": {
       "hanzi": "迷人",
       "pinyin": "mírén",
-      "due": "2026-06-17T13:07:45.815Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:28:04.732Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:04.732Z"
     },
     "密切|mìqiè": {
       "hanzi": "密切",
@@ -28408,14 +28410,15 @@
     "自信|zìxìn": {
       "hanzi": "自信",
       "pinyin": "zìxìn",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:28:47.908Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:47.908Z"
     },
     "自在|zìzài": {
       "hanzi": "自在",
@@ -43449,14 +43452,15 @@
     "普通|pǔtōng": {
       "hanzi": "普通",
       "pinyin": "pǔtōng",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:28:57.685Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:57.685Z"
     },
     "普通話|pǔtōnghuà": {
       "hanzi": "普通話",
@@ -48676,14 +48680,15 @@
     "外表|wàibiǎo": {
       "hanzi": "外表",
       "pinyin": "wàibiǎo",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:28:52.669Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:52.669Z"
     },
     "外部|wàibù": {
       "hanzi": "外部",
@@ -50718,14 +50723,15 @@
     "休假|xiūjià": {
       "hanzi": "休假",
       "pinyin": "xiūjià",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:28:01.008Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:01.008Z"
     },
     "休閒|xiūxián": {
       "hanzi": "休閒",
@@ -94333,50 +94339,54 @@
     "職場|zhíchǎng": {
       "hanzi": "職場",
       "pinyin": "zhíchǎng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:23:10.744Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:10.744Z"
     },
     "競爭力|jìngzhēnglì": {
       "hanzi": "競爭力",
       "pinyin": "jìngzhēnglì",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:28:15.637Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:15.637Z"
     },
     "整型|zhěngxíng": {
       "hanzi": "整型",
       "pinyin": "zhěngxíng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:23:35.672Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:35.672Z"
     },
     "增加|zēngjiā": {
       "hanzi": "增加",
       "pinyin": "zēngjiā",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:19:41.615Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:18:41.615Z"
     },
     "醫治|yīzhì": {
       "hanzi": "醫治",
@@ -114686,7 +114696,77 @@
       "pinyin": "hélǐ",
       "rating": "good",
       "at": "2026-07-06T13:17:56.160Z"
+    },
+    {
+      "key": "休假|xiūjià",
+      "hanzi": "休假",
+      "pinyin": "xiūjià",
+      "rating": "good",
+      "at": "2026-07-06T13:18:01.015Z"
+    },
+    {
+      "key": "迷人|mírén",
+      "hanzi": "迷人",
+      "pinyin": "mírén",
+      "rating": "good",
+      "at": "2026-07-06T13:18:04.738Z"
+    },
+    {
+      "key": "職場|zhíchǎng",
+      "hanzi": "職場",
+      "pinyin": "zhíchǎng",
+      "rating": "hard",
+      "at": "2026-07-06T13:18:10.753Z"
+    },
+    {
+      "key": "競爭力|jìngzhēnglì",
+      "hanzi": "競爭力",
+      "pinyin": "jìngzhēnglì",
+      "rating": "good",
+      "at": "2026-07-06T13:18:15.645Z"
+    },
+    {
+      "key": "調查|diàochá",
+      "hanzi": "調查",
+      "pinyin": "diàochá",
+      "rating": "again",
+      "at": "2026-07-06T13:18:27.782Z"
+    },
+    {
+      "key": "整型|zhěngxíng",
+      "hanzi": "整型",
+      "pinyin": "zhěngxíng",
+      "rating": "hard",
+      "at": "2026-07-06T13:18:35.680Z"
+    },
+    {
+      "key": "增加|zēngjiā",
+      "hanzi": "增加",
+      "pinyin": "zēngjiā",
+      "rating": "again",
+      "at": "2026-07-06T13:18:41.623Z"
+    },
+    {
+      "key": "自信|zìxìn",
+      "hanzi": "自信",
+      "pinyin": "zìxìn",
+      "rating": "good",
+      "at": "2026-07-06T13:18:47.915Z"
+    },
+    {
+      "key": "外表|wàibiǎo",
+      "hanzi": "外表",
+      "pinyin": "wàibiǎo",
+      "rating": "good",
+      "at": "2026-07-06T13:18:52.673Z"
+    },
+    {
+      "key": "普通|pǔtōng",
+      "hanzi": "普通",
+      "pinyin": "pǔtōng",
+      "rating": "good",
+      "at": "2026-07-06T13:18:57.695Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:17:57.662Z"
+  "updatedAt": "2026-07-06T13:18:59.197Z"
 }
