@@ -18805,14 +18805,15 @@
     "怪|guài": {
       "hanzi": "怪",
       "pinyin": "guài",
-      "due": "2026-06-17T13:07:45.815Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:21:33.697Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:33.697Z"
     },
     "觀察|guānchá": {
       "hanzi": "觀察",
@@ -28607,14 +28608,15 @@
     "尊敬|zūnjìng": {
       "hanzi": "尊敬",
       "pinyin": "zūnjìng",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:21:12.714Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:12.714Z"
     },
     "作|zuò": {
       "hanzi": "作",
@@ -35100,14 +35102,15 @@
     "告|gào": {
       "hanzi": "告",
       "pinyin": "gào",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:21:18.866Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:18.866Z"
     },
     "高潮|gāocháo": {
       "hanzi": "高潮",
@@ -43255,14 +43258,15 @@
     "平均|píngjūn": {
       "hanzi": "平均",
       "pinyin": "píngjūn",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:21:23.921Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:23.921Z"
     },
     "乒乓球|pīngpāngqiú/zhuōqiú": {
       "hanzi": "乒乓球",
@@ -82319,14 +82323,15 @@
     "醫療|yīliáo": {
       "hanzi": "醫療",
       "pinyin": "yīliáo",
-      "due": "2026-06-17T13:07:45.819Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:21:29.283Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:29.283Z"
     },
     "醫術|yīshù": {
       "hanzi": "醫術",
@@ -94425,62 +94430,67 @@
     "價值觀|jiàzhíguān": {
       "hanzi": "價值觀",
       "pinyin": "jiàzhíguān",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:30:06.113Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:06.113Z"
     },
     "愛林|Àilín": {
       "hanzi": "愛林",
       "pinyin": "Àilín",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:30:39.416Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:39.416Z"
     },
     "微整型|wéi zhěngxíng": {
       "hanzi": "微整型",
       "pinyin": "wéi zhěngxíng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:25:48.558Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:48.558Z"
     },
     "數一數二|shǔyī shǔ'èr": {
       "hanzi": "數一數二",
       "pinyin": "shǔyī shǔ'èr",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:30:53.117Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:53.117Z"
     },
     "人際關係|rénjì guānxì": {
       "hanzi": "人際關係",
       "pinyin": "rénjì guānxì",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:30:58.602Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:20:58.602Z"
     },
     "動不動就|dòng bú dòng jiù": {
       "hanzi": "動不動就",
@@ -114846,7 +114856,77 @@
       "pinyin": "lìng",
       "rating": "good",
       "at": "2026-07-06T13:19:57.097Z"
+    },
+    {
+      "key": "價值觀|jiàzhíguān",
+      "hanzi": "價值觀",
+      "pinyin": "jiàzhíguān",
+      "rating": "good",
+      "at": "2026-07-06T13:20:06.121Z"
+    },
+    {
+      "key": "尊敬|zūnjìng",
+      "hanzi": "尊敬",
+      "pinyin": "zūnjìng",
+      "rating": "again",
+      "at": "2026-07-06T13:20:12.721Z"
+    },
+    {
+      "key": "告|gào",
+      "hanzi": "告",
+      "pinyin": "gào",
+      "rating": "again",
+      "at": "2026-07-06T13:20:18.871Z"
+    },
+    {
+      "key": "平均|píngjūn",
+      "hanzi": "平均",
+      "pinyin": "píngjūn",
+      "rating": "again",
+      "at": "2026-07-06T13:20:23.929Z"
+    },
+    {
+      "key": "醫療|yīliáo",
+      "hanzi": "醫療",
+      "pinyin": "yīliáo",
+      "rating": "again",
+      "at": "2026-07-06T13:20:29.290Z"
+    },
+    {
+      "key": "怪|guài",
+      "hanzi": "怪",
+      "pinyin": "guài",
+      "rating": "again",
+      "at": "2026-07-06T13:20:33.704Z"
+    },
+    {
+      "key": "愛林|Àilín",
+      "hanzi": "愛林",
+      "pinyin": "Àilín",
+      "rating": "good",
+      "at": "2026-07-06T13:20:39.425Z"
+    },
+    {
+      "key": "微整型|wéi zhěngxíng",
+      "hanzi": "微整型",
+      "pinyin": "wéi zhěngxíng",
+      "rating": "hard",
+      "at": "2026-07-06T13:20:48.565Z"
+    },
+    {
+      "key": "數一數二|shǔyī shǔ'èr",
+      "hanzi": "數一數二",
+      "pinyin": "shǔyī shǔ'èr",
+      "rating": "good",
+      "at": "2026-07-06T13:20:53.125Z"
+    },
+    {
+      "key": "人際關係|rénjì guānxì",
+      "hanzi": "人際關係",
+      "pinyin": "rénjì guānxì",
+      "rating": "good",
+      "at": "2026-07-06T13:20:58.611Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:19:58.599Z"
+  "updatedAt": "2026-07-06T13:21:00.113Z"
 }
