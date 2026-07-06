@@ -10286,15 +10286,15 @@
     "危險|wéixiǎn": {
       "hanzi": "危險",
       "pinyin": "wéixiǎn",
-      "due": "2026-07-06T08:59:49.373Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-07-06T13:22:00.598Z",
+      "stability": 0.99424621,
+      "difficulty": 7.04050155,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:54:49.373Z"
+      "last_review": "2026-07-06T13:12:00.598Z"
     },
     "安全|ānquán": {
       "hanzi": "安全",
@@ -19414,15 +19414,15 @@
     "恢復|huīfù": {
       "hanzi": "恢復",
       "pinyin": "huīfù",
-      "due": "2026-07-06T09:00:17.627Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-07-08T13:12:10.304Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:55:17.627Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:12:10.304Z"
     },
     "回想|huíxiǎng": {
       "hanzi": "回想",
@@ -20461,15 +20461,15 @@
     "警察|jǐngchá": {
       "hanzi": "警察",
       "pinyin": "jǐngchá",
-      "due": "2026-07-06T08:55:42.963Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
+      "due": "2026-07-07T13:11:55.276Z",
+      "stability": 0.5666983,
+      "difficulty": 7.17663617,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 1,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:54:42.963Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:11:55.276Z"
     },
     "儘管|jǐnguǎn": {
       "hanzi": "儘管",
@@ -27735,15 +27735,15 @@
     "至於|zhìyú": {
       "hanzi": "至於",
       "pinyin": "zhìyú",
-      "due": "2026-07-06T09:00:05.929Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-07-08T13:12:03.892Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:55:05.929Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:12:03.892Z"
     },
     "摘|zhāi": {
       "hanzi": "摘",
@@ -46801,15 +46801,15 @@
     "手術|shǒushù": {
       "hanzi": "手術",
       "pinyin": "shǒushù",
-      "due": "2026-07-06T08:59:37.362Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-07-08T13:11:47.525Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:54:37.362Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:11:47.525Z"
     },
     "首先|shǒuxiān": {
       "hanzi": "首先",
@@ -75043,15 +75043,15 @@
     "傷口|shāngkǒu": {
       "hanzi": "傷口",
       "pinyin": "shāngkǒu",
-      "due": "2026-07-06T09:00:22.274Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-07-08T13:12:14.460Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:55:22.274Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:12:14.460Z"
     },
     "傷亡|shāngwáng": {
       "hanzi": "傷亡",
@@ -94202,67 +94202,67 @@
     "止痛|zhǐtòng": {
       "hanzi": "止痛",
       "pinyin": "zhǐtòng",
-      "due": "2026-07-06T08:55:29.390Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
+      "due": "2026-07-06T13:21:43.230Z",
+      "stability": 0.33807815,
+      "difficulty": 7.6297166,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:54:29.390Z"
+      "last_review": "2026-07-06T13:11:43.230Z"
     },
     "部位|bùwèi": {
       "hanzi": "部位",
       "pinyin": "bùwèi",
-      "due": "2026-07-06T09:00:12.102Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
+      "due": "2026-07-08T13:12:06.355Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:55:12.102Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:12:06.355Z"
     },
     "哎呀|āiya": {
       "hanzi": "哎呀",
       "pinyin": "āiya",
-      "due": "2026-07-06T09:05:28.458Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
+      "due": "2026-07-09T13:12:18.192Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:55:28.458Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:12:18.192Z"
     },
     "出車禍|chū chēhuò": {
       "hanzi": "出車禍",
       "pinyin": "chū chēhuò",
-      "due": "2026-07-06T09:05:34.416Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
+      "due": "2026-07-10T13:12:22.326Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 4,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:55:34.416Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:12:22.326Z"
     },
     "趕時間|gǎn shíjiān": {
       "hanzi": "趕時間",
       "pinyin": "gǎn shíjiān",
-      "due": "2026-07-06T09:05:40.706Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
+      "due": "2026-07-09T13:12:26.370Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:55:40.706Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:12:26.370Z"
     },
     "撞倒|zhuàng dǎo": {
       "hanzi": "撞倒",
@@ -94319,14 +94319,15 @@
     "醫美|yīměi": {
       "hanzi": "醫美",
       "pinyin": "yīměi",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:22:52.487Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:12:52.487Z"
     },
     "職場|zhíchǎng": {
       "hanzi": "職場",
@@ -114586,7 +114587,91 @@
       "pinyin": "dǎzhēn",
       "rating": "good",
       "at": "2026-07-06T13:11:34.888Z"
+    },
+    {
+      "key": "止痛|zhǐtòng",
+      "hanzi": "止痛",
+      "pinyin": "zhǐtòng",
+      "rating": "hard",
+      "at": "2026-07-06T13:11:43.233Z"
+    },
+    {
+      "key": "手術|shǒushù",
+      "hanzi": "手術",
+      "pinyin": "shǒushù",
+      "rating": "good",
+      "at": "2026-07-06T13:11:47.535Z"
+    },
+    {
+      "key": "警察|jǐngchá",
+      "hanzi": "警察",
+      "pinyin": "jǐngchá",
+      "rating": "good",
+      "at": "2026-07-06T13:11:55.286Z"
+    },
+    {
+      "key": "危險|wéixiǎn",
+      "hanzi": "危險",
+      "pinyin": "wéixiǎn",
+      "rating": "hard",
+      "at": "2026-07-06T13:12:00.605Z"
+    },
+    {
+      "key": "至於|zhìyú",
+      "hanzi": "至於",
+      "pinyin": "zhìyú",
+      "rating": "good",
+      "at": "2026-07-06T13:12:03.895Z"
+    },
+    {
+      "key": "部位|bùwèi",
+      "hanzi": "部位",
+      "pinyin": "bùwèi",
+      "rating": "good",
+      "at": "2026-07-06T13:12:06.362Z"
+    },
+    {
+      "key": "恢復|huīfù",
+      "hanzi": "恢復",
+      "pinyin": "huīfù",
+      "rating": "good",
+      "at": "2026-07-06T13:12:10.311Z"
+    },
+    {
+      "key": "傷口|shāngkǒu",
+      "hanzi": "傷口",
+      "pinyin": "shāngkǒu",
+      "rating": "good",
+      "at": "2026-07-06T13:12:14.468Z"
+    },
+    {
+      "key": "哎呀|āiya",
+      "hanzi": "哎呀",
+      "pinyin": "āiya",
+      "rating": "good",
+      "at": "2026-07-06T13:12:18.200Z"
+    },
+    {
+      "key": "出車禍|chū chēhuò",
+      "hanzi": "出車禍",
+      "pinyin": "chū chēhuò",
+      "rating": "good",
+      "at": "2026-07-06T13:12:22.334Z"
+    },
+    {
+      "key": "趕時間|gǎn shíjiān",
+      "hanzi": "趕時間",
+      "pinyin": "gǎn shíjiān",
+      "rating": "good",
+      "at": "2026-07-06T13:12:26.378Z"
+    },
+    {
+      "key": "醫美|yīměi",
+      "hanzi": "醫美",
+      "pinyin": "yīměi",
+      "rating": "good",
+      "at": "2026-07-06T13:12:52.497Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:11:36.390Z"
+  "updatedAt": "2026-07-06T13:12:53.998Z"
 }
