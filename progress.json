@@ -94933,98 +94933,106 @@
     "客家人|Kèjiā rén": {
       "hanzi": "客家人",
       "pinyin": "Kèjiā rén",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:36:53.814Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:26:53.814Z"
     },
     "閩南人|Mǐnnán rén": {
       "hanzi": "閩南人",
       "pinyin": "Mǐnnán rén",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:37:02.381Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:27:02.381Z"
     },
     "蛋餅|dàn bǐng": {
       "hanzi": "蛋餅",
       "pinyin": "dàn bǐng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:37:08.398Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:27:08.398Z"
     },
     "打輸|dǎ shū": {
       "hanzi": "打輸",
       "pinyin": "dǎ shū",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:37:18.260Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:27:18.260Z"
     },
     "擺攤子|bǎi tānzi": {
       "hanzi": "擺攤子",
       "pinyin": "bǎi tānzi",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:37:29.910Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:27:29.910Z"
     },
     "蘿蔔糕|luóbo gāo": {
       "hanzi": "蘿蔔糕",
       "pinyin": "luóbo gāo",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:37:33.707Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:27:33.707Z"
     },
     "烹飪課|pēngrèn kè": {
       "hanzi": "烹飪課",
       "pinyin": "pēngrèn kè",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:32:42.640Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:27:42.640Z"
     },
     "曬乾|shài gān": {
       "hanzi": "曬乾",
       "pinyin": "shài gān",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:32:50.507Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:27:50.507Z"
     },
     "各種各樣|gèzhǒng gèyàng": {
       "hanzi": "各種各樣",
@@ -115187,7 +115195,63 @@
       "pinyin": "Guó Gòng nèizhàn",
       "rating": "good",
       "at": "2026-07-06T13:26:48.989Z"
+    },
+    {
+      "key": "客家人|Kèjiā rén",
+      "hanzi": "客家人",
+      "pinyin": "Kèjiā rén",
+      "rating": "good",
+      "at": "2026-07-06T13:26:53.822Z"
+    },
+    {
+      "key": "閩南人|Mǐnnán rén",
+      "hanzi": "閩南人",
+      "pinyin": "Mǐnnán rén",
+      "rating": "good",
+      "at": "2026-07-06T13:27:02.390Z"
+    },
+    {
+      "key": "蛋餅|dàn bǐng",
+      "hanzi": "蛋餅",
+      "pinyin": "dàn bǐng",
+      "rating": "good",
+      "at": "2026-07-06T13:27:08.406Z"
+    },
+    {
+      "key": "打輸|dǎ shū",
+      "hanzi": "打輸",
+      "pinyin": "dǎ shū",
+      "rating": "good",
+      "at": "2026-07-06T13:27:18.267Z"
+    },
+    {
+      "key": "擺攤子|bǎi tānzi",
+      "hanzi": "擺攤子",
+      "pinyin": "bǎi tānzi",
+      "rating": "good",
+      "at": "2026-07-06T13:27:29.919Z"
+    },
+    {
+      "key": "蘿蔔糕|luóbo gāo",
+      "hanzi": "蘿蔔糕",
+      "pinyin": "luóbo gāo",
+      "rating": "good",
+      "at": "2026-07-06T13:27:33.713Z"
+    },
+    {
+      "key": "烹飪課|pēngrèn kè",
+      "hanzi": "烹飪課",
+      "pinyin": "pēngrèn kè",
+      "rating": "hard",
+      "at": "2026-07-06T13:27:42.648Z"
+    },
+    {
+      "key": "曬乾|shài gān",
+      "hanzi": "曬乾",
+      "pinyin": "shài gān",
+      "rating": "hard",
+      "at": "2026-07-06T13:27:50.515Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:26:50.491Z"
+  "updatedAt": "2026-07-06T13:27:52.017Z"
 }
