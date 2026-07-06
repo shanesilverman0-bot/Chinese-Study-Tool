@@ -15098,14 +15098,15 @@
     "倍|bèi": {
       "hanzi": "倍",
       "pinyin": "bèi",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:29:53.777Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:53.777Z"
     },
     "包括|bāokuò": {
       "hanzi": "包括",
@@ -15314,14 +15315,15 @@
     "另|lìng": {
       "hanzi": "另",
       "pinyin": "lìng",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:29:57.089Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:57.089Z"
     },
     "另外|lìngwài": {
       "hanzi": "另外",
@@ -16359,14 +16361,15 @@
     "超過|chāoguò": {
       "hanzi": "超過",
       "pinyin": "chāoguò",
-      "due": "2026-06-17T13:07:45.814Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:29:50.036Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:50.036Z"
     },
     "超級|chāojí": {
       "hanzi": "超級",
@@ -28206,14 +28209,15 @@
     "主要|zhǔyào": {
       "hanzi": "主要",
       "pinyin": "zhǔyào",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:29:19.937Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:19.937Z"
     },
     "主意|zhǔyì": {
       "hanzi": "主意",
@@ -31765,14 +31769,15 @@
     "從事|cóngshì": {
       "hanzi": "從事",
       "pinyin": "cóngshì",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:29:00.728Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:00.728Z"
     },
     "湊|còu": {
       "hanzi": "湊",
@@ -32149,14 +32154,15 @@
     "待遇|dàiyù": {
       "hanzi": "待遇",
       "pinyin": "dàiyù",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:20:29.180Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:29.180Z"
     },
     "大街|dàjiē": {
       "hanzi": "大街",
@@ -35442,14 +35448,15 @@
     "公立|gōnglì": {
       "hanzi": "公立",
       "pinyin": "gōnglì",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:29:38.486Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:38.486Z"
     },
     "公平|gōngpíng": {
       "hanzi": "公平",
@@ -48789,14 +48796,15 @@
     "外科|wàikē": {
       "hanzi": "外科",
       "pinyin": "wàikē",
-      "due": "2026-06-17T13:07:45.817Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:24:46.066Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:46.066Z"
     },
     "彎|wān": {
       "hanzi": "彎",
@@ -94391,26 +94399,28 @@
     "醫治|yīzhì": {
       "hanzi": "醫治",
       "pinyin": "yīzhì",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:20:08.778Z",
+      "stability": 0.40255,
+      "difficulty": 7.1949,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:08.778Z"
     },
     "一向|yíxiàng": {
       "hanzi": "一向",
       "pinyin": "yíxiàng",
-      "due": "2026-06-22T07:32:48.164Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-07-06T13:24:14.842Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-07-06T13:19:14.842Z"
     },
     "價值觀|jiàzhíguān": {
       "hanzi": "價值觀",
@@ -114766,7 +114776,77 @@
       "pinyin": "pǔtōng",
       "rating": "good",
       "at": "2026-07-06T13:18:57.695Z"
+    },
+    {
+      "key": "從事|cóngshì",
+      "hanzi": "從事",
+      "pinyin": "cóngshì",
+      "rating": "good",
+      "at": "2026-07-06T13:19:00.736Z"
+    },
+    {
+      "key": "醫治|yīzhì",
+      "hanzi": "醫治",
+      "pinyin": "yīzhì",
+      "rating": "again",
+      "at": "2026-07-06T13:19:08.786Z"
+    },
+    {
+      "key": "一向|yíxiàng",
+      "hanzi": "一向",
+      "pinyin": "yíxiàng",
+      "rating": "hard",
+      "at": "2026-07-06T13:19:14.850Z"
+    },
+    {
+      "key": "主要|zhǔyào",
+      "hanzi": "主要",
+      "pinyin": "zhǔyào",
+      "rating": "good",
+      "at": "2026-07-06T13:19:19.942Z"
+    },
+    {
+      "key": "待遇|dàiyù",
+      "hanzi": "待遇",
+      "pinyin": "dàiyù",
+      "rating": "again",
+      "at": "2026-07-06T13:19:29.188Z"
+    },
+    {
+      "key": "公立|gōnglì",
+      "hanzi": "公立",
+      "pinyin": "gōnglì",
+      "rating": "good",
+      "at": "2026-07-06T13:19:38.496Z"
+    },
+    {
+      "key": "外科|wàikē",
+      "hanzi": "外科",
+      "pinyin": "wàikē",
+      "rating": "hard",
+      "at": "2026-07-06T13:19:46.075Z"
+    },
+    {
+      "key": "超過|chāoguò",
+      "hanzi": "超過",
+      "pinyin": "chāoguò",
+      "rating": "good",
+      "at": "2026-07-06T13:19:50.043Z"
+    },
+    {
+      "key": "倍|bèi",
+      "hanzi": "倍",
+      "pinyin": "bèi",
+      "rating": "good",
+      "at": "2026-07-06T13:19:53.783Z"
+    },
+    {
+      "key": "另|lìng",
+      "hanzi": "另",
+      "pinyin": "lìng",
+      "rating": "good",
+      "at": "2026-07-06T13:19:57.097Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:18:59.197Z"
+  "updatedAt": "2026-07-06T13:19:58.599Z"
 }
