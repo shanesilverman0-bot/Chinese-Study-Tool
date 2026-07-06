@@ -23078,15 +23078,15 @@
     "情況|qíngkuàng": {
       "hanzi": "情況",
       "pinyin": "qíngkuàng",
-      "due": "2026-07-06T08:58:51.143Z",
-      "stability": 1.58976351,
-      "difficulty": 6.79693258,
-      "elapsed_days": 14,
-      "scheduled_days": 0,
-      "reps": 2,
+      "due": "2026-07-08T13:11:12.343Z",
+      "stability": 2.23802331,
+      "difficulty": 6.7804994,
+      "elapsed_days": 0,
+      "scheduled_days": 2,
+      "reps": 3,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:53:51.143Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:11:12.343Z"
     },
     "情人|qíngrén": {
       "hanzi": "情人",
@@ -29248,15 +29248,15 @@
     "報警|bàojǐng": {
       "hanzi": "報警",
       "pinyin": "bàojǐng",
-      "due": "2026-07-06T09:02:52.201Z",
-      "stability": 0.8350091,
-      "difficulty": 7.50096685,
-      "elapsed_days": 14,
+      "due": "2026-07-06T13:15:44.886Z",
+      "stability": 0.41836338,
+      "difficulty": 8.28858398,
+      "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 3,
+      "reps": 4,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:52:52.201Z"
+      "last_review": "2026-07-06T13:10:44.886Z"
     },
     "暴力|bàolì": {
       "hanzi": "暴力",
@@ -32543,15 +32543,15 @@
     "打針|dǎzhēn": {
       "hanzi": "打針",
       "pinyin": "dǎzhēn",
-      "due": "2026-07-06T08:55:19.948Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
+      "due": "2026-07-07T13:11:34.879Z",
+      "stability": 0.5666983,
+      "difficulty": 7.17663617,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 1,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:54:19.948Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:11:34.879Z"
     },
     "大致|dàzhì": {
       "hanzi": "大致",
@@ -35979,15 +35979,15 @@
     "規則|guīzé": {
       "hanzi": "規則",
       "pinyin": "guīzé",
-      "due": "2026-07-06T08:57:42.851Z",
-      "stability": 1.18385,
-      "difficulty": 7.59761686,
-      "elapsed_days": 14,
-      "scheduled_days": 0,
-      "reps": 3,
+      "due": "2026-07-08T13:10:38.855Z",
+      "stability": 1.66658995,
+      "difficulty": 7.57750053,
+      "elapsed_days": 0,
+      "scheduled_days": 2,
+      "reps": 4,
       "lapses": 1,
-      "state": 3,
-      "last_review": "2026-07-06T08:52:42.851Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:10:38.855Z"
     },
     "貴族|guìzú": {
       "hanzi": "貴族",
@@ -39008,15 +39008,15 @@
     "緊急|jǐnjí": {
       "hanzi": "緊急",
       "pinyin": "jǐnjí",
-      "due": "2026-07-06T09:04:00.152Z",
-      "stability": 2.66481668,
-      "difficulty": 6.03495025,
-      "elapsed_days": 14,
+      "due": "2026-07-06T13:21:17.181Z",
+      "stability": 2.2380233,
+      "difficulty": 6.66245798,
+      "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 2,
+      "reps": 3,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:54:00.152Z"
+      "last_review": "2026-07-06T13:11:17.181Z"
     },
     "進口|jìnkǒu": {
       "hanzi": "進口",
@@ -39742,15 +39742,15 @@
     "開刀|kāidāo": {
       "hanzi": "開刀",
       "pinyin": "kāidāo",
-      "due": "2026-07-06T08:58:39.266Z",
-      "stability": 0.59314262,
-      "difficulty": 7.60771133,
-      "elapsed_days": 14,
-      "scheduled_days": 0,
-      "reps": 2,
+      "due": "2026-07-07T13:11:05.312Z",
+      "stability": 0.83500911,
+      "difficulty": 7.58754857,
+      "elapsed_days": 0,
+      "scheduled_days": 1,
+      "reps": 3,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:53:39.266Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:11:05.312Z"
     },
     "開動|kāidòng": {
       "hanzi": "開動",
@@ -51307,15 +51307,15 @@
     "要命|yàomìng": {
       "hanzi": "要命",
       "pinyin": "yàomìng",
-      "due": "2026-07-06T09:04:11.711Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
+      "due": "2026-07-11T13:11:29.445Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 5,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:54:11.711Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:11:29.445Z"
     },
     "藥水|yàoshuǐ": {
       "hanzi": "藥水",
@@ -56689,15 +56689,15 @@
     "病床|bìngchuáng": {
       "hanzi": "病床",
       "pinyin": "bìngchuáng",
-      "due": "2026-07-06T09:04:06.071Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
+      "due": "2026-07-10T13:11:22.574Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "scheduled_days": 4,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:54:06.071Z"
+      "state": 2,
+      "last_review": "2026-07-06T13:11:22.574Z"
     },
     "病菌|bìngjùn": {
       "hanzi": "病菌",
@@ -94176,15 +94176,15 @@
     "急診室|jízhěnshì": {
       "hanzi": "急診室",
       "pinyin": "jízhěnshì",
-      "due": "2026-07-06T08:58:00.599Z",
-      "stability": 0.59314262,
-      "difficulty": 7.60771133,
-      "elapsed_days": 14,
+      "due": "2026-07-06T13:16:00.289Z",
+      "stability": 0.29718137,
+      "difficulty": 8.36035465,
+      "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 2,
+      "reps": 3,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:53:00.599Z"
+      "last_review": "2026-07-06T13:11:00.289Z"
     },
     "骨折|gǔzhé": {
       "hanzi": "骨折",
@@ -114523,7 +114523,70 @@
       "pinyin": "zūnshǒu",
       "rating": "again",
       "at": "2026-07-06T13:10:32.280Z"
+    },
+    {
+      "key": "規則|guīzé",
+      "hanzi": "規則",
+      "pinyin": "guīzé",
+      "rating": "good",
+      "at": "2026-07-06T13:10:38.864Z"
+    },
+    {
+      "key": "報警|bàojǐng",
+      "hanzi": "報警",
+      "pinyin": "bàojǐng",
+      "rating": "again",
+      "at": "2026-07-06T13:10:44.894Z"
+    },
+    {
+      "key": "急診室|jízhěnshì",
+      "hanzi": "急診室",
+      "pinyin": "jízhěnshì",
+      "rating": "again",
+      "at": "2026-07-06T13:11:00.298Z"
+    },
+    {
+      "key": "開刀|kāidāo",
+      "hanzi": "開刀",
+      "pinyin": "kāidāo",
+      "rating": "good",
+      "at": "2026-07-06T13:11:05.320Z"
+    },
+    {
+      "key": "情況|qíngkuàng",
+      "hanzi": "情況",
+      "pinyin": "qíngkuàng",
+      "rating": "good",
+      "at": "2026-07-06T13:11:12.351Z"
+    },
+    {
+      "key": "緊急|jǐnjí",
+      "hanzi": "緊急",
+      "pinyin": "jǐnjí",
+      "rating": "hard",
+      "at": "2026-07-06T13:11:17.191Z"
+    },
+    {
+      "key": "病床|bìngchuáng",
+      "hanzi": "病床",
+      "pinyin": "bìngchuáng",
+      "rating": "good",
+      "at": "2026-07-06T13:11:22.580Z"
+    },
+    {
+      "key": "要命|yàomìng",
+      "hanzi": "要命",
+      "pinyin": "yàomìng",
+      "rating": "good",
+      "at": "2026-07-06T13:11:29.455Z"
+    },
+    {
+      "key": "打針|dǎzhēn",
+      "hanzi": "打針",
+      "pinyin": "dǎzhēn",
+      "rating": "good",
+      "at": "2026-07-06T13:11:34.888Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:10:33.782Z"
+  "updatedAt": "2026-07-06T13:11:36.390Z"
 }
