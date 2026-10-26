@@ -6889,15 +6889,15 @@
     "冰箱|bīngxiāng": {
       "hanzi": "冰箱",
       "pinyin": "bīngxiāng",
-      "due": "2026-07-06T08:46:27.035Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-29T16:41:09.080Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 112,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:36:27.035Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:41:09.080Z"
     },
     "台|tái": {
       "hanzi": "台",
@@ -13131,15 +13131,15 @@
     "下|xià": {
       "hanzi": "下",
       "pinyin": "xià",
-      "due": "2026-07-06T08:45:20.661Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-31T16:38:21.599Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 112,
+      "scheduled_days": 5,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:35:20.661Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:38:21.599Z"
     },
     "上|shàng": {
       "hanzi": "上",
@@ -24615,15 +24615,15 @@
     "隨時|suíshí": {
       "hanzi": "隨時",
       "pinyin": "suíshí",
-      "due": "2026-07-06T08:46:15.711Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:38:39.549Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 112,
+      "scheduled_days": 4,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:36:15.711Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:38:39.549Z"
     },
     "所|suǒ": {
       "hanzi": "所",
@@ -93877,41 +93877,41 @@
     "宅配|zháipèi": {
       "hanzi": "宅配",
       "pinyin": "zháipèi",
-      "due": "2026-07-06T08:40:14.369Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-28T16:38:18.582Z",
+      "stability": 1.66658995,
+      "difficulty": 6.47329177,
+      "elapsed_days": 112,
+      "scheduled_days": 2,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:35:14.369Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:38:18.582Z"
     },
     "既|jì": {
       "hanzi": "既",
       "pinyin": "jì",
-      "due": "2026-07-06T08:46:02.177Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:38:24.465Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 112,
+      "scheduled_days": 4,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:36:02.177Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:38:24.465Z"
     },
     "搜尋|sōuxún": {
       "hanzi": "搜尋",
       "pinyin": "sōuxún",
-      "due": "2026-07-06T08:41:24.870Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:51:07.865Z",
+      "stability": 0.99424621,
+      "difficulty": 7.04050155,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:36:24.870Z"
+      "last_review": "2026-10-26T16:41:07.865Z"
     },
     "比價|bǐjià": {
       "hanzi": "比價",
@@ -115553,7 +115553,49 @@
       "pinyin": "jīngyíng",
       "rating": "good",
       "at": "2026-10-26T16:38:13.388Z"
+    },
+    {
+      "key": "宅配|zháipèi",
+      "hanzi": "宅配",
+      "pinyin": "zháipèi",
+      "rating": "good",
+      "at": "2026-10-26T16:38:18.589Z"
+    },
+    {
+      "key": "下|xià",
+      "hanzi": "下",
+      "pinyin": "xià",
+      "rating": "good",
+      "at": "2026-10-26T16:38:21.606Z"
+    },
+    {
+      "key": "既|jì",
+      "hanzi": "既",
+      "pinyin": "jì",
+      "rating": "good",
+      "at": "2026-10-26T16:38:24.475Z"
+    },
+    {
+      "key": "隨時|suíshí",
+      "hanzi": "隨時",
+      "pinyin": "suíshí",
+      "rating": "good",
+      "at": "2026-10-26T16:38:39.557Z"
+    },
+    {
+      "key": "搜尋|sōuxún",
+      "hanzi": "搜尋",
+      "pinyin": "sōuxún",
+      "rating": "hard",
+      "at": "2026-10-26T16:41:07.872Z"
+    },
+    {
+      "key": "冰箱|bīngxiāng",
+      "hanzi": "冰箱",
+      "pinyin": "bīngxiāng",
+      "rating": "good",
+      "at": "2026-10-26T16:41:09.086Z"
     }
   ],
-  "updatedAt": "2026-10-26T16:38:14.889Z"
+  "updatedAt": "2026-10-26T16:41:10.589Z"
 }
