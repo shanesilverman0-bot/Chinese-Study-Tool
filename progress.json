@@ -21830,15 +21830,15 @@
     "滿意|mǎnyì": {
       "hanzi": "滿意",
       "pinyin": "mǎnyì",
-      "due": "2026-07-06T08:47:52.600Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:52:18.582Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:37:52.600Z"
+      "last_review": "2026-10-26T16:42:18.582Z"
     },
     "滿足|mǎnzú": {
       "hanzi": "滿足",
@@ -22818,15 +22818,15 @@
     "普遍|pǔbiàn": {
       "hanzi": "普遍",
       "pinyin": "pǔbiàn",
-      "due": "2026-07-06T08:39:00.689Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:53:06.114Z",
+      "stability": 0.33807815,
+      "difficulty": 7.6297166,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:38:00.689Z"
+      "last_review": "2026-10-26T16:43:06.114Z"
     },
     "期|qí": {
       "hanzi": "期",
@@ -25350,15 +25350,15 @@
     "萬一|wànyī": {
       "hanzi": "萬一",
       "pinyin": "wànyī",
-      "due": "2026-07-06T08:38:46.243Z",
-      "stability": 0.40255,
-      "difficulty": 7.1949,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:52:12.964Z",
+      "stability": 0.33807815,
+      "difficulty": 7.6297166,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:37:46.243Z"
+      "last_review": "2026-10-26T16:42:12.964Z"
     },
     "網|wǎng": {
       "hanzi": "網",
@@ -93942,28 +93942,28 @@
     "以內|yǐnèi": {
       "hanzi": "以內",
       "pinyin": "yǐnèi",
-      "due": "2026-07-06T08:47:56.118Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:42:23.598Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 112,
+      "scheduled_days": 4,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:37:56.118Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:42:23.598Z"
     },
     "網購|wǎng gòu": {
       "hanzi": "網購",
       "pinyin": "wǎng gòu",
-      "due": "2026-07-06T08:48:06.887Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-31T16:48:14.230Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 112,
+      "scheduled_days": 5,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:38:06.887Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:48:14.230Z"
     },
     "貨比三家不吃虧|huò bǐ sān jiā bù chīkuī": {
       "hanzi": "貨比三家不吃虧",
@@ -115637,7 +115637,42 @@
       "pinyin": "xìnyòng",
       "rating": "hard",
       "at": "2026-10-26T16:42:09.472Z"
+    },
+    {
+      "key": "萬一|wànyī",
+      "hanzi": "萬一",
+      "pinyin": "wànyī",
+      "rating": "hard",
+      "at": "2026-10-26T16:42:12.973Z"
+    },
+    {
+      "key": "滿意|mǎnyì",
+      "hanzi": "滿意",
+      "pinyin": "mǎnyì",
+      "rating": "hard",
+      "at": "2026-10-26T16:42:18.591Z"
+    },
+    {
+      "key": "以內|yǐnèi",
+      "hanzi": "以內",
+      "pinyin": "yǐnèi",
+      "rating": "good",
+      "at": "2026-10-26T16:42:23.607Z"
+    },
+    {
+      "key": "普遍|pǔbiàn",
+      "hanzi": "普遍",
+      "pinyin": "pǔbiàn",
+      "rating": "hard",
+      "at": "2026-10-26T16:43:06.119Z"
+    },
+    {
+      "key": "網購|wǎng gòu",
+      "hanzi": "網購",
+      "pinyin": "wǎng gòu",
+      "rating": "good",
+      "at": "2026-10-26T16:48:14.237Z"
     }
   ],
-  "updatedAt": "2026-10-26T16:42:10.973Z"
+  "updatedAt": "2026-10-26T16:48:15.738Z"
 }
