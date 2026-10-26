@@ -93838,15 +93838,15 @@
     "訂單|dìngdān": {
       "hanzi": "訂單",
       "pinyin": "dìngdān",
-      "due": "2026-07-06T08:43:41.389Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:37:04.900Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 112,
+      "scheduled_days": 4,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:33:41.389Z"
+      "state": 2,
+      "last_review": "2026-10-26T16:37:04.900Z"
     },
     "阿嬤|āmà": {
       "hanzi": "阿嬤",
@@ -115483,7 +115483,14 @@
       "pinyin": "shàngwǔ",
       "rating": "easy",
       "at": "2026-07-06T13:29:53.063Z"
+    },
+    {
+      "key": "訂單|dìngdān",
+      "hanzi": "訂單",
+      "pinyin": "dìngdān",
+      "rating": "good",
+      "at": "2026-10-26T16:37:04.907Z"
     }
   ],
-  "updatedAt": "2026-07-06T13:29:54.564Z"
+  "updatedAt": "2026-10-26T16:37:06.410Z"
 }
