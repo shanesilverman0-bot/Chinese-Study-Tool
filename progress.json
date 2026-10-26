@@ -25483,14 +25483,15 @@
     "溫暖|wēnnuǎn": {
       "hanzi": "溫暖",
       "pinyin": "wēnnuǎn",
-      "due": "2026-06-17T13:07:45.816Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-10-26T17:02:57.678Z",
+      "stability": 1.18385,
+      "difficulty": 6.48830527,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-10-26T16:57:57.678Z"
     },
     "溫柔|wēnróu": {
       "hanzi": "溫柔",
@@ -93981,15 +93982,15 @@
     "兩成|liǎng chéng": {
       "hanzi": "兩成",
       "pinyin": "liǎng chéng",
-      "due": "2026-07-06T08:55:14.575Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-26T17:02:50.627Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:45:14.575Z"
+      "last_review": "2026-10-26T16:52:50.627Z"
     },
     "鳳梨|fènglí": {
       "hanzi": "鳳梨",
@@ -115679,7 +115680,21 @@
       "pinyin": "huò bǐ sān jiā bù chīkuī",
       "rating": "hard",
       "at": "2026-10-26T16:51:56.135Z"
+    },
+    {
+      "key": "兩成|liǎng chéng",
+      "hanzi": "兩成",
+      "pinyin": "liǎng chéng",
+      "rating": "hard",
+      "at": "2026-10-26T16:52:50.635Z"
+    },
+    {
+      "key": "溫暖|wēnnuǎn",
+      "hanzi": "溫暖",
+      "pinyin": "wēnnuǎn",
+      "rating": "hard",
+      "at": "2026-10-26T16:57:57.686Z"
     }
   ],
-  "updatedAt": "2026-10-26T16:51:57.638Z"
+  "updatedAt": "2026-10-26T16:57:59.188Z"
 }
