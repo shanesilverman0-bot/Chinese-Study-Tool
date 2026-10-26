@@ -14758,15 +14758,15 @@
     "必須|bìxū": {
       "hanzi": "必須",
       "pinyin": "bìxū",
-      "due": "2026-07-06T08:47:29.661Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:52:04.598Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:37:29.661Z"
+      "last_review": "2026-10-26T16:42:04.598Z"
     },
     "多麼|duōme": {
       "hanzi": "多麼",
@@ -31185,15 +31185,15 @@
     "吃虧|chīkuī": {
       "hanzi": "吃虧",
       "pinyin": "chīkuī",
-      "due": "2026-07-06T08:46:30.353Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:51:22.915Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:36:30.353Z"
+      "last_review": "2026-10-26T16:41:22.915Z"
     },
     "持續|chíxù": {
       "hanzi": "持續",
@@ -34528,15 +34528,15 @@
     "風險|fēngxiǎn": {
       "hanzi": "風險",
       "pinyin": "fēngxiǎn",
-      "due": "2026-07-06T08:47:17.188Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:51:35.814Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:37:17.188Z"
+      "last_review": "2026-10-26T16:41:35.814Z"
     },
     "瘋子|fēngzi": {
       "hanzi": "瘋子",
@@ -50715,15 +50715,15 @@
     "信用|xìnyòng": {
       "hanzi": "信用",
       "pinyin": "xìnyòng",
-      "due": "2026-07-06T08:42:40.881Z",
-      "stability": 1.18385,
-      "difficulty": 6.48830527,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:52:09.464Z",
+      "stability": 0.99424621,
+      "difficulty": 7.04050155,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:37:40.881Z"
+      "last_review": "2026-10-26T16:42:09.464Z"
     },
     "心臟|xīnzàng": {
       "hanzi": "心臟",
@@ -93916,28 +93916,28 @@
     "比價|bǐjià": {
       "hanzi": "比價",
       "pinyin": "bǐjià",
-      "due": "2026-07-06T08:46:34.308Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:51:31.481Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:36:34.308Z"
+      "last_review": "2026-10-26T16:41:31.481Z"
     },
     "賣家|màijiā": {
       "hanzi": "賣家",
       "pinyin": "màijiā",
-      "due": "2026-07-06T08:47:21.882Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-26T16:51:44.149Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 112,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:37:21.882Z"
+      "last_review": "2026-10-26T16:41:44.149Z"
     },
     "以內|yǐnèi": {
       "hanzi": "以內",
@@ -115595,7 +115595,49 @@
       "pinyin": "bīngxiāng",
       "rating": "good",
       "at": "2026-10-26T16:41:09.086Z"
+    },
+    {
+      "key": "吃虧|chīkuī",
+      "hanzi": "吃虧",
+      "pinyin": "chīkuī",
+      "rating": "hard",
+      "at": "2026-10-26T16:41:22.924Z"
+    },
+    {
+      "key": "比價|bǐjià",
+      "hanzi": "比價",
+      "pinyin": "bǐjià",
+      "rating": "hard",
+      "at": "2026-10-26T16:41:31.488Z"
+    },
+    {
+      "key": "風險|fēngxiǎn",
+      "hanzi": "風險",
+      "pinyin": "fēngxiǎn",
+      "rating": "hard",
+      "at": "2026-10-26T16:41:35.823Z"
+    },
+    {
+      "key": "賣家|màijiā",
+      "hanzi": "賣家",
+      "pinyin": "màijiā",
+      "rating": "hard",
+      "at": "2026-10-26T16:41:44.157Z"
+    },
+    {
+      "key": "必須|bìxū",
+      "hanzi": "必須",
+      "pinyin": "bìxū",
+      "rating": "hard",
+      "at": "2026-10-26T16:42:04.606Z"
+    },
+    {
+      "key": "信用|xìnyòng",
+      "hanzi": "信用",
+      "pinyin": "xìnyòng",
+      "rating": "hard",
+      "at": "2026-10-26T16:42:09.472Z"
     }
   ],
-  "updatedAt": "2026-10-26T16:41:10.589Z"
+  "updatedAt": "2026-10-26T16:42:10.973Z"
 }
