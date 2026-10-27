@@ -13360,15 +13360,15 @@
     "出口|chūkǒu": {
       "hanzi": "出口",
       "pinyin": "chūkǒu",
-      "due": "2026-07-06T08:55:41.494Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:41:20.563Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 113,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:45:41.494Z"
+      "state": 2,
+      "last_review": "2026-10-27T16:41:20.563Z"
     },
     "油|yóu": {
       "hanzi": "油",
@@ -16323,15 +16323,15 @@
     "曾經|céngjīng": {
       "hanzi": "曾經",
       "pinyin": "céngjīng",
-      "due": "2026-07-06T08:55:47.569Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:41:23.764Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 113,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:45:47.569Z"
+      "state": 2,
+      "last_review": "2026-10-27T16:41:23.764Z"
     },
     "差點|chādiǎn/chādiǎnr/chāyīdiǎnr": {
       "hanzi": "差點",
@@ -19803,15 +19803,15 @@
     "價格|jiàgé": {
       "hanzi": "價格",
       "pinyin": "jiàgé",
-      "due": "2026-07-06T08:55:58.257Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
+      "due": "2026-10-27T16:51:38.329Z",
+      "stability": 2.66481668,
+      "difficulty": 6.03495025,
+      "elapsed_days": 113,
       "scheduled_days": 0,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": 1,
-      "last_review": "2026-07-06T08:45:58.257Z"
+      "last_review": "2026-10-27T16:41:38.329Z"
     },
     "肩|jiān": {
       "hanzi": "肩",
@@ -30968,15 +30968,15 @@
     "成本|chéngběn": {
       "hanzi": "成本",
       "pinyin": "chéngběn",
-      "due": "2026-07-06T08:55:53.616Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:41:31.597Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 113,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:45:53.616Z"
+      "state": 2,
+      "last_review": "2026-10-27T16:41:31.597Z"
     },
     "成分|chéngfèn": {
       "hanzi": "成分",
@@ -39038,15 +39038,15 @@
     "競爭|jìngzhēng": {
       "hanzi": "競爭",
       "pinyin": "jìngzhēng",
-      "due": "2026-07-06T08:56:03.408Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-30T16:41:46.812Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 113,
+      "scheduled_days": 3,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:46:03.408Z"
+      "state": 2,
+      "last_review": "2026-10-27T16:41:46.812Z"
     },
     "今後|jīnhòu": {
       "hanzi": "今後",
@@ -53302,15 +53302,15 @@
     "占|zhàn": {
       "hanzi": "占",
       "pinyin": "zhàn",
-      "due": "2026-07-06T08:55:49.920Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-11-01T16:41:26.097Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 113,
+      "scheduled_days": 5,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:45:49.920Z"
+      "state": 2,
+      "last_review": "2026-10-27T16:41:26.097Z"
     },
     "戰場|zhànchǎng": {
       "hanzi": "戰場",
@@ -115708,7 +115708,49 @@
       "pinyin": "nóngchǎnpǐn",
       "rating": "good",
       "at": "2026-10-27T16:40:55.674Z"
+    },
+    {
+      "key": "出口|chūkǒu",
+      "hanzi": "出口",
+      "pinyin": "chūkǒu",
+      "rating": "good",
+      "at": "2026-10-27T16:41:20.571Z"
+    },
+    {
+      "key": "曾經|céngjīng",
+      "hanzi": "曾經",
+      "pinyin": "céngjīng",
+      "rating": "good",
+      "at": "2026-10-27T16:41:23.774Z"
+    },
+    {
+      "key": "占|zhàn",
+      "hanzi": "占",
+      "pinyin": "zhàn",
+      "rating": "good",
+      "at": "2026-10-27T16:41:26.104Z"
+    },
+    {
+      "key": "成本|chéngběn",
+      "hanzi": "成本",
+      "pinyin": "chéngběn",
+      "rating": "good",
+      "at": "2026-10-27T16:41:31.605Z"
+    },
+    {
+      "key": "價格|jiàgé",
+      "hanzi": "價格",
+      "pinyin": "jiàgé",
+      "rating": "hard",
+      "at": "2026-10-27T16:41:38.337Z"
+    },
+    {
+      "key": "競爭|jìngzhēng",
+      "hanzi": "競爭",
+      "pinyin": "jìngzhēng",
+      "rating": "good",
+      "at": "2026-10-27T16:41:46.820Z"
     }
   ],
-  "updatedAt": "2026-10-27T16:40:57.175Z"
+  "updatedAt": "2026-10-27T16:41:48.322Z"
 }
