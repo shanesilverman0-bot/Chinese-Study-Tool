@@ -93995,15 +93995,15 @@
     "鳳梨|fènglí": {
       "hanzi": "鳳梨",
       "pinyin": "fènglí",
-      "due": "2026-07-06T08:55:22.446Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-10-31T16:39:07.698Z",
+      "stability": 4.46685806,
+      "difficulty": 5.27296793,
+      "elapsed_days": 113,
+      "scheduled_days": 4,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-07-06T08:45:22.446Z"
+      "state": 2,
+      "last_review": "2026-10-27T16:39:07.698Z"
     },
     "好運|hǎoyùn": {
       "hanzi": "好運",
@@ -115694,7 +115694,14 @@
       "pinyin": "wēnnuǎn",
       "rating": "hard",
       "at": "2026-10-26T16:57:57.686Z"
+    },
+    {
+      "key": "鳳梨|fènglí",
+      "hanzi": "鳳梨",
+      "pinyin": "fènglí",
+      "rating": "good",
+      "at": "2026-10-27T16:39:07.709Z"
     }
   ],
-  "updatedAt": "2026-10-26T16:57:59.188Z"
+  "updatedAt": "2026-10-27T16:39:09.211Z"
 }
