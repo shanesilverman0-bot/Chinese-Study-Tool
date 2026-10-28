@@ -80,3 +80,4 @@ Updated 2026-10-29 with Shane's answers (§E) and the questions still open (§F)
 
 ## Implementation notes
 (Sonnet sessions append here when a spec gap forces a conservative choice.)
+- Phase 1A: `assertWriteAllowed` takes no settings argument, so it reads the data repo `owner/repo` from the mode-namespaced settings in localStorage (default `Chinese-Study-Data`). Restore skips the remote backup only when no token is set (nothing remote to back up).
