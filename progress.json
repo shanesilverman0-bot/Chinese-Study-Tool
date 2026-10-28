@@ -1830,14 +1830,15 @@
     "對|duì": {
       "hanzi": "對",
       "pinyin": "duì",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-16T18:00:50.754Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 19,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:50.754Z"
     },
     "能|néng": {
       "hanzi": "能",
@@ -116447,7 +116448,14 @@
       "pinyin": "tīng",
       "rating": "easy",
       "at": "2026-10-28T18:00:42.310Z"
+    },
+    {
+      "key": "對|duì",
+      "hanzi": "對",
+      "pinyin": "duì",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:50.762Z"
     }
   ],
-  "updatedAt": "2026-10-28T18:00:43.812Z"
+  "updatedAt": "2026-10-28T18:00:52.264Z"
 }
