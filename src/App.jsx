@@ -4,7 +4,9 @@ import { loadVocabPacksFromGitHub, filterVocab } from './lib/vocab.js'
 import { useProgress } from './hooks/useProgress.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
-import { isDue, cardKey } from './lib/fsrs.js'
+import { isDue, cardKey, newCardState } from './lib/fsrs.js'
+import { migrate } from './lib/migrate.js'
+import { itemTypeOf } from './lib/items.js'
 import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
@@ -40,6 +42,8 @@ export default function App() {
       dataMode: DATA_MODE,
       assertWriteAllowed,
       dataPath,
+      migrate,
+      itemTypeOf,
       get progress() {
         return progressRef.current
       },
@@ -131,9 +135,8 @@ export default function App() {
     for (const v of filteredVocab) {
       const key = cardKey(v)
       const card = progress.cards[key]
-      if (!card) continue
-      if (isDue(card, now)) due.push(key)
-      else if (card.reps === 0) unseen.push(key)
+      if (!card || card.reps === 0) unseen.push(key) // no card = new
+      else if (isDue(card, now)) due.push(key)
       else rest.push(key)
     }
     const primary = [...due, ...unseen].slice(0, 40)
@@ -156,7 +159,9 @@ export default function App() {
   }
 
   const currentWord = queue[pos] ? vocabByKey[queue[pos]] : null
-  const currentCard = queue[pos] ? progress.cards[queue[pos]] : null
+  const currentCard = queue[pos]
+    ? progress.cards[queue[pos]] ?? (currentWord ? newCardState(currentWord) : null)
+    : null
 
   return (
     <div className="ink-texture min-h-screen">

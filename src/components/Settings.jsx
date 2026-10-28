@@ -354,8 +354,12 @@ function DataSection({ progress, replaceProgress, forcePush, effectiveGh }) {
       setStatus({ kind: 'error', message: `Backup failed, nothing restored: ${err.message}` })
       return
     }
-    replaceProgress(pending.data)
-    if (hasToken) forcePush(pending.data)
+    const restored = replaceProgress(pending.data)
+    if (!restored) {
+      setStatus({ kind: 'error', message: 'This file is from a newer app version. Reload the app.' })
+      return
+    }
+    if (hasToken) forcePush(restored)
     setStatus({ kind: 'ok', message: `Restored from ${pending.fileName}.` })
     setPending(null)
     setConfirmText('')
