@@ -241,7 +241,9 @@ export function useProgress(vocab = SEED_VOCAB) {
     rate,
     syncState,
     pull,
-    forcePush: (data) => push(data || progress),
+    // Only a real progress object may be pushed; anything else (e.g. a click
+    // event from onClick={forcePush}) falls back to the current progress.
+    forcePush: (data) => push(data && typeof data.cards === 'object' && data.cards ? data : progress),
     githubReady,
     isDue,
   }

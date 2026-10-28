@@ -235,6 +235,7 @@ export default function App() {
                 forcePush={forcePush}
                 progress={progress}
                 replaceProgress={replaceProgress}
+                effectiveGh={gh}
                 vocabInfo={vocabInfo}
                 vocabCount={vocab.length}
                 onReloadVocab={reloadVocab}
