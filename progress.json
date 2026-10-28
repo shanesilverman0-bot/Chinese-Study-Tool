@@ -686,28 +686,28 @@
     "我|wǒ": {
       "hanzi": "我",
       "pinyin": "wǒ",
-      "due": "2026-07-23T13:28:26.640Z",
-      "stability": 15.69105,
-      "difficulty": 3.22450159,
-      "elapsed_days": 0,
-      "scheduled_days": 17,
-      "reps": 1,
+      "due": "2028-06-21T16:46:19.632Z",
+      "stability": 620.86319507,
+      "difficulty": 2.13012146,
+      "elapsed_days": 114,
+      "scheduled_days": 602,
+      "reps": 2,
       "lapses": 0,
       "state": 2,
-      "last_review": "2026-07-06T13:28:26.640Z"
+      "last_review": "2026-10-28T16:46:19.632Z"
     },
     "你|nǐ": {
       "hanzi": "你",
       "pinyin": "nǐ",
-      "due": "2026-07-21T13:28:28.140Z",
-      "stability": 15.69105,
-      "difficulty": 3.22450159,
-      "elapsed_days": 0,
-      "scheduled_days": 15,
-      "reps": 1,
+      "due": "2028-06-23T16:46:20.899Z",
+      "stability": 620.86319507,
+      "difficulty": 2.13012146,
+      "elapsed_days": 114,
+      "scheduled_days": 604,
+      "reps": 2,
       "lapses": 0,
       "state": 2,
-      "last_review": "2026-07-06T13:28:28.140Z"
+      "last_review": "2026-10-28T16:46:20.899Z"
     },
     "他|tā": {
       "hanzi": "他",
@@ -115750,7 +115750,21 @@
       "pinyin": "jìngzhēng",
       "rating": "good",
       "at": "2026-10-27T16:41:46.820Z"
+    },
+    {
+      "key": "我|wǒ",
+      "hanzi": "我",
+      "pinyin": "wǒ",
+      "rating": "easy",
+      "at": "2026-10-28T16:46:19.640Z"
+    },
+    {
+      "key": "你|nǐ",
+      "hanzi": "你",
+      "pinyin": "nǐ",
+      "rating": "easy",
+      "at": "2026-10-28T16:46:20.909Z"
     }
   ],
-  "updatedAt": "2026-10-27T16:41:48.322Z"
+  "updatedAt": "2026-10-28T16:46:22.411Z"
 }
