@@ -5,6 +5,8 @@
 // passed in here. The PAT needs `repo` scope (or `contents:write` for a
 // fine-grained token scoped to the one repository).
 
+import { assertWriteAllowed } from './dataMode.js'
+
 const API = 'https://api.github.com'
 
 function headers(token) {
@@ -63,6 +65,7 @@ export async function saveProgress(
   data,
   _sha  // ignored — we always fetch fresh to avoid 422 on existing file
 ) {
+  assertWriteAllowed({ owner, repo, path })
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`
 
   async function fetchCurrentSha() {
@@ -95,6 +98,12 @@ export async function saveProgress(
   if (res.status === 409) {
     const freshSha = await fetchCurrentSha()
     res = await putFile(freshSha)
+  }
+
+  if (res.status === 404) {
+    throw new Error(
+      `Data repo ${owner}/${repo} not found, or the token has no access to it. See WORKFLOW §1 step 5.`
+    )
   }
 
   if (!res.ok) throw new Error(`GitHub save failed (${res.status}): ${await res.text()}`)
@@ -134,6 +143,7 @@ export async function putTextFile(
   sha,
   message
 ) {
+  assertWriteAllowed({ owner, repo, path })
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`
   const body = {
     message: message || `chore: write ${path}`,
@@ -152,8 +162,9 @@ export async function putTextFile(
 
 // Upload a File/Blob (any type) using its base64 contents.
 export async function uploadFile(cfg, dirPath, file) {
-  const base64 = await fileToBase64(file)
   const path = dirPath ? `${dirPath.replace(/\/$/, '')}/${file.name}` : file.name
+  assertWriteAllowed({ owner: cfg.owner, repo: cfg.repo, path })
+  const base64 = await fileToBase64(file)
   const url = `${API}/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`
   // If the file already exists we need its sha to overwrite.
   let sha
@@ -179,11 +190,13 @@ export async function uploadFile(cfg, dirPath, file) {
 // Git has no empty folders, so a "folder" is created by adding a .gitkeep file.
 export async function createFolder(cfg, dirPath) {
   const path = `${dirPath.replace(/\/$/, '')}/.gitkeep`
+  assertWriteAllowed({ owner: cfg.owner, repo: cfg.repo, path })
   return putTextFile(cfg, path, '', undefined, `chore: create folder ${dirPath}`)
 }
 
 // Delete a file (needs its sha). The caller confirms with the user first.
 export async function deleteFile({ token, owner, repo, branch = 'main' }, path, sha) {
+  assertWriteAllowed({ owner, repo, path })
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`
   const res = await fetch(url, {
     method: 'DELETE',

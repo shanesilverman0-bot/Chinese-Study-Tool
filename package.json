@@ -7,18 +7,21 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:phone": "vite --host --mode phone",
+    "dev:offline": "vite --mode offline"
   },
   "dependencies": {
+    "pitchfinder": "^2.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "ts-fsrs": "^4.1.1",
-    "pitchfinder": "^2.3.2",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "ts-fsrs": "^4.1.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-basic-ssl": "1.1.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.39",

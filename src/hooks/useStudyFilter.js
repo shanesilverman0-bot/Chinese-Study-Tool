@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import { storageKey } from '../lib/dataMode.js'
 
-const FILTER_KEY = 'tocfl.studyFilter'
+const FILTER_KEY = storageKey('studyFilter')
 
 const DEFAULT_FILTER = {
   tocfl: {

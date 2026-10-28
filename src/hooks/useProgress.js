@@ -1,16 +1,18 @@
 // Central state hook: owns the deck (card states + review log + settings),
 // persists settings to localStorage, and orchestrates GitHub load/save.
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SEED_VOCAB } from '../data/vocab.js'
 import { cardKey, newCardState, reviewCard, isDue } from '../lib/fsrs.js'
 import { fetchProgress, saveProgress } from '../lib/github.js'
+import { DEFAULT_DATA_REPO, effectiveGithub, storageKey } from '../lib/dataMode.js'
 
-const SETTINGS_KEY = 'tocfl.settings'
-const LOCAL_PROGRESS_KEY = 'tocfl.progress'
+const SETTINGS_KEY = storageKey('settings')
+const LOCAL_PROGRESS_KEY = storageKey('progress')
 
 const DEFAULT_SETTINGS = {
-  github: { token: '', owner: '', repo: '', branch: 'main', path: 'progress.json' },
+  github: { token: '', owner: '', repo: '', branch: 'main', path: 'progress.json' }, // owner/repo/branch/path ignored since Phase 1A
+  data: { owner: DEFAULT_DATA_REPO.owner, repo: DEFAULT_DATA_REPO.repo },
   aiProvider: 'claude', // 'claude' | 'deepseek'
   claudeApiKey: '',
   claudeModel: 'claude-sonnet-4-20250514',
@@ -24,7 +26,14 @@ function loadSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY)
     if (!raw) return structuredClone(DEFAULT_SETTINGS)
-    return { ...structuredClone(DEFAULT_SETTINGS), ...JSON.parse(raw) }
+    const stored = JSON.parse(raw)
+    const base = structuredClone(DEFAULT_SETTINGS)
+    return {
+      ...base,
+      ...stored,
+      github: { ...base.github, ...stored.github },
+      data: { ...base.data, ...stored.data },
+    }
   } catch {
     return structuredClone(DEFAULT_SETTINGS)
   }
@@ -126,15 +135,18 @@ export function useProgress(vocab = SEED_VOCAB) {
     localStorage.setItem(LOCAL_PROGRESS_KEY, JSON.stringify(progress))
   }, [progress])
 
-  const githubReady =
-    settings.github.token && settings.github.owner && settings.github.repo
+  const gh = useMemo(
+    () => effectiveGithub(settings),
+    [settings.github.token, settings.data.owner, settings.data.repo] // eslint-disable-line react-hooks/exhaustive-deps
+  )
+  const githubReady = Boolean(gh.token && gh.owner && gh.repo)
 
   // Pull latest from GitHub.
   const pull = useCallback(async () => {
     if (!githubReady) return
     setSyncState({ status: 'syncing', message: 'Loading from GitHub…' })
     try {
-      const { data, sha } = await fetchProgress(settings.github)
+      const { data, sha } = await fetchProgress(gh)
       shaRef.current = sha
       if (data) {
         setProgress(reconcile(data, vocab))
@@ -145,7 +157,7 @@ export function useProgress(vocab = SEED_VOCAB) {
     } catch (e) {
       setSyncState({ status: 'error', message: e.message })
     }
-  }, [githubReady, settings.github, vocab])
+  }, [githubReady, gh, vocab])
 
   // Push current progress to GitHub (debounced by caller via scheduleSync).
   const push = useCallback(
@@ -154,14 +166,14 @@ export function useProgress(vocab = SEED_VOCAB) {
       setSyncState({ status: 'syncing', message: 'Saving…' })
       try {
         const payload = { ...data, updatedAt: new Date().toISOString() }
-        const { sha } = await saveProgress(settings.github, payload, shaRef.current)
+        const { sha } = await saveProgress(gh, payload, shaRef.current)
         shaRef.current = sha
         setSyncState({ status: 'ok', message: 'Synced' })
       } catch (e) {
         setSyncState({ status: 'error', message: e.message })
       }
     },
-    [githubReady, settings.github]
+    [githubReady, gh]
   )
 
   // On first mount, if GitHub is configured, pull.
@@ -214,14 +226,22 @@ export function useProgress(vocab = SEED_VOCAB) {
     setSettings((prev) => ({ ...prev, ...patch }))
   }, [])
 
+  // Replace local state wholesale (Restore). The caller then calls forcePush().
+  const replaceProgress = useCallback(
+    (data) => setProgress(reconcile(data, vocab)),
+    [vocab]
+  )
+
   return {
     settings,
     updateSettings,
     progress,
+    replaceProgress,
+    gh,
     rate,
     syncState,
     pull,
-    forcePush: () => push(progress),
+    forcePush: (data) => push(data || progress),
     githubReady,
     isDue,
   }

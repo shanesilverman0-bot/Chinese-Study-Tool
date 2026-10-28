@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SEED_VOCAB } from './data/vocab.js'
 import { loadVocabPacksFromGitHub, filterVocab } from './lib/vocab.js'
 import { useProgress } from './hooks/useProgress.js'
@@ -9,6 +9,8 @@ import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
 import RepoFiles from './components/RepoFiles.jsx'
+import DataBanner from './components/DataBanner.jsx'
+import { DATA_MODE, assertWriteAllowed, dataPath } from './lib/dataMode.js'
 
 export default function App() {
   // Vocab starts as the bundled seed, then grows when packs load from the repo.
@@ -24,7 +26,25 @@ export default function App() {
     pull,
     forcePush,
     githubReady,
+    replaceProgress,
+    gh,
   } = useProgress(vocab)
+
+  // Debug handle (dev and local modes only, DESIGN §3.4). The ref keeps the
+  // getter current without re-creating the handle.
+  const progressRef = useRef(progress)
+  progressRef.current = progress
+  useEffect(() => {
+    if (DATA_MODE === 'live') return
+    window.__tt = {
+      dataMode: DATA_MODE,
+      assertWriteAllowed,
+      dataPath,
+      get progress() {
+        return progressRef.current
+      },
+    }
+  }, [])
 
   const {
     filter,
@@ -79,7 +99,7 @@ export default function App() {
   }, [])
 
   // Load vocab packs from the repo whenever GitHub credentials change.
-  const { token, owner, repo, branch } = settings.github
+  const { token, owner, repo, branch } = gh
   const reloadVocab = useMemo(
     () => async () => {
       if (!(token && owner && repo)) {
@@ -87,7 +107,7 @@ export default function App() {
         return
       }
       try {
-        const res = await loadVocabPacksFromGitHub(settings.github)
+        const res = await loadVocabPacksFromGitHub(gh)
         setVocab([...SEED_VOCAB, ...res.vocab])
         setVocabInfo({ packs: res.packs, errors: res.errors })
       } catch (e) {
@@ -140,6 +160,7 @@ export default function App() {
 
   return (
     <div className="ink-texture min-h-screen">
+      <DataBanner gh={gh} />
       <div className="mx-auto flex min-h-screen max-w-lg flex-col">
         <header className="flex items-center justify-between px-5 pb-3 pt-6">
           <button onClick={() => setView('home')} className="flex items-center gap-2.5 text-left">
@@ -202,7 +223,7 @@ export default function App() {
             )}
 
             {view === 'files' && (
-              <RepoFiles github={settings.github} onChanged={reloadVocab} />
+              <RepoFiles github={gh} onChanged={reloadVocab} />
             )}
 
             {view === 'settings' && (
@@ -212,6 +233,8 @@ export default function App() {
                 syncState={syncState}
                 pull={pull}
                 forcePush={forcePush}
+                progress={progress}
+                replaceProgress={replaceProgress}
                 vocabInfo={vocabInfo}
                 vocabCount={vocab.length}
                 onReloadVocab={reloadVocab}
