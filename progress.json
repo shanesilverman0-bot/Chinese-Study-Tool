@@ -1544,266 +1544,288 @@
     "漂亮|piàoliàng": {
       "hanzi": "漂亮",
       "pinyin": "piàoliàng",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-16T17:59:11.602Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 19,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:11.602Z"
     },
     "高|gāo": {
       "hanzi": "高",
       "pinyin": "gāo",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-14T17:59:13.234Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 17,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:13.234Z"
     },
     "老|lǎo": {
       "hanzi": "老",
       "pinyin": "lǎo",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-11T17:59:14.703Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 14,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:14.703Z"
     },
     "好|hǎo": {
       "hanzi": "好",
       "pinyin": "hǎo",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-10T17:59:19.837Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 13,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:19.837Z"
     },
     "很|hěn": {
       "hanzi": "很",
       "pinyin": "hěn",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-13T17:59:23.570Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 16,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:23.570Z"
     },
     "真|zhēn": {
       "hanzi": "真",
       "pinyin": "zhēn",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-10-28T18:09:27.436Z",
+      "stability": 3.173,
+      "difficulty": 5.28243442,
       "elapsed_days": 0,
       "scheduled_days": 0,
-      "reps": 0,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 1,
+      "last_review": "2026-10-28T17:59:27.436Z"
     },
     "電腦|diànnǎo": {
       "hanzi": "電腦",
       "pinyin": "diànnǎo",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-12T17:59:30.936Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 15,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:30.936Z"
     },
     "老師|lǎoshī": {
       "hanzi": "老師",
       "pinyin": "lǎoshī",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-11T17:59:35.353Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 14,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:35.353Z"
     },
     "買|mǎi": {
       "hanzi": "買",
       "pinyin": "mǎi",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-10T17:59:39.720Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 13,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:39.720Z"
     },
     "忙|máng": {
       "hanzi": "忙",
       "pinyin": "máng",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-15T17:59:42.854Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 18,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:42.854Z"
     },
     "學生|xuéshēng": {
       "hanzi": "學生",
       "pinyin": "xuéshēng",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-15T17:59:46.920Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 18,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:46.920Z"
     },
     "大學|dàxué": {
       "hanzi": "大學",
       "pinyin": "dàxué",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-14T17:59:49.653Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 17,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:49.653Z"
     },
     "學校|xuéxiào": {
       "hanzi": "學校",
       "pinyin": "xuéxiào",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-10T17:59:52.787Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 13,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:52.787Z"
     },
     "中文|Zhōngwén": {
       "hanzi": "中文",
       "pinyin": "Zhōngwén",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-12T17:59:54.853Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 15,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T17:59:54.853Z"
     },
     "同學|tóngxué": {
       "hanzi": "同學",
       "pinyin": "tóngxué",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-16T18:00:00.254Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 19,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:00.254Z"
     },
     "字|zì": {
       "hanzi": "字",
       "pinyin": "zì",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-12T18:00:07.789Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 15,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:07.789Z"
     },
     "筆|bǐ": {
       "hanzi": "筆",
       "pinyin": "bǐ",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-15T18:00:25.486Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 18,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:25.486Z"
     },
     "學|xué": {
       "hanzi": "學",
       "pinyin": "xué",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-14T18:00:28.304Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 17,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:28.304Z"
     },
     "問|wèn": {
       "hanzi": "問",
       "pinyin": "wèn",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-12T18:00:33.140Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 15,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:33.140Z"
     },
     "說|shuō": {
       "hanzi": "說",
       "pinyin": "shuō",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-16T18:00:36.687Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 19,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:36.687Z"
     },
     "寫|xiě": {
       "hanzi": "寫",
       "pinyin": "xiě",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-10T18:00:39.737Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 13,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:39.737Z"
     },
     "聽|tīng": {
       "hanzi": "聽",
       "pinyin": "tīng",
-      "due": "2026-06-17T13:07:45.813Z",
-      "stability": 0,
-      "difficulty": 0,
+      "due": "2026-11-12T18:00:42.303Z",
+      "stability": 15.69105,
+      "difficulty": 3.22450159,
       "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 0,
+      "scheduled_days": 15,
+      "reps": 1,
       "lapses": 0,
-      "state": 0
+      "state": 2,
+      "last_review": "2026-10-28T18:00:42.303Z"
     },
     "對|duì": {
       "hanzi": "對",
@@ -116271,7 +116293,161 @@
       "pinyin": "dǎ diànhuà",
       "rating": "easy",
       "at": "2026-10-28T17:59:08.833Z"
+    },
+    {
+      "key": "漂亮|piàoliàng",
+      "hanzi": "漂亮",
+      "pinyin": "piàoliàng",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:11.613Z"
+    },
+    {
+      "key": "高|gāo",
+      "hanzi": "高",
+      "pinyin": "gāo",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:13.237Z"
+    },
+    {
+      "key": "老|lǎo",
+      "hanzi": "老",
+      "pinyin": "lǎo",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:14.710Z"
+    },
+    {
+      "key": "好|hǎo",
+      "hanzi": "好",
+      "pinyin": "hǎo",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:19.844Z"
+    },
+    {
+      "key": "很|hěn",
+      "hanzi": "很",
+      "pinyin": "hěn",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:23.578Z"
+    },
+    {
+      "key": "真|zhēn",
+      "hanzi": "真",
+      "pinyin": "zhēn",
+      "rating": "good",
+      "at": "2026-10-28T17:59:27.443Z"
+    },
+    {
+      "key": "電腦|diànnǎo",
+      "hanzi": "電腦",
+      "pinyin": "diànnǎo",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:30.942Z"
+    },
+    {
+      "key": "老師|lǎoshī",
+      "hanzi": "老師",
+      "pinyin": "lǎoshī",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:35.363Z"
+    },
+    {
+      "key": "買|mǎi",
+      "hanzi": "買",
+      "pinyin": "mǎi",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:39.728Z"
+    },
+    {
+      "key": "忙|máng",
+      "hanzi": "忙",
+      "pinyin": "máng",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:42.861Z"
+    },
+    {
+      "key": "學生|xuéshēng",
+      "hanzi": "學生",
+      "pinyin": "xuéshēng",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:46.926Z"
+    },
+    {
+      "key": "大學|dàxué",
+      "hanzi": "大學",
+      "pinyin": "dàxué",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:49.661Z"
+    },
+    {
+      "key": "學校|xuéxiào",
+      "hanzi": "學校",
+      "pinyin": "xuéxiào",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:52.795Z"
+    },
+    {
+      "key": "中文|Zhōngwén",
+      "hanzi": "中文",
+      "pinyin": "Zhōngwén",
+      "rating": "easy",
+      "at": "2026-10-28T17:59:54.862Z"
+    },
+    {
+      "key": "同學|tóngxué",
+      "hanzi": "同學",
+      "pinyin": "tóngxué",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:00.263Z"
+    },
+    {
+      "key": "字|zì",
+      "hanzi": "字",
+      "pinyin": "zì",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:07.797Z"
+    },
+    {
+      "key": "筆|bǐ",
+      "hanzi": "筆",
+      "pinyin": "bǐ",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:25.495Z"
+    },
+    {
+      "key": "學|xué",
+      "hanzi": "學",
+      "pinyin": "xué",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:28.310Z"
+    },
+    {
+      "key": "問|wèn",
+      "hanzi": "問",
+      "pinyin": "wèn",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:33.143Z"
+    },
+    {
+      "key": "說|shuō",
+      "hanzi": "說",
+      "pinyin": "shuō",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:36.695Z"
+    },
+    {
+      "key": "寫|xiě",
+      "hanzi": "寫",
+      "pinyin": "xiě",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:39.747Z"
+    },
+    {
+      "key": "聽|tīng",
+      "hanzi": "聽",
+      "pinyin": "tīng",
+      "rating": "easy",
+      "at": "2026-10-28T18:00:42.310Z"
     }
   ],
-  "updatedAt": "2026-10-28T17:59:10.335Z"
+  "updatedAt": "2026-10-28T18:00:43.812Z"
 }
