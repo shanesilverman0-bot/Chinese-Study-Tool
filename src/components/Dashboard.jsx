@@ -113,7 +113,8 @@ function FilterCard({
 
   const dueInFiltered = filteredVocab.filter((v) => {
     const card = progress.cards[cardKey(v)]
-    return card && isDue(card, now)
+    // No card (or never rated) = a new word; buildQueue serves those too.
+    return !card || card.reps === 0 || isDue(card, now)
   }).length
 
   return (

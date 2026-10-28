@@ -278,7 +278,7 @@ export function useProgress(vocab = SEED_VOCAB) {
               rating: ratingKey,
               at: nowIso,
             },
-          ].slice(-5000),
+          ], // no cap: old entries move to log archive files (DESIGN §8.5, Phase 6)
         }
         scheduleSync(next)
         return next
