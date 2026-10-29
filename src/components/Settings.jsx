@@ -25,6 +25,7 @@ export default function Settings({
   syncState,
   pull,
   forcePush,
+  saveNow,
   progress,
   replaceProgress,
   effectiveGh,
@@ -118,7 +119,7 @@ export default function Settings({
               Pull
             </button>
             <button
-              onClick={() => forcePush()}
+              onClick={() => saveNow()}
               className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar"
             >
               Push now

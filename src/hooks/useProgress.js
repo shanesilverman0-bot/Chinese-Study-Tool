@@ -8,6 +8,10 @@ import { fetchProgress, saveProgress, putTextFile } from '../lib/github.js'
 import { DEFAULT_DATA_REPO, dataPath, effectiveGithub, storageKey } from '../lib/dataMode.js'
 import { freshV3 } from '../lib/schema.js'
 import { migrate, needsPreV3Backup } from '../lib/migrate.js'
+import { mergeProgress } from '../lib/merge.js'
+
+const SAVE_DEBOUNCE_MS = 4000
+const MAX_SAVE_TRIES = 3
 
 const SETTINGS_KEY = storageKey('settings')
 const LOCAL_PROGRESS_KEY = storageKey('progress')
@@ -80,7 +84,7 @@ function stamp() {
 // its original key and re-mapped on a later pass once the pack arrives.
 // Dropping it would truncate progress.json.
 function reconcile(progress, vocab) {
-  const p = progress || freshProgress()
+  const p = progress ? { ...progress } : freshProgress() // shallow copy: never mutate state
   if (!p.cards) p.cards = {}
 
   // Indexes for re-keying legacy records.
@@ -131,15 +135,26 @@ export function useProgress(vocab = SEED_VOCAB) {
   const [syncState, setSyncState] = useState(
     initial.error ? { status: 'error', message: initial.error.message } : { status: 'idle', message: '' }
   )
-  const shaRef = useRef(null)
   const saveTimer = useRef(null)
   const blockedRef = useRef(Boolean(initial.error)) // newer schema: never save
   const backupCheckedRef = useRef(false) // pre-v3 backup decided for this session
+  const savingRef = useRef(false) // one save at a time
+  const dirtyRef = useRef(false) // local changes not yet saved
+  const latestRef = useRef(initial.progress) // always the newest local state
+  const saveRef = useRef(null)
+
+  // Single entry point for state changes so latestRef never lags behind.
+  const apply = useCallback((fn) => {
+    const next = fn(latestRef.current)
+    if (next === latestRef.current) return
+    latestRef.current = next
+    setProgress(next)
+  }, [])
 
   // When the vocab list changes (packs loaded), re-key cards for the new words.
   useEffect(() => {
-    setProgress((prev) => reconcile(prev, vocab))
-  }, [vocab])
+    apply((prev) => reconcile(prev, vocab))
+  }, [vocab, apply])
 
   // Persist settings locally whenever they change.
   useEffect(() => {
@@ -157,21 +172,21 @@ export function useProgress(vocab = SEED_VOCAB) {
   )
   const githubReady = Boolean(gh.token && gh.owner && gh.repo)
 
-  // Pull latest from GitHub.
+  const block = useCallback((message) => {
+    blockedRef.current = true
+    setSyncState({ status: 'error', message })
+  }, [])
+
+  // Pull latest from GitHub and merge it into local state (never replaces).
   const pull = useCallback(async () => {
     if (!githubReady) return
     setSyncState({ status: 'syncing', message: 'Loading from GitHub…' })
     try {
-      const { data, sha } = await fetchProgress(gh)
-      shaRef.current = sha
+      const { data } = await fetchProgress(gh)
       if (data) {
-        const { progress: migrated, error } = migrateSafe(data)
-        if (error) {
-          blockedRef.current = true
-          setSyncState({ status: 'error', message: error.message })
-          return
-        }
-        setProgress(reconcile(migrated, vocab))
+        const { progress: remote, error } = migrateSafe(data)
+        if (error) return block(error.message)
+        apply((prev) => reconcile(mergeProgress(prev, remote), vocab))
         setSyncState({ status: 'ok', message: 'Synced' })
       } else {
         setSyncState({ status: 'ok', message: 'No remote file yet — will create on first save' })
@@ -179,55 +194,76 @@ export function useProgress(vocab = SEED_VOCAB) {
     } catch (e) {
       setSyncState({ status: 'error', message: e.message })
     }
-  }, [githubReady, gh, vocab])
+  }, [githubReady, gh, vocab, apply, block])
 
-  // Push current progress to GitHub (debounced by caller via scheduleSync).
-  const push = useCallback(
-    async (data) => {
-      if (!githubReady || blockedRef.current) return
-      setSyncState({ status: 'syncing', message: 'Saving…' })
-      try {
-        const payload = { ...data, updatedAt: new Date().toISOString() }
+  // Merge-on-save (DESIGN §7): fetch remote → migrate → merge → PUT with sha;
+  // on a stale-sha conflict repeat, max MAX_SAVE_TRIES.
+  const save = useCallback(async () => {
+    if (!githubReady || blockedRef.current || savingRef.current) return
+    savingRef.current = true
+    clearTimeout(saveTimer.current)
+    setSyncState({ status: 'syncing', message: 'Saving…' })
+    try {
+      for (let attempt = 0; attempt < MAX_SAVE_TRIES; attempt++) {
+        const { data: rawRemote, sha } = await fetchProgress(gh)
+        let remote
+        if (rawRemote) {
+          const m = migrateSafe(rawRemote)
+          if (m.error) return block(m.error.message) // newer schema: no merge, no save
+          remote = m.progress
+        } else {
+          remote = freshV3() // first save on a new path
+        }
 
-        // Before the first save of the session, back up a pre-v3 remote file
-        // untouched (DESIGN §6.2). If that fails, save nothing; the next push retries.
-        if (!backupCheckedRef.current) {
-          const remote = await fetchProgress(gh)
-          if (remote.data && remote.data.schemaVersion > payload.schemaVersion) {
-            blockedRef.current = true
-            setSyncState({
-              status: 'error',
-              message: `progress.json is from a newer app version (schemaVersion ${remote.data.schemaVersion}). Reload the app.`,
-            })
+        // Back up a pre-v3 remote file untouched before the first v3 save
+        // (DESIGN §6.2). If that fails, save nothing; the next save retries.
+        let backupPath = null
+        if (!backupCheckedRef.current && needsPreV3Backup(rawRemote)) {
+          backupPath = dataPath(`backups/progress-pre-v3-${stamp()}.json`)
+          try {
+            await putTextFile(gh, backupPath, JSON.stringify(rawRemote, null, 2), undefined, `backup before v3: ${backupPath}`)
+          } catch {
+            setSyncState({ status: 'error', message: 'Backup failed — not saving' })
             return
           }
-          if (needsPreV3Backup(remote.data)) {
-            const path = dataPath(`backups/progress-pre-v3-${stamp()}.json`)
-            try {
-              await putTextFile(gh, path, JSON.stringify(remote.data, null, 2), undefined, `backup before v3: ${path}`)
-            } catch (e) {
-              setSyncState({ status: 'error', message: 'Backup failed — not saving' })
-              return
-            }
-            const migrations = [...(payload.migrations || [])]
-            const last = migrations.length - 1
-            if (last >= 0 && migrations[last].backupPath == null) {
-              migrations[last] = { ...migrations[last], backupPath: path }
-              payload.migrations = migrations
-              setProgress((prev) => ({ ...prev, migrations }))
-            }
-          }
-          backupCheckedRef.current = true
         }
-        const { sha } = await saveProgress(gh, payload, shaRef.current)
-        shaRef.current = sha
-        setSyncState({ status: 'ok', message: 'Synced' })
-      } catch (e) {
-        setSyncState({ status: 'error', message: e.message })
+        backupCheckedRef.current = true
+
+        dirtyRef.current = false // everything in latestRef right now goes into this PUT
+        let merged = mergeProgress(latestRef.current, remote)
+        if (backupPath) {
+          merged = {
+            ...merged,
+            migrations: merged.migrations.map((m) =>
+              m.backupPath == null && m.from < 3 ? { ...m, backupPath } : m
+            ),
+          }
+        }
+        const payload = { ...merged, updatedAt: new Date().toISOString() }
+        const res = await saveProgress(gh, payload, sha)
+        if (res.ok) {
+          // Keep any local changes made while saving.
+          apply((prev) => reconcile(mergeProgress(prev, payload), vocab))
+          setSyncState({ status: 'ok', message: 'Synced' })
+          return
+        }
+        // conflict: another device pushed between our GET and PUT → refetch, re-merge
       }
-    },
-    [githubReady, gh]
-  )
+      dirtyRef.current = true
+      setSyncState({ status: 'error', message: 'Sync conflict: another device kept saving. Will retry on the next change.' })
+    } catch (e) {
+      dirtyRef.current = true
+      setSyncState({ status: 'error', message: e.message })
+    } finally {
+      savingRef.current = false
+      // A change made during the save schedules another save afterwards.
+      if (dirtyRef.current && !blockedRef.current) {
+        clearTimeout(saveTimer.current)
+        saveTimer.current = setTimeout(() => saveRef.current?.(), SAVE_DEBOUNCE_MS)
+      }
+    }
+  }, [githubReady, gh, vocab, apply, block])
+  saveRef.current = save
 
   // On first mount, if GitHub is configured, pull.
   useEffect(() => {
@@ -235,14 +271,24 @@ export function useProgress(vocab = SEED_VOCAB) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const scheduleSync = useCallback(
-    (data) => {
-      if (!githubReady) return
+  // Flush unsaved changes the moment the page is hidden (phone lock, tab switch).
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden' && dirtyRef.current) saveRef.current?.()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
       clearTimeout(saveTimer.current)
-      saveTimer.current = setTimeout(() => push(data), 1500)
-    },
-    [githubReady, push]
-  )
+    }
+  }, [])
+
+  const scheduleSync = useCallback(() => {
+    if (!githubReady) return
+    dirtyRef.current = true
+    clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => saveRef.current?.(), SAVE_DEBOUNCE_MS)
+  }, [githubReady])
 
   // Rate a card; update FSRS state + append to log; schedule a sync.
   // Accepts the composite card key (string) or a vocab/word object, from which
@@ -250,41 +296,64 @@ export function useProgress(vocab = SEED_VOCAB) {
   const rate = useCallback(
     (wordOrKey, ratingKey) => {
       const key = typeof wordOrKey === 'string' ? wordOrKey : cardKey(wordOrKey)
-      setProgress((prev) => {
-        let card = prev.cards[key]
-        if (!card) {
-          // First rating: create the card now (no stubs, DESIGN §5.1).
-          const word =
-            typeof wordOrKey === 'string'
-              ? { hanzi: key.split('|')[0], pinyin: key.split('|').slice(1).join('|') }
-              : wordOrKey
-          if (!word.hanzi || !key.includes('|')) return prev
-          card = newCardState(word)
-        }
-        const nowIso = new Date().toISOString()
-        const updated = {
-          ...reviewCard(card, ratingKey),
-          firstSeen: card.firstSeen ?? (card.reps === 0 ? nowIso : null),
-        }
-        const next = {
-          ...prev,
-          cards: { ...prev.cards, [key]: updated },
-          log: [
-            ...prev.log,
-            {
-              key,
-              hanzi: card.hanzi,
-              pinyin: card.pinyin,
-              rating: ratingKey,
-              at: nowIso,
-            },
-          ], // no cap: old entries move to log archive files (DESIGN §8.5, Phase 6)
-        }
-        scheduleSync(next)
-        return next
-      })
+      const prev = latestRef.current
+      let card = prev.cards[key]
+      if (!card) {
+        // First rating: create the card now (no stubs, DESIGN §5.1).
+        const word =
+          typeof wordOrKey === 'string'
+            ? { hanzi: key.split('|')[0], pinyin: key.split('|').slice(1).join('|') }
+            : wordOrKey
+        if (!word.hanzi || !key.includes('|')) return
+        card = newCardState(word)
+      }
+      const nowIso = new Date().toISOString()
+      const updated = {
+        ...reviewCard(card, ratingKey),
+        firstSeen: card.firstSeen ?? (card.reps === 0 ? nowIso : null),
+      }
+      apply(() => ({
+        ...prev,
+        cards: { ...prev.cards, [key]: updated },
+        log: [
+          ...prev.log,
+          {
+            key,
+            hanzi: card.hanzi,
+            pinyin: card.pinyin,
+            rating: ratingKey,
+            at: nowIso,
+          },
+        ], // no cap: old entries move to log archive files (DESIGN §8.5, Phase 6)
+      }))
+      scheduleSync()
     },
-    [scheduleSync]
+    [scheduleSync, apply]
+  )
+
+  // Restore only (DESIGN §7): PUT `data` as-is, no merge, over whatever is
+  // remote. The caller has already backed up the remote file.
+  const forcePush = useCallback(
+    async (data) => {
+      if (!githubReady || blockedRef.current) return
+      if (!(data && typeof data.cards === 'object' && data.cards)) return // never an unmerged push of anything else
+      clearTimeout(saveTimer.current)
+      setSyncState({ status: 'syncing', message: 'Saving…' })
+      try {
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const { sha } = await fetchProgress(gh)
+          const res = await saveProgress(gh, { ...data, updatedAt: new Date().toISOString() }, sha)
+          if (res.ok) {
+            setSyncState({ status: 'ok', message: 'Synced' })
+            return
+          }
+        }
+        setSyncState({ status: 'error', message: 'Sync conflict during restore. Try again.' })
+      } catch (e) {
+        setSyncState({ status: 'error', message: e.message })
+      }
+    },
+    [githubReady, gh]
   )
 
   const updateSettings = useCallback((patch) => {
@@ -297,15 +366,15 @@ export function useProgress(vocab = SEED_VOCAB) {
     (data) => {
       const { progress: migrated, error } = migrateSafe(data)
       if (error) {
-        blockedRef.current = true
-        setSyncState({ status: 'error', message: error.message })
+        block(error.message)
         return null
       }
       const next = reconcile(migrated, vocab)
+      latestRef.current = next
       setProgress(next)
       return next
     },
-    [vocab]
+    [vocab, block]
   )
 
   return {
@@ -317,9 +386,8 @@ export function useProgress(vocab = SEED_VOCAB) {
     rate,
     syncState,
     pull,
-    // Only a real progress object may be pushed; anything else (e.g. a click
-    // event from onClick={forcePush}) falls back to the current progress.
-    forcePush: (data) => push(data && typeof data.cards === 'object' && data.cards ? data : progress),
+    saveNow: save, // merge-save immediately (Settings → Push now)
+    forcePush, // Restore only: no merge
     githubReady,
     isDue,
   }

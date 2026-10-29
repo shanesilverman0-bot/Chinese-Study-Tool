@@ -6,6 +6,7 @@ import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
 import { isDue, cardKey, newCardState } from './lib/fsrs.js'
 import { migrate } from './lib/migrate.js'
+import { mergeProgress } from './lib/merge.js'
 import { itemTypeOf } from './lib/items.js'
 import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
@@ -27,6 +28,7 @@ export default function App() {
     syncState,
     pull,
     forcePush,
+    saveNow,
     githubReady,
     replaceProgress,
     gh,
@@ -43,6 +45,7 @@ export default function App() {
       assertWriteAllowed,
       dataPath,
       migrate,
+      mergeProgress,
       itemTypeOf,
       get progress() {
         return progressRef.current
@@ -238,6 +241,7 @@ export default function App() {
                 syncState={syncState}
                 pull={pull}
                 forcePush={forcePush}
+                saveNow={saveNow}
                 progress={progress}
                 replaceProgress={replaceProgress}
                 effectiveGh={gh}
