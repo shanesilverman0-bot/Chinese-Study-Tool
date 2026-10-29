@@ -27,7 +27,8 @@ Read `docs/DESIGN.md` first. Section references like §8.2 point there. **Revise
 | 1A | Private data repo, dev data mode, write guard, download/restore | 0 | **Yes** | Sonnet |
 | 1B | Schema v3, item keys, migration (prunes stubs), pre-v3 backup | 1A | **Yes** | Sonnet |
 | 2 | Merge-on-save sync, compact JSON | 1B | **Yes** | Sonnet, Opus review is mandatory |
-| 3 | Item registry, bundled CCC, TOCFL matching, baseline set | 1B | **Yes** | Sonnet |
+| 2.5 | Rebuild word data: senses, variants, levels, glosses | 1B | **Yes** | Sonnet |
+| 3 | Item registry, bundled CCC, TOCFL matching, baseline set | 2.5 | **Yes** | Sonnet |
 | 4 | Counts engine (two-tier baseline), daily snapshots, counting settings | 3 | **Yes** | Sonnet |
 | 5 | Dashboard: chart, goals, exam-date selector, pace box | 4 | No | Sonnet |
 | 6 | Review-log archive, FSRS backfill, course-history estimate | 4, 2 | **Yes** | Sonnet; Opus if the replay check fails |
@@ -248,23 +249,70 @@ node scripts/check-migration.mjs local-data/progress.copy.json
 
 ---
 
+## Phase 2.5 — Rebuild word data: senses, variants, levels, glosses
+
+**Session prompt:**
+> Read CLAUDE.md, docs/DESIGN.md §4 (especially §4.4), and Phase 2.5 in docs/PHASES.md. Implement only Phase 2.5. Run scripts/build-vocab.mjs and scripts/check-vocab.mjs as described, then npm run build and fix errors. Before committing, list every file that builds a card key or looks up a word by hanzi+pinyin, and check each one. Commit and push to v2-update.
+
+- **Depends on:** 1B (2 done is fine).
+- **Review with Opus?** **Yes.** It regenerates every word in the app and decides which senses count.
+- **Model:** Sonnet.
+
+**Why:** see DESIGN §4.4. The meaning shown for 筆, 對, 家 and others comes from whichever list loaded last. Senses share cards, variant characters are missing, and CCC chapter lists drop rows.
+
+**Files**
+- `data-src/tocfl-cedict.csv`, `data-src/dangdai-expanded.csv`: already in the repo (the original sources). Don't edit them.
+- `data-src/gloss-overrides.csv` (new): header line `key,english` only.
+- `scripts/build-vocab.mjs` (new, Node, no new dependencies; write a small CSV parser that handles quoted fields with commas and `""` escapes): implements DESIGN §4.4 exactly. It writes `src/data/vocab.js` (keep the existing export names and the `source: 'tocfl'` tag; add `LEVELS`, `LEVEL_LABELS` = `{Novice:'準備級', A1:'入門級', A2:'基礎級', B1:'進階級', B2:'高階級', C:'流利級'}`), `vocab/cccc-book1..6.json` (same top-level shape as now: `name, description, source, book, band, lessons, total, vocab[]`), and `data-src/gloss-review.csv`. It prints a summary: TOCFL rows, groups, main senses, extra senses, true duplicates merged, entries with variants, glossSource counts; CCC rows per book, `Name` rows, `Character Name` rows skipped.
+- `scripts/convert-dangdai.mjs`: delete it. `build-vocab.mjs` replaces it. Mention this in the commit message.
+- `src/lib/fsrs.js`: `cardKey(v)` returns `v.key` when present, else `${v.hanzi}|${v.pinyin}` (unchanged for old callers).
+- **Every place that builds `${hanzi}|${pinyin}` by hand must use `cardKey(v)`.** At least: `src/components/DangdaiFilter.jsx` `countCards`, `src/lib/vocab.js`, `src/App.jsx` `vocabByKey`. Run `grep -rn "hanzi}|\|'|'" src` and fix every hit.
+- `src/lib/vocab.js`: `normalizeEntry` keeps `key, pos, level, senseOf, senses, variants, glossSource, id, tags` when present. Remove the per-pack dedupe (`seenInThisPack`). Rows are distinct by `id`.
+- `src/App.jsx`: `vocabByKey` must prefer the **TOCFL** entry for a key over CCC rows (build it from CCC first, then TOCFL, so TOCFL wins). The CCC gloss no longer overwrites the sense gloss.
+- `src/components/Flashcard.jsx`: under the hanzi on the front, a small POS chip when `word.senseOf || word.senses?.length` (constant map `POS_LABELS` = `{N:'名', V:'動', Vs:'狀', Vi:'動', Vst:'動', Vp:'動', 'V-sep':'離', M:'量', Adv:'副', Prep:'介', Conj:'連', Ptc:'助', Det:'定'}`; unknown → the raw POS). Show variants after the hanzi as `他／她`.
+- `scripts/check-vocab.mjs` (new): imports the generated `vocab.js` and packs, and asserts:
+  - TOCFL source rows 7,517 all accounted for (main + extra + merged = 7,517)
+  - keys are unique; every pre-2.5 key (read `local-data/progress.copy.json` card keys with `reps > 0`) still exists as a key
+  - 筆|bǐ english contains "pen" and level Novice; 筆|bǐ#M exists, level B1, english contains "money" or "classifier"
+  - 對|duì english contains "correct" or "right"; 她 appears as a variant of 他|tā; 照片 has variants 相片 and 相片兒
+  - CCC: 4,960 rows kept; B1 lesson 13 contains a row 對 with pos Prep
+  - level counts printed per level; prints how many reviewed cards sit on keys that now have extra senses (expect ≈ 29)
+  - It exits 1 on any FAIL.
+
+**Edge cases**
+- A TOCFL row whose first `Traditional` form differs from the first form in its pinyin list: use the `Variants` JSON to pair each form with its reading.
+- A `<br>` segment that doesn't start with the hanzi: fall back to the whole Meaning.
+- Keys must stay byte-identical to the old ones for main senses. Compare the old and new key sets in the check script, and print any old key that disappeared (expect 0).
+- `gloss-overrides.csv` rows for unknown keys: print a warning, don't fail.
+
+**Acceptance checks**
+1. `node scripts/build-vocab.mjs` prints the summary: about 7,488 TOCFL senses, about 273 extra senses, 10 true duplicates, and CCC 4,960 rows.
+2. `node scripts/check-vocab.mjs` → all PASS. Paste both outputs into the commit message.
+3. Dev app: study TOCFL Novice. 筆 shows **pen** with a `名 N` chip (it has an extra sense). 對 shows **right; correct**.
+4. Study CCC Book 4 Ch 9 (the old filter): 筆 shows `量 M` and a money/classifier meaning, and it is a **new** card, separate from 筆 "pen".
+5. Open `data-src/gloss-review.csv` in Numbers/Excel: a few hundred rows. Shane spot-checks 20; fixes go into `gloss-overrides.csv` (done by hand, later, any time).
+
+**Migration:** none (no schema change; all existing card keys survive).
+
+---
+
 ## Phase 3 — Item registry, bundled CCC, TOCFL matching, baseline set
 
 **Session prompt:**
 > Read CLAUDE.md, docs/DESIGN.md §4 and §8.1–8.2, and Phase 3 in docs/PHASES.md. Implement only Phase 3. Run scripts/check-counts.mjs as described, then npm run build and fix errors. Commit and push to v2-update.
 
-- **Depends on:** 1B.
+- **Depends on:** 2.5.
 - **Review with Opus?** **Yes.** Matching decides the baseline, which shifts the Known count by ~1,300–1,900.
 - **Model:** Sonnet.
 
 **Files**
 - `src/lib/vocab.js`: export `normalizeEntry`. `loadVocabPacksFromGitHub(cfg, { skipNames = [] } = {})` skips files whose name is in `skipNames`.
-- `src/data/ccc.js` (new): `const mods = import.meta.glob('../../vocab/cccc-book*.json', { eager: true, import: 'default' })`. `export const CCC_PACK_NAMES` (the 6 file names). `export const CCC_VOCAB` = every pack's `vocab` mapped through `normalizeEntry` with `source: 'cccc'`, deduped per pack by key (same as the runtime loader).
+- `src/data/ccc.js` (new): `const mods = import.meta.glob('../../vocab/cccc-book*.json', { eager: true, import: 'default' })`. `export const CCC_PACK_NAMES` (the 6 file names). `export const CCC_VOCAB` = every pack's `vocab` mapped through `normalizeEntry` with `source: 'cccc'`. **Every row is kept** (no per-pack dedupe; DESIGN §4.4). Each row's item key comes from `pickSense` (DESIGN §4.3). Also remove the per-pack dedupe from the runtime loader in `src/lib/vocab.js`.
 - `src/lib/items.js` (extend; pure, data passed in): `normPinyin(p)`, `buildItemIndex({ tocfl, ccc, customItems = {}, grammar = [] })` → `{ get(key), all(), tocflKeys: Set, byHanzi: Map, match(hanzi, pinyin), aliasesOf(tocflKey) }`. `matchToTocfl` implements the 6 tiers of DESIGN §4.3. Each CCC item gets `tocflKey` (tiers 1–4, else null). Each item also keeps its parts in `ccc: [{book, chapter, part}]`. `firstChapterOf(tocflKey)` = earliest `(book, chapter)` among its CCC aliases. `baselineSets(index, cccEntries, baseline)` → `{ solid: Set, studied: Set }` per DESIGN §8.2 (inclusive `through` bounds; a key belongs to the tier of its first chapter).
 - `src/App.jsx`: initial vocab = `[...SEED_VOCAB, ...CCC_VOCAB]`. `reloadVocab` → `setVocab([...SEED_VOCAB, ...CCC_VOCAB, ...res.vocab])` with `skipNames: CCC_PACK_NAMES`. Without a token the vocab stays seed + CCC (no longer seed only). Build `itemIndex` with `useMemo` from `SEED_VOCAB`, `CCC_VOCAB`, `progress.customItems`. Add `items: itemIndex` to `window.__tt`.
 - `src/components/Dashboard.jsx`: no logic change. The CCC tab now works without a token.
 - `scripts/check-counts.mjs` (new; extended in Phase 4): reads the TOCFL seed by importing `../src/data/vocab.js` (plain ESM), reads `vocab/cccc-book*.json` with `fs`, builds the index with `items.js`, and prints:
-  - unique TOCFL keys (expect **7215**), TOCFL rows (7517), duplicate keys (302)
+  - TOCFL senses (expect ≈ **7,488**), main senses, extra senses, TOCFL rows (7,517)
   - match tiers for CCC rows in books 1–3 and for all books (counts per tier)
   - baseline tier sizes for the defaults (solidThrough B3C9, studiedThrough B4C4), plus a per-band breakdown
   - the CCC ↔ TOCFL gap table from `docs/CCC-TOCFL-GAP.md` (per band: total, met through B4C4, met later in CCC, never in CCC)
@@ -276,9 +324,9 @@ node scripts/check-migration.mjs local-data/progress.copy.json
 - Bundling adds ~1.3 MB of raw JSON to the JS bundle (~200 KB gzipped). `npm run build` must still succeed. Note the bundle size from the build output in the commit message.
 
 **Acceptance checks**
-1. `node scripts/check-counts.mjs local-data/progress.copy.json` prints unique TOCFL keys 7215. Books 1–3 tiers are close to exact 1410, normalized 27, (variant + hanzi-unique) ≈ 84, ambiguous 2, none 551. Baseline tiers ≈ solid 1,268 and studied 325 (architect's measurement, ±20), and the gap table matches `docs/CCC-TOCFL-GAP.md` ±20 per cell. Add the printed numbers to `docs/RISKS.md` under "Implementation notes".
+1. `node scripts/check-counts.mjs local-data/progress.copy.json` prints TOCFL senses ≈ 7,488. Books 1–3 match tiers are printed (the old-data figures were exact 1410, normalized 27, variant + hanzi-unique ≈ 84, ambiguous 2, none 551; variant hanzi such as 她 now match, so "none" should drop). Baseline tiers are printed per sense (the old-data figures were solid 1,268, studied 325). Update the numbers in `docs/CCC-TOCFL-GAP.md` and DESIGN §8.2 with the new ones, by level (Novice/A1/A2/B1/B2/C). Add the printed numbers to `docs/RISKS.md` under "Implementation notes".
 2. `npm run dev:offline` (no token): Home → 當代中文 tab shows Books 1–6 (before, it said "Upload vocab packs").
-3. Console: `__tt.items.match('這','zhèi')` → `{status:'hanzi-unique', key:'這|zhè'}`. `__tt.items.match('照片','zhàopiàn')` → status `variant`. `__tt.items.get('在|zài').bands` → `['Novice','B']`.
+3. Console: `__tt.items.match('這','zhèi')` → `{status:'hanzi-unique', key:'這|zhè'}`. `__tt.items.match('照片','zhàopiàn')` → status `variant`. `__tt.items.get('筆|bǐ#M').level` → `'B1'`. `__tt.items.match('她','tā').key` → `'他|tā'`.
 4. With a token in dev: the Settings vocab info shows no duplicate CCC packs loaded (6 bundled; runtime loads only extra packs from the data repo's `vocab/` folder, if any).
 
 **Migration:** none.
@@ -441,7 +489,7 @@ node scripts/check-migration.mjs local-data/progress.copy.json
 - `src/lib/lists.js` (new): `cccLists(cccVocab)` → virtual lists `ccc:b{book}c{chapter}`, named `當代 B{book} 第{chapter}課`, plus one per part present, `ccc:b{book}c{chapter}p{part}`, named `當代 B{book} 第{chapter}課 {part}`. `getAllLists(progress, cccVocab)`. `createCustomList(name)`. `addItems(listId, keys)`. `removeItems(listId, keys)`. `renameList`. `deleteList` (tombstone; CCC lists can't be deleted).
 - `src/lib/queue.js` (new): `buildFlashcardQueue({ selection, lists, index, progress, baseline, settings, now })` → `{ queue, stats: {due, fresh, baselineSkipped, total} }`, exactly per DESIGN §9.4. `requeueAfterRating(queue, pos, key, card, now)` → the learning re-show rule in §9.4.
 - `src/components/StudyPicker.jsx` (new; replaces FilterCard + DangdaiFilter): activity tabs (only **Flashcards** for now). Selection UI:
-  - TOCFL band chips (Novice/A/B/C).
+  - TOCFL level chips (Novice / A1 / A2 / B1 / B2 / C).
   - CCC: Book accordion, each with a "whole book" checkbox, then chapter checkboxes showing `due·new`; each chapter row has a small ▸ that reveals its part checkboxes (I / II / III) with their own `due·new`. Any mix of chapters and parts can be selected.
   - Pleco and Custom sections (empty-state text until Phase 9 / until you create one).
   - Switch "Include baseline words" (off by default): includes untouched solid-baseline words so you can check them.
@@ -449,7 +497,7 @@ node scripts/check-migration.mjs local-data/progress.copy.json
   - Footer: "N due · M new · K baseline skipped" and **Start T cards**, where T is the exact queue length. The selection (including size) persists in `storageKey('selection')`.
 - `src/components/ListsView.jsx` (new; nav tab 清單): all lists grouped by type with item counts and `due·new·known`. "New custom list". Tapping a list opens `ListDetail`.
 - `src/components/ListDetail.jsx` (new): name (editable for custom), item table (hanzi, pinyin, english, band, status chip: new/learning/known/baseline), "Add words" search for custom lists (substring match on hanzi, pinyin without tones, or english; max 50 results), "Remove" per item for custom lists, "Study this list" (sets the selection to this list and opens the picker). The old TOCFL/CCC mastery panels move to the top of ListsView as "Overview".
-- `src/App.jsx`: remove `useStudyFilter`, `dangdaiFilter`, `filteredVocab`, `buildQueue`. Use `buildFlashcardQueue`. After each rating call `requeueAfterRating`, so Learning/Relearning cards come back in the same session. At the end, if learning cards are still waiting: "n cards still learning — Continue / Finish". Nav: 首頁 · 清單 · 檔案 · 設定. One-time conversion: if the old `storageKey('studyFilter')` exists and `storageKey('selection')` doesn't, map enabled bands → `tocflBands`, and an old `dangdai` book+chapter → that CCC list id. The old key is left in place.
+- `src/App.jsx`: remove `useStudyFilter`, `dangdaiFilter`, `filteredVocab`, `buildQueue`. Use `buildFlashcardQueue`. After each rating call `requeueAfterRating`, so Learning/Relearning cards come back in the same session. At the end, if learning cards are still waiting: "n cards still learning — Continue / Finish". Nav: 首頁 · 清單 · 檔案 · 設定. One-time conversion: if the old `storageKey('studyFilter')` exists and `storageKey('selection')` doesn't, map enabled bands → `tocflLevels` (A → A1 + A2, B → B1 + B2), and an old `dangdai` book+chapter → that CCC list id. The old key is left in place.
 - `src/hooks/useProgress.js`: `upsertList`, `deleteList`. (Card creation on first rating already exists from Phase 1B.)
 - `src/components/Settings.jsx`: remove the "Study levels" section and the `enabledBands` toggle. No session-size setting: size is chosen in the picker.
 - Delete `src/hooks/useStudyFilter.js` and `src/components/DangdaiFilter.jsx`.

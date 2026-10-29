@@ -1,5 +1,7 @@
 # Brief: the gap between CCC (當代中文課程) and the TOCFL word list
 
+> **Note 2026-10-30:** these numbers come from the old word data (one item per hanzi+pinyin, four bands). Phase 2.5 rebuilds the data as senses with six levels (B1/B2 split), and Phase 3 re-measures this brief. Expect small shifts, plus a B1 vs B2 breakdown.
+
 Measured 2026-10-29 from the repo data. TOCFL list = 7,215 unique words (`hanzi|pinyin`), each counted at its lowest band. CCC = the vocabulary lists of Books 1–6 (4,960 rows), matched to TOCFL words with the app's matching rules (exact, normalized pinyin, `/` variants, unique hanzi). Phase 3 re-measures these numbers; expect ±20 per cell.
 
 ## 1. Where you stand

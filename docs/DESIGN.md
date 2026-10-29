@@ -1,6 +1,6 @@
 # DESIGN — 習字 / TOCFL Tutor v2
 
-Status: architecture for the `v2-update` branch. Written 2026-10-28 against the code in the repo on that date. **Revised 2026-10-29** with Shane's answers (RISKS §E): private data repo, no stub cards, no session cap, two-tier baseline, part-level CCC lists, TOCFL exam dates, understanding score, review-log archive, grammar on FSRS.
+Status: architecture for the `v2-update` branch. Written 2026-10-28 against the code in the repo on that date. **Revised 2026-10-29** with Shane's answers (RISKS §E): private data repo, no stub cards, no session cap, two-tier baseline, part-level CCC lists, TOCFL exam dates, understanding score, review-log archive, grammar on FSRS. **Revised 2026-10-30:** word data rebuilt from the original sources as one item per *sense*, with variant characters and the six TOCFL levels (§4.4, Phase 2.5).
 Every phase in `docs/PHASES.md` implements against this file. If code and this file disagree, this file wins unless a phase says otherwise.
 
 Contents
@@ -39,7 +39,7 @@ Contents
 |---|---|---|
 | Build | Vite 5 + React 18 + Tailwind 3. `build.outDir: 'docs'`, `emptyOutDir: true` | `vite.config.js` |
 | Deploy | Actions workflow on push to `main`: `npm install`, `npm run build`, upload `docs/` to Pages | `.github/workflows/deploy.yml` |
-| Vocab | `SEED_VOCAB`: 7,517 TOCFL rows (`hanzi, pinyin, english, band, tones`, `source:'tocfl'`), 7,215 unique `hanzi|pinyin` keys | `src/data/vocab.js` |
+| Vocab | `SEED_VOCAB`: 7,517 TOCFL rows (`hanzi, pinyin, english, band, tones`, `source:'tocfl'`), 7,215 unique `hanzi|pinyin` keys. One gloss per key, no POS, variants dropped. **Rebuilt in Phase 2.5 (§4.4)** | `src/data/vocab.js` |
 | CCC | 6 JSON packs, 4,960 rows (`hanzi, pinyin, english, book, lesson, part, band[], tones, pos`), loaded **at runtime** from the repo `vocab/` folder through the GitHub API, only when a token is set | `vocab/cccc-book*.json`, `src/lib/vocab.js` |
 | FSRS | ts-fsrs 4.7.1, default weights, `enable_fuzz: true`. Card stored as plain JSON with `hanzi, pinyin` | `src/lib/fsrs.js` |
 | Progress | `{ version, cards, log, updatedAt }`. A stub card is created for **every** vocab word at load. Log capped at 5,000 | `src/hooks/useProgress.js` |
@@ -115,10 +115,11 @@ In `dev` and `local` modes only, `window.__tt` exposes `{ progress, migrate, mer
 ### 4.1 Keys
 
 ```
-word key     = `${hanzi}|${pinyin}`     e.g. "遺憾|yíhàn"   (unchanged; cardKey() in fsrs.js)
+word key     = `${hanzi}|${pinyin}`     e.g. "遺憾|yíhàn"   (main sense; unchanged, so every existing card keeps its key)
+extra sense  = `${hanzi}|${pinyin}#${POS}`  e.g. "筆|bǐ#M"   (a second TOCFL sense of the same hanzi+pinyin, §4.4)
 grammar key  = `g:${slug}`              e.g. "g:lian-dou"    (reserved; no grammar items exist yet)
 ```
-`itemTypeOf(key)` returns `'grammar'` if the key starts with `g:`, otherwise `'word'`. Word keys always contain `|`. Grammar keys never do.
+`itemTypeOf(key)` returns `'grammar'` if the key starts with `g:`, otherwise `'word'`. Word keys always contain `|`. Grammar keys never do. **Never build a key by hand** from `hanzi` and `pinyin`: always use `item.key` (or `cardKey(v)`, which returns `v.key` when present).
 
 ### 4.2 Item record (runtime, built by `buildItemIndex()` in `src/lib/items.js`)
 
@@ -129,10 +130,15 @@ type Item = {
   // word fields
   hanzi?: string
   pinyin?: string
-  english: string           // dataset gloss; for outside-TOCFL Pleco words, trimmed Pleco gloss
-  band: 'Novice'|'A'|'B'|'C'|null   // lowest TOCFL band for this key; CCC-only words use book band; null if unknown
-  bands: string[]           // all TOCFL bands this key appears with (duplicates in dataset)
-  pos?: string              // from CCC packs only; TOCFL dataset has no POS
+  english: string           // the gloss for THIS sense (§4.4); for outside-TOCFL Pleco words, trimmed Pleco gloss
+  glossSource?: 'override'|'ccc'|'cedict-pos'|'cedict'   // where english came from (§4.4)
+  level: 'Novice'|'A1'|'A2'|'B1'|'B2'|'C'|null   // TOCFL level of this sense (source ID prefix L0…L5); null if not TOCFL
+  band: 'Novice'|'A'|'B'|'C'|null   // derived from level (A1/A2 → A, B1/B2 → B); kept for older code
+  pos?: string              // part of speech from the source list (TOCFL or CCC), e.g. 'N', 'M', 'Vs', 'M/Prep/V'
+  senseOf?: string          // for an extra sense: the main sense's key ("筆|bǐ"); absent on main senses
+  senses?: string[]         // on a main sense: keys of its extra senses
+  variants?: { hanzi: string, pinyin: string }[]   // other written forms of this entry (她 for 他/她, 相片 for 照片)
+  tocflId?: string          // source row ID, e.g. 'L0-1083'
   inTocfl: boolean          // key is a TOCFL key
   tocflKey: string|null     // the TOCFL key this item counts as (itself, or the match for a CCC/Pleco key), see 4.3
   ccc: {book:number, chapter:number, part:string}[]
@@ -145,7 +151,7 @@ type Item = {
 }
 ```
 
-Built from: `SEED_VOCAB` (deduplicated: 302 duplicate keys collapse into one item, `band` = lowest, `bands` = all, `english` = distinct glosses joined with `; `), bundled CCC packs, `progress.customItems`, and later a grammar dataset.
+Built from: `SEED_VOCAB` (one entry per TOCFL sense, already built by `scripts/build-vocab.mjs`, §4.4), bundled CCC packs (every row kept), `progress.customItems`, and later a grammar dataset.
 
 ### 4.3 Matching a (hanzi, pinyin) pair to a TOCFL key
 
@@ -158,11 +164,52 @@ Built from: `SEED_VOCAB` (deduplicated: 302 duplicate keys collapse into one ite
 5. `ambiguous`: the hanzi has 2+ TOCFL keys and no pinyin match. `candidates` lists them.
 6. `none`: the hanzi is not in TOCFL.
 
+Variant forms count as hanzi here: `她|tā` matches `他|tā` through its `variants` at tier 1. After a word is matched, **pick the sense** with `pickSense(mainKey, pos)`: the sense whose `pos` equals the given POS, or contains it in a `/` list (`M/Prep/V` contains `Prep`). If none fits, use the main sense. CCC rows pass their own `pos`, so 筆 in Book 4 (M) maps to `筆|bǐ#M` and 筆 in Book 2 (N) maps to `筆|bǐ`.
+
 How each consumer uses the tiers:
 - **Baseline and counting** (CCC words → TOCFL): tiers 1–4 are accepted. 5–6 are excluded.
 - **Pleco import**: tiers 1–3 are accepted automatically. Tier 4 and tier 5 go to the resolve screen. Tier 6 becomes an `outside-TOCFL` custom item.
 
 Measured on books 1–3 (2,074 rows): exact 1,410, normalized 27, hanzi-unique 84, ambiguous 2, none 551.
+
+### 4.4 Word data: senses, variants, levels (built by Phase 2.5)
+
+**Why.** The original converter kept one English gloss per hanzi+pinyin and dropped POS, variant characters and the A1/A2, B1/B2 split. It also deduplicated CCC rows. As a result, 筆 showed "sum (of money)" (the Book 4 measure word overwrote the Book 2 "pen"). Both TOCFL senses of 筆 also shared one card, 她 vanished, and 對 "to" dropped out of B1 Ch 13.
+
+**Sources (in the app repo, `data-src/`):**
+- `tocfl-cedict.csv`: 7,517 TOCFL rows: `ID` (`L0`…`L5` prefix = level), `Traditional` (`/` separates variant forms), `Pinyin` (`/` separates the variants' readings), `POS`, `Variants` (JSON list of `{Traditional, Pinyin}`), and `Meaning` (CC-CEDICT, senses separated by `/`, variants by `<br>`).
+- `dangdai-expanded.csv`: 4,989 CCC rows: `ID` (`B1L10-I-11` = book, lesson, part, number), `Traditional`, `Pinyin`, `POS`, `Meaning`, `Tags` (`Name`, `Character Name`).
+- `gloss-overrides.csv` (new, starts empty, header `key,english`): your corrections. They always win.
+
+**Levels.** `L0` Novice (準備, 394 rows), `L1` A1 (入門, 347), `L2` A2 (基礎, 485), `L3` B1 (進階, 1,173), `L4` B2 (高階, 2,342), `L5` C (流利, 2,776).
+
+**Senses (TOCFL).** Group rows by `(first Traditional form, full Pinyin string)` (so existing keys don't change):
+- The **main sense** is the row with the lowest level (ties: lowest ID). Its key is `hanzi|pinyin`.
+- Every other row with a **different POS** becomes an **extra sense** with key `hanzi|pinyin#POS` (a second extra sense with the same POS gets `#POS-2`).
+- A row with the **same POS** as the main sense is a true duplicate: it is merged into the main sense (it keeps the lowest level and records the others in `levels`).
+
+Measured: 7,517 rows → 283 keys appear 2+ times; 273 become extra senses, 10 are true duplicates. That gives about **7,488 senses**.
+
+**Variants.** The first `Traditional` form is the display and key form. The others go in `variants` with their pinyin from the `Variants` column (`他/她` → key `他|tā`, variant `她|tā`; `照片/相片/相片兒` → variants `相片|xiàngpiàn`, `相片兒|xiàngpiànr`). Following TOCFL, an entry with variants counts as **one** word. The card shows all forms: 他／她.
+
+**Gloss per sense (`english`, first match wins):**
+1. `override`: a row in `gloss-overrides.csv` for this key.
+2. `ccc`: a CCC row with the same hanzi (or a variant), the same normalized pinyin, and a matching POS (§4.3 `pickSense` rule). Use its `Meaning`.
+3. `cedict-pos`: take this variant's `Meaning` segment (split on `<br>`, pick the one starting with this hanzi), then split it into senses on `/`. For `M` senses, keep senses starting with `classifier`, `CL:` or `measure word`. For other POS, drop those classifier senses and `CL:…` notes. Keep the first 3, joined with `; `.
+4. `cedict`: the first 3 senses of this variant's segment, unfiltered.
+
+**Review list.** The build writes `data-src/gloss-review.csv` (`key, level, pos, english, glossSource, otherSenses`). It lists every extra sense, plus every main sense that has extra senses, whose `glossSource` isn't `override` or `ccc` (expect ≈ 250 rows). You fix what's wrong by adding rows to `gloss-overrides.csv` and re-running the build.
+
+**CCC rows.** All 4,960 non-`Character Name` rows are kept. **No per-book dedupe.** Each row gets `id` (from `ID`), `book`, `lesson`, `part`, `pos`, `english`, `tags`. Rows tagged `Name` are kept in lists but tagged `name`, and never count. The CCC row's own `english` is shown on lists and, when you study from a CCC list, under the card's gloss as "In this lesson: …".
+
+**Front of the card.** Hanzi + pinyin alone can't tell two senses apart. When an item has extra senses (or is one), the front shows a small POS chip under the hanzi (`名`/`N`, `量`/`M`, …, from a constant map), e.g. 筆 `量 M`.
+
+**Outputs.**
+- `src/data/vocab.js`: same exports (`BANDS`, `BAND_LABELS`, `SEED_VOCAB`, `vocab`), plus `LEVELS` and `LEVEL_LABELS`. One entry per sense with `key, hanzi, pinyin, english, glossSource, level, band, pos, senseOf?, senses?, variants?, tocflId, tones`. `tones` = the tone numbers read from the tone marks of the key's first pinyin reading, in order (unmarked neutral-tone syllables are skipped). That's better than the old arrays (RISKS B16); Phase 16 may refine it.
+- `vocab/cccc-book{1..6}.json`: same file shape as today, all rows, with the added fields.
+- Both are generated. Never edit them by hand. Re-run `node scripts/build-vocab.mjs`.
+
+**Existing progress.** No migration is needed. Every existing card key is still the key of a main sense. For your 29 reviewed multi-sense words, the history stays on the main sense (筆 = pen, 對 = correct, 家 = home). The extra senses start as new cards.
 
 ## 5. progress.json schema v3
 
@@ -539,12 +586,12 @@ Known limitation: attempts older than the archive watermark that arrive late fro
 All counting lives in `src/lib/counts.js` (pure). Inputs: `progress`, `itemIndex`, `baselineSet`, `studySettings`, `now`.
 
 ### 8.1 Universe
-Only TOCFL items count: the 7,215 unique TOCFL keys. CCC and Pleco cards count **through** their `tocflKey` (§4.3). The **effective card** of a TOCFL key is whichever of {its own card, every card whose item maps to it} has the highest stability. Its `firstSeen` is the earliest of them. Outside-TOCFL items never count.
+Only TOCFL items count: the ≈ 7,488 TOCFL senses (§4.4). CCC and Pleco cards count **through** their `tocflKey` (§4.3). The **effective card** of a TOCFL key is whichever of {its own card, every card whose item maps to it} has the highest stability. Its `firstSeen` is the earliest of them. Outside-TOCFL items never count.
 
 ### 8.2 Baseline (two tiers)
 Your CCC course position is the measure of what you have studied, but the most recent chapters aren't solid yet. So the baseline has two tiers, both computed from bundled CCC entries matched to TOCFL keys (tiers 1–4 of §4.3), each key assigned to the **first** CCC chapter where it appears:
 
-| Tier | Chapters (defaults) | TOCFL keys (measured 2026-10-29) | Counts as |
+| Tier | Chapters (defaults) | TOCFL keys (measured 2026-10-29 on the old data; Phase 2.5 re-measures on senses) | Counts as |
 |---|---|---|---|
 | `solid` | Book 1 Ch 1 → `solidThrough` (B3 Ch 9) | **1,268** | Seen **and** Known, until you rate it |
 | `studied` | after `solidThrough` → `studiedThrough` (B3 Ch 10 → B4 Ch 4) | **325** | Seen only. Known only once FSRS says so |
@@ -592,7 +639,7 @@ Rule (2026-10-29): **Known = stability > 3 days AND graduated (Review state).** 
 ### 9.1 Kinds
 | sourceType | id | Items | Stored? |
 |---|---|---|---|
-| `ccc` | `ccc:b{book}c{chapter}` (whole chapter) and `ccc:b{book}c{chapter}p{part}` (part `I`, `II`, `III`) | that chapter's (or part's) CCC entries, deduped by key, in pack order | Virtual: built at runtime from bundled packs |
+| `ccc` | `ccc:b{book}c{chapter}` (whole chapter) and `ccc:b{book}c{chapter}p{part}` (part `I`, `II`, `III`) | that chapter's (or part's) CCC rows mapped to their sense keys (§4.3 `pickSense`), every row kept, deduped by **sense** key only, in pack order | Virtual: built at runtime from bundled packs |
 | `pleco` | `pleco:{category}` | matched or custom keys from import | `progress.lists` |
 | `custom` | `custom:{newId}` | keys added by hand (search box over the item index) | `progress.lists` |
 
@@ -605,12 +652,12 @@ Rule (2026-10-29): **Known = stability > 3 days AND graduated (Review state).** 
 - `nextVariant(listId)` = the variant never attempted, else the one whose latest run is oldest. A retake therefore serves a different variant when one exists. The UI lets you override.
 
 ### 9.3 Multi-select
-The study picker holds `selection = { listIds: string[], tocflBands: string[], includeBaseline: boolean, size: number|null, newMax: number|null }`. `size` and `newMax` are null for "All". It is persisted per device in `tocfl.<mode>.selection`. The queue is the union of items, deduped by key. Selecting a chapter and one of its parts is allowed; the union removes the overlap.
+The study picker holds `selection = { listIds: string[], tocflLevels: string[], includeBaseline: boolean, size: number|null, newMax: number|null }`. `size` and `newMax` are null for "All". It is persisted per device in `tocfl.<mode>.selection`. The queue is the union of items, deduped by key. Selecting a chapter and one of its parts is allowed; the union removes the overlap.
 
 ### 9.4 Flashcard queue (replaces `buildQueue`; no fixed cap)
 ```
 items  = union(selection)
-unless selection.includeBaseline: exclude untouched SOLID baseline items that came ONLY from tocflBands or ccc lists
+unless selection.includeBaseline: exclude untouched SOLID baseline items that came ONLY from tocflLevels or ccc lists
 due    = items with card && reps>0 && isDue   (sorted by due asc)
 fresh  = items with (!card || reps===0)        (selection order)
 if newMax != null: fresh = fresh.slice(0, newMax)
