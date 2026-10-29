@@ -32,7 +32,9 @@ function b64decode(str) {
 // CORS preflights when called from a browser.
 export async function fetchProgress({ token, owner, repo, branch = 'main', path = 'progress.json' }) {
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`
-  const res = await fetch(url, { headers: headers(token) })
+  // no-store: GitHub sends max-age=60, and a cached copy would hand the merge a
+  // stale file and sha (every save after another device's save would conflict).
+  const res = await fetch(url, { headers: headers(token), cache: 'no-store' })
   if (res.status === 404) return { data: null, sha: null }
   if (!res.ok) throw new Error(`GitHub fetch failed (${res.status}): ${await res.text()}`)
   const json = await res.json()
@@ -155,7 +157,7 @@ export async function uploadFile(cfg, dirPath, file) {
   // If the file already exists we need its sha to overwrite.
   let sha
   try {
-    const existing = await fetch(`${url}?ref=${cfg.branch || 'main'}`, { headers: headers(cfg.token) })
+    const existing = await fetch(`${url}?ref=${cfg.branch || 'main'}`, { headers: headers(cfg.token), cache: 'no-store' })
     if (existing.ok) sha = (await existing.json()).sha
   } catch {}
   const body = {

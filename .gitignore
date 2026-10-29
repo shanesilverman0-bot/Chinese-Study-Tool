@@ -7,3 +7,4 @@ local-data/
 .vite
 # progress.json lives in the repo on purpose — that's the sync target.
 # It is NOT ignored.
+.claude/
