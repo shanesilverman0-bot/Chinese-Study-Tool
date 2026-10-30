@@ -2,6 +2,10 @@ import React, { useState, useMemo } from 'react'
 import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { isDue, State, cardKey } from '../lib/fsrs.js'
 import DangdaiFilter from './DangdaiFilter.jsx'
+import ProgressChart from './ProgressChart.jsx'
+import PaceBox from './PaceBox.jsx'
+import GoalsEditor from './GoalsEditor.jsx'
+import { pickGoal } from '../lib/pace.js'
 
 // Computes study stats from the progress object.
 function computeStats(progress, vocab) {
@@ -402,7 +406,7 @@ function CCCCMasteryPanel({ vocab, progress }) {
   )
 }
 
-function TodayCard({ counts, baseline, settings }) {
+function TodayCard({ counts, baseline, settings, due }) {
   const b = settings?.baseline
   const sol = b?.solidThrough ?? { book: 3, chapter: 9 }
   const stu = b?.studiedThrough ?? { book: 4, chapter: 4 }
@@ -425,6 +429,9 @@ function TodayCard({ counts, baseline, settings }) {
         ))}
       </div>
       <p className="mt-3 font-mono text-[11px] leading-relaxed text-ink/45">
+        Due today: <span className="font-semibold text-cinnabar">{fmt(due)}</span>
+      </p>
+      <p className="mt-1 font-mono text-[11px] leading-relaxed text-ink/45">
         baseline: {fmt(baseline.solid.size)} solid (to B{sol.book} Ch {sol.chapter}) + {fmt(baseline.studied.size)} studied, unconfirmed (to B{stu.book} Ch {stu.chapter})
       </p>
     </div>
@@ -435,6 +442,9 @@ export default function Dashboard({
   progress,
   counts,
   baseline,
+  todayDate,
+  updateGoals,
+  updateStudySettings,
   vocab,
   filter,
   toggleTocflBand,
@@ -444,20 +454,44 @@ export default function Dashboard({
   onStart,
 }) {
   const s = computeStats(progress, vocab)
+  const [editing, setEditing] = useState(false)
+  const goals = progress.goals ?? []
+  const goal = pickGoal(goals, progress.studySettings?.selectedGoalId, todayDate)
+
+  const updateGoal = (id, patch) =>
+    updateGoals((gs) => gs.map((g) => (g.id === id ? { ...g, ...patch, updatedAt: new Date().toISOString() } : g)))
+  const toggleGoal = (id) => {
+    const g = goals.find((x) => x.id === id)
+    if (g) updateGoal(id, { enabled: !g.enabled })
+  }
 
   return (
-    <div className="brush-in flex flex-col gap-5">
-      <TodayCard counts={counts} baseline={baseline} settings={progress.studySettings} />
-      <div className="grid grid-cols-2 gap-3">
-        <Stat value={s.due} label="due today" accent="#c0392b" />
-        <Stat value={s.streak} label="day streak" accent="#b8860b" />
-        <Stat value={s.learned} label="learned" accent="#2d6a4f" />
-        <Stat value={s.retention == null ? '—' : `${s.retention}%`} label="retention" accent="#1a6b8a" />
+    <div className="brush-in mx-auto flex w-full flex-col gap-5 md:max-w-3xl">
+      <TodayCard counts={counts} baseline={baseline} settings={progress.studySettings} due={s.due} />
+
+      <div className="grid gap-5 md:grid-cols-[1fr_220px]">
+        <ProgressChart
+          snapshots={progress.snapshots}
+          today={todayDate}
+          counts={counts}
+          goals={goals}
+          onToggleGoal={toggleGoal}
+        />
+        {editing ? (
+          <GoalsEditor goals={goals} onSave={(gs) => updateGoals(() => gs)} onClose={() => setEditing(false)} />
+        ) : (
+          <PaceBox
+            goals={goals}
+            goal={goal}
+            snapshots={progress.snapshots}
+            knownToday={counts.known}
+            today={todayDate}
+            onSelectGoal={(id) => updateStudySettings({ selectedGoalId: id })}
+            onUpdateGoal={updateGoal}
+            onEditGoals={() => setEditing(true)}
+          />
+        )}
       </div>
-
-      <TOCFLMasteryPanel vocab={vocab} progress={progress} />
-
-      <CCCCMasteryPanel vocab={vocab} progress={progress} />
 
       <FilterCard
         filter={filter}
@@ -469,6 +503,22 @@ export default function Dashboard({
         setDangdaiFilter={setDangdaiFilter}
         onStart={onStart}
       />
+
+      <details className="rounded-2xl border border-ink/10 bg-white/30 p-4">
+        <summary className="cursor-pointer font-display text-sm font-bold tracking-wide text-ink/70">
+          詳細 · Details
+        </summary>
+        <div className="mt-4 flex flex-col gap-5">
+          <div className="grid grid-cols-2 gap-3">
+            <Stat value={s.due} label="due today" accent="#c0392b" />
+            <Stat value={s.streak} label="day streak" accent="#b8860b" />
+            <Stat value={s.learned} label="learned" accent="#2d6a4f" />
+            <Stat value={s.retention == null ? '—' : `${s.retention}%`} label="retention" accent="#1a6b8a" />
+          </div>
+          <TOCFLMasteryPanel vocab={vocab} progress={progress} />
+          <CCCCMasteryPanel vocab={vocab} progress={progress} />
+        </div>
+      </details>
     </div>
   )
 }

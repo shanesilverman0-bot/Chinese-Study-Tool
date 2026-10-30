@@ -75,6 +75,8 @@ export default function App() {
     }
   }, [])
 
+  const updateGoals = (fn) => updateProgress((prev) => ({ ...prev, goals: fn(prev.goals ?? []) }))
+
   const recompute = () => {
     let changed = 0
     updateProgress((prev) => {
@@ -242,6 +244,9 @@ export default function App() {
                 progress={progress}
                 counts={counts}
                 baseline={baseline}
+                todayDate={today.date}
+                updateGoals={updateGoals}
+                updateStudySettings={updateStudySettings}
                 vocab={vocab}
                 filter={filter}
                 toggleTocflBand={toggleTocflBand}
