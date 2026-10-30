@@ -1,29 +1,31 @@
 # Brief: the gap between CCC (當代中文課程) and the TOCFL word list
 
-> **Note 2026-10-30:** these numbers come from the old word data (one item per hanzi+pinyin, four bands). Phase 2.5 rebuilds the data as senses with six levels (B1/B2 split), and Phase 3 re-measures this brief. Expect small shifts, plus a B1 vs B2 breakdown.
+> **Re-measured in Phase 3 (2026-10-30)** on the sense data (7,505 TOCFL senses, six levels) with `node scripts/check-counts.mjs`. Section 3 onward still quotes the old four-band figures.
 
-Measured 2026-10-29 from the repo data. TOCFL list = 7,215 unique words (`hanzi|pinyin`), each counted at its lowest band. CCC = the vocabulary lists of Books 1–6 (4,960 rows), matched to TOCFL words with the app's matching rules (exact, normalized pinyin, `/` variants, unique hanzi). Phase 3 re-measures these numbers; expect ±20 per cell.
+TOCFL list = 7,505 senses (7,215 main + 290 extra). CCC = the vocabulary lists of Books 1–6 (4,960 rows, 229 tagged `name` and never counted), matched to TOCFL with the app's rules (exact, normalized pinyin, `/` variants, unique hanzi), each key placed at the first CCC chapter that lists it.
 
 ## 1. Where you stand
 
-| | TOCFL words |
+| | TOCFL senses |
 |---|---|
-| Met in CCC B1 Ch 1 → B3 Ch 9 (**solid baseline**, counted Known) | **1,268** |
-| Met in CCC B3 Ch 10 → B4 Ch 4 (**studied, under review**, counted Seen) | **325** |
-| Graduated flashcards outside the solid baseline | 18 |
-| **Known today (estimate)** | **≈ 1,286** |
+| Met in CCC B1 Ch 1 → B3 Ch 9 (**solid baseline**, counted Known) | **1,289** |
+| Met in CCC B3 Ch 10 → B4 Ch 4 (**studied, under review**, counted Seen) | **327** |
 
-## 2. How much of TOCFL CCC covers, by band
+Solid by level: Novice 314, A1 244, A2 239, B1 237, B2 211, C 44. Studied by level: Novice 5, A1 14, A2 32, B1 112, B2 123, C 41.
 
-| Band | TOCFL words | In CCC through B4 Ch 4 | In CCC later (B4 Ch 5 → B6) | **Never in CCC's vocab lists** |
+## 2. How much of TOCFL CCC covers, by level
+
+| Level | TOCFL senses | In CCC through B4 Ch 4 | In CCC later (B4 Ch 5 → B6) | **Never in CCC's vocab lists** |
 |---|---|---|---|---|
-| Novice | 394 | 325 | 5 | **64** |
-| A | 829 | 535 | 66 | **228** |
-| B | 3,320 | 656 | 805 | **1,859** |
-| C | 2,672 | 77 | 348 | 2,247 |
-| **Total** | 7,215 | 1,593 | 1,224 | 4,398 |
+| Novice | 394 | 319 | 6 | **69** |
+| A1 | 347 | 258 | 22 | **67** |
+| A2 | 485 | 271 | 44 | **170** |
+| B1 | 1,170 | 349 | 314 | **507** |
+| B2 | 2,336 | 334 | 489 | **1,513** |
+| C | 2,773 | 85 | 357 | 2,331 |
+| **Total** | 7,505 | 1,616 | 1,232 | 4,657 |
 
-The other way round: 1,982 CCC vocab rows have no TOCFL match (Book 1: 111, Book 2: 177, Book 3: 265, Book 4: 401, Book 5: 399, Book 6: 631). These are mostly proper nouns, set phrases, and words outside the TOCFL list. They're still useful, but they don't move the Known count.
+CCC match tiers, all books: exact 2,838, normalized 36, variant 56, hanzi-unique 68, ambiguous 2, none 1,731, name 229. Books 1–3: exact 1,419, normalized 23, variant 43, hanzi-unique 43, ambiguous 2, none 460, name 84.
 
 ## 3. What this means
 
@@ -51,4 +53,4 @@ Step 2 is fast and front-loads the count. The real work is steps 3–4: about 2,
 
 ## 5. Caveats
 - The matching is automatic. Phase 3 prints the ambiguous cases (2 in Books 1–3) and the unmatched CCC rows, so you can spot real misses.
-- The TOCFL list does not split Band B into B1/B2, so "B2 coverage" can't be measured separately.
+- Phase 2.5 splits Band B into B1/B2, so the table above measures them separately.

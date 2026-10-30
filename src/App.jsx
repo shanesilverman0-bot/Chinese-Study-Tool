@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SEED_VOCAB } from './data/vocab.js'
+import { CCC_VOCAB, CCC_PACK_NAMES } from './data/ccc.js'
 import { loadVocabPacksFromGitHub, filterVocab } from './lib/vocab.js'
 import { useProgress } from './hooks/useProgress.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
@@ -7,7 +8,7 @@ import { primeVoices } from './lib/speech.js'
 import { isDue, cardKey, newCardState } from './lib/fsrs.js'
 import { migrate } from './lib/migrate.js'
 import { mergeProgress } from './lib/merge.js'
-import { itemTypeOf } from './lib/items.js'
+import { itemTypeOf, buildItemIndex } from './lib/items.js'
 import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
@@ -17,7 +18,7 @@ import { DATA_MODE, assertWriteAllowed, dataPath } from './lib/dataMode.js'
 
 export default function App() {
   // Vocab starts as the bundled seed, then grows when packs load from the repo.
-  const [vocab, setVocab] = useState(SEED_VOCAB)
+  const [vocab, setVocab] = useState(() => [...SEED_VOCAB, ...CCC_VOCAB])
   const [vocabInfo, setVocabInfo] = useState({ packs: [], errors: [] })
 
   const {
@@ -38,6 +39,12 @@ export default function App() {
   // getter current without re-creating the handle.
   const progressRef = useRef(progress)
   progressRef.current = progress
+  const itemIndex = useMemo(
+    () => buildItemIndex({ tocfl: SEED_VOCAB, ccc: CCC_VOCAB, customItems: progress.customItems }),
+    [progress.customItems]
+  )
+  const itemIndexRef = useRef(itemIndex)
+  itemIndexRef.current = itemIndex
   useEffect(() => {
     if (DATA_MODE === 'live') return
     window.__tt = {
@@ -47,6 +54,9 @@ export default function App() {
       migrate,
       mergeProgress,
       itemTypeOf,
+      get items() {
+        return itemIndexRef.current
+      },
       get progress() {
         return progressRef.current
       },
@@ -115,12 +125,12 @@ export default function App() {
   const reloadVocab = useMemo(
     () => async () => {
       if (!(token && owner && repo)) {
-        setVocab(SEED_VOCAB)
+        setVocab([...SEED_VOCAB, ...CCC_VOCAB])
         return
       }
       try {
-        const res = await loadVocabPacksFromGitHub(gh)
-        setVocab([...SEED_VOCAB, ...res.vocab])
+        const res = await loadVocabPacksFromGitHub(gh, { skipNames: CCC_PACK_NAMES })
+        setVocab([...SEED_VOCAB, ...CCC_VOCAB, ...res.vocab])
         setVocabInfo({ packs: res.packs, errors: res.errors })
       } catch (e) {
         setVocabInfo({ packs: [], errors: [e.message] })

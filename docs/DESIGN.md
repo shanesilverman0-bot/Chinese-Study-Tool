@@ -591,10 +591,10 @@ Only TOCFL items count: the ≈ 7,488 TOCFL senses (§4.4). CCC and Pleco cards 
 ### 8.2 Baseline (two tiers)
 Your CCC course position is the measure of what you have studied, but the most recent chapters aren't solid yet. So the baseline has two tiers, both computed from bundled CCC entries matched to TOCFL keys (tiers 1–4 of §4.3), each key assigned to the **first** CCC chapter where it appears:
 
-| Tier | Chapters (defaults) | TOCFL keys (measured 2026-10-29 on the old data; Phase 2.5 re-measures on senses) | Counts as |
+| Tier | Chapters (defaults) | TOCFL keys (measured in Phase 3 on the sense data; by level — solid: Novice 314, A1 244, A2 239, B1 237, B2 211, C 44; studied: 5, 14, 32, 112, 123, 41) | Counts as |
 |---|---|---|---|
-| `solid` | Book 1 Ch 1 → `solidThrough` (B3 Ch 9) | **1,268** | Seen **and** Known, until you rate it |
-| `studied` | after `solidThrough` → `studiedThrough` (B3 Ch 10 → B4 Ch 4) | **325** | Seen only. Known only once FSRS says so |
+| `solid` | Book 1 Ch 1 → `solidThrough` (B3 Ch 9) | **1,289** | Seen **and** Known, until you rate it |
+| `studied` | after `solidThrough` → `studiedThrough` (B3 Ch 10 → B4 Ch 4) | **327** | Seen only. Known only once FSRS says so |
 
 `baselineSets(index, cccEntries, settings.baseline)` → `{ solid: Set, studied: Set }`. Chapter comparison is lexicographic on `(book, chapter)`.
 

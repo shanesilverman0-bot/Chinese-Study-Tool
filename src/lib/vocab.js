@@ -103,7 +103,7 @@ function deriveBand(entry) {
 
 // ─── Field alias resolution ───────────────────────────────────────────────────
 // `source` is NOT set here — callers set it based on pack type.
-function normalizeEntry(raw) {
+export function normalizeEntry(raw) {
   const hanzi = raw.hanzi ?? raw.traditional ?? raw.word ?? ''
   const pinyin = raw.pinyin ?? raw.reading ?? ''
   const english = raw.english ?? raw.definition ?? raw.meaning ?? ''
@@ -197,7 +197,7 @@ export const BANDS = ['Novice', 'A', 'B', 'C']
 // SEED_VOCAB) so that chapter-level filtering can find every word in a lesson.
 // Callers prepend SEED_VOCAB and deduplicate by card key when building
 // the study queue.
-export async function loadVocabPacksFromGitHub(githubConfig) {
+export async function loadVocabPacksFromGitHub(githubConfig, { skipNames = [] } = {}) {
   const result = { vocab: [], packs: [], errors: [] }
   const { token, owner, repo } = githubConfig || {}
   if (!(token && owner && repo)) return result
@@ -210,7 +210,7 @@ export async function loadVocabPacksFromGitHub(githubConfig) {
     return result
   }
 
-  const jsonFiles = entries.filter((e) => e.type === 'file' && e.name.toLowerCase().endsWith('.json'))
+  const jsonFiles = entries.filter((e) => e.type === 'file' && e.name.toLowerCase().endsWith('.json') && !skipNames.includes(e.name))
 
   for (const f of jsonFiles) {
     try {
