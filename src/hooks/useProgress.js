@@ -158,9 +158,10 @@ export function useProgress(vocab = SEED_VOCAB) {
   // Single entry point for state changes so latestRef never lags behind.
   const apply = useCallback((fn) => {
     const next = fn(latestRef.current)
-    if (next === latestRef.current) return
+    if (next === latestRef.current) return false
     latestRef.current = next
     setProgress(next)
+    return true
   }, [])
 
   // When the vocab list changes (packs loaded), re-key cards for the new words.
@@ -373,8 +374,8 @@ export function useProgress(vocab = SEED_VOCAB) {
   // Apply fn(progress) → progress and schedule a save (DESIGN §8.5 snapshots, settings edits).
   const updateProgress = useCallback(
     (fn) => {
-      apply(fn)
-      scheduleSync()
+      // Save only when something actually changed (an unchanged snapshot must not commit).
+      if (apply(fn)) scheduleSync()
     },
     [apply, scheduleSync]
   )
