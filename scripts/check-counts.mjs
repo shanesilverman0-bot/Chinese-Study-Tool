@@ -1,6 +1,6 @@
 // Usage: node scripts/check-counts.mjs [local-data/progress.copy.json]
 // Phase 3: word data, CCC -> TOCFL matching tiers, baseline tiers, CCC/TOCFL gap table.
-// (Phase 4 extends this with the counts engine.) Read-only.
+// Phase 4: counts engine on the progress copy (T=3/7, Review-state, baseline on/off). Read-only.
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url'
 import { SEED_VOCAB, LEVELS } from '../src/data/vocab.js'
 import { buildItemIndex, baselineSets } from '../src/lib/items.js'
 import { DEFAULT_STUDY_SETTINGS } from '../src/lib/schema.js'
+import { migrate } from '../src/lib/migrate.js'
+import { computeCounts, buildSnapshot, effectiveCards } from '../src/lib/counts.js'
+import { localDate } from '../src/lib/dates.js'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const progressFile = process.argv[2] ?? path.join(ROOT, 'local-data/progress.copy.json')
@@ -91,9 +94,47 @@ for (const l of LEVELS) {
 console.log(`${'Total'.padEnd(7)} ${String(tot.total).padStart(6)} ${String(tot.thru).padStart(12)} ${String(tot.later).padStart(13)} ${String(tot.never).padStart(13)}`)
 
 if (fs.existsSync(progressFile)) {
-  const p = JSON.parse(fs.readFileSync(progressFile, 'utf8'))
+  const raw = JSON.parse(fs.readFileSync(progressFile, 'utf8'))
+  const p = migrate(raw) // in memory only; the file is never written
   const keys = Object.keys(p.cards ?? {}).filter((k) => k.includes('|'))
   const unknown = keys.filter((k) => !index.get(k))
-  hr(`Progress copy (${path.basename(progressFile)})`)
+  hr(`Progress copy (${path.basename(progressFile)}, schema ${raw.schemaVersion ?? '?'} -> ${p.schemaVersion})`)
   console.log(`${keys.length} word cards, ${unknown.length} not in the item index${unknown.length ? ': ' + unknown.slice(0, 15).join('  ') : ''}`)
+
+  hr('Counts (DESIGN §8.3)')
+  const eff = effectiveCards(p, index)
+  const base = baselineSets(index, rows, bl)
+  const noBase = { solid: new Set(), studied: new Set() }
+  const run = (T, rev, withBase) => computeCounts({
+    progress: p, index, eff, baseline: withBase ? base : noBase,
+    settings: { ...DEFAULT_STUDY_SETTINGS, knownThreshold: T, knownRequiresReviewState: rev },
+  })
+  const rows2 = []
+  for (const T of [3, 7]) for (const rev of [true, false]) for (const wb of [true, false]) {
+    rows2.push({ T, rev, wb, c: run(T, rev, wb) })
+  }
+  console.log('T  review  baseline   seen   known')
+  for (const { T, rev, wb, c } of rows2) {
+    console.log(`${String(T).padEnd(2)} ${String(rev).padEnd(7)} ${String(wb).padEnd(9)} ${String(c.seen).padStart(5)} ${String(c.known).padStart(6)}`)
+  }
+  const get = (T, rev, wb) => rows2.find((r) => r.T === T && r.rev === rev && r.wb === wb).c
+  const d = run(3, true, true)
+  const { reviewedTocfl, baselineUntouched, studiedUntouched } = d.raw
+  const ok = (label, cond, detail = '') => console.log(`${cond ? 'PASS' : 'FAIL'}  ${label} ${detail}`)
+  console.log(`\ndefault: reviewedTocfl ${reviewedTocfl}, baselineUntouched ${baselineUntouched}, studiedUntouched ${studiedUntouched}`)
+  ok('seen = reviewedTocfl + baselineUntouched + studiedUntouched', d.seen === reviewedTocfl + baselineUntouched + studiedUntouched, `(${d.seen})`)
+  ok('known <= seen', d.known <= d.seen)
+  for (const rev of [true, false]) for (const wb of [true, false]) {
+    ok(`known(T=7) <= known(T=3) [review ${rev}, baseline ${wb}]`, get(7, rev, wb).known <= get(3, rev, wb).known)
+  }
+  for (const T of [3, 7]) for (const wb of [true, false]) {
+    ok(`known(review on) <= known(review off) [T=${T}, baseline ${wb}]`, get(T, true, wb).known <= get(T, false, wb).known)
+  }
+  const off = run(3, true, false)
+  ok('baseline off: Known drops by exactly baselineUntouched', d.known - off.known === baselineUntouched, `(${d.known} - ${off.known} = ${d.known - off.known})`)
+  ok('baseline off: Seen drops by baselineUntouched + studiedUntouched', d.seen - off.seen === baselineUntouched + studiedUntouched, `(${d.seen - off.seen})`)
+  ok('tails has 14 keys', Object.keys(d.raw.tails).length === 14)
+  const tz = DEFAULT_STUDY_SETTINGS.timeZone
+  console.log(`\nToday's snapshot (${tz}):`)
+  console.log(JSON.stringify(buildSnapshot(localDate(new Date(), tz), d, DEFAULT_STUDY_SETTINGS, 'live'), null, 1))
 }

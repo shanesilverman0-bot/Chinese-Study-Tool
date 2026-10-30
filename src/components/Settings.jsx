@@ -3,6 +3,8 @@ import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { fetchProgress, putTextFile, verifyAccess } from '../lib/github.js'
 import { DATA_MODE, dataPath } from '../lib/dataMode.js'
 import { PROVIDERS } from '../lib/tutor.js'
+import { CCC_VOCAB } from '../data/ccc.js'
+import { THRESHOLD_EDGES, countingSettings } from '../lib/counts.js'
 import MicTest from './MicTest.jsx'
 
 
@@ -27,6 +29,9 @@ export default function Settings({
   forcePush,
   saveNow,
   progress,
+  baseline,
+  updateStudySettings,
+  onRecompute,
   replaceProgress,
   effectiveGh,
   vocabInfo,
@@ -148,6 +153,13 @@ export default function Settings({
         replaceProgress={replaceProgress}
         forcePush={forcePush}
         effectiveGh={effectiveGh}
+      />
+
+      <CountingSection
+        progress={progress}
+        baseline={baseline}
+        updateStudySettings={updateStudySettings}
+        onRecompute={onRecompute}
       />
 
       {/* AI tutor provider */}
@@ -300,6 +312,130 @@ function stamp(withSeconds) {
 }
 
 // 資料 · Data: download the in-memory progress, or restore it from a file (DESIGN §15.3).
+const CHAPTERS = (() => {
+  const m = {}
+  for (const r of CCC_VOCAB) {
+    if (r.book == null || r.chapter == null) continue
+    ;(m[r.book] ||= new Set()).add(r.chapter)
+  }
+  return Object.fromEntries(Object.entries(m).map(([b, set]) => [b, [...set].sort((x, y) => x - y)]))
+})()
+const BOOKS = Object.keys(CHAPTERS).map(Number).sort((a, b) => a - b)
+
+function ChapterPicker({ value, onChange }) {
+  const chapters = CHAPTERS[value.book] ?? []
+  return (
+    <div className="flex gap-2">
+      <select
+        className={inputCls}
+        value={value.book}
+        onChange={(e) => {
+          const book = Number(e.target.value)
+          const cs = CHAPTERS[book] ?? []
+          onChange({ book, chapter: cs.includes(value.chapter) ? value.chapter : cs[cs.length - 1] })
+        }}
+      >
+        {BOOKS.map((b) => <option key={b} value={b}>Book {b}</option>)}
+      </select>
+      <select className={inputCls} value={value.chapter} onChange={(e) => onChange({ ...value, chapter: Number(e.target.value) })}>
+        {chapters.map((c) => <option key={c} value={c}>Ch {c}</option>)}
+      </select>
+    </div>
+  )
+}
+
+const chapterCmp = (a, b) => (a.book - b.book) || (a.chapter - b.chapter)
+
+// DESIGN §5.4 / §8: counting settings (synced in progress.studySettings).
+function CountingSection({ progress, baseline, updateStudySettings, onRecompute }) {
+  const s = countingSettings(progress.studySettings)
+  const [note, setNote] = useState('')
+  const snapCount = (progress.snapshots ?? []).length
+  const setBaseline = (patch) => {
+    const next = { ...s.baseline, ...patch }
+    if (chapterCmp(next.studiedThrough, next.solidThrough) < 0) {
+      setNote('"Studied through" must be at or after "Solid through".')
+      return
+    }
+    setNote('')
+    updateStudySettings({ baseline: next })
+  }
+  const fmt = (n) => n.toLocaleString('en-US')
+
+  function recompute() {
+    if (!window.confirm(`Rewrite ${snapCount} past snapshots with the current settings?`)) return
+    const n = onRecompute()
+    setNote(`Recomputed ${n} snapshot${n === 1 ? '' : 's'}.`)
+  }
+
+  return (
+    <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-1 font-display text-base font-bold text-ink">計算 · Counting</h3>
+      <p className="mb-4 font-sans text-xs text-ink/50">
+        How Seen and Known are counted. Changes update today's numbers at once; past days only change when you press Recompute history.
+      </p>
+      <div className="flex flex-col gap-4">
+        <Field label="Known threshold" hint="One Good on a new card = 3.17 days">
+          <div className="flex items-center gap-2">
+            <select
+              className={inputCls}
+              value={s.knownThreshold}
+              onChange={(e) => updateStudySettings({ knownThreshold: Number(e.target.value) })}
+            >
+              {THRESHOLD_EDGES.map((e) => <option key={e} value={e}>{e}</option>)}
+            </select>
+            <span className="font-mono text-sm text-ink/60">days</span>
+          </div>
+        </Field>
+
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4"
+            checked={s.knownRequiresReviewState}
+            onChange={(e) => updateStudySettings({ knownRequiresReviewState: e.target.checked })}
+          />
+          <span>
+            <span className="font-sans text-sm font-medium text-ink/80">Known also requires graduation (Review state)</span>
+            <span className="mt-0.5 block font-mono text-[11px] text-ink/45">
+              A new word must be recalled again later (or rated Easy) before it counts. One lucky Good isn't enough.
+            </span>
+          </span>
+        </label>
+
+        <label className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            className="h-4 w-4"
+            checked={s.baseline.enabled}
+            onChange={(e) => setBaseline({ enabled: e.target.checked })}
+          />
+          <span className="font-sans text-sm font-medium text-ink/80">Baseline from my course position</span>
+        </label>
+        <Field label="Solid through" hint="counts as Known until you rate it">
+          <ChapterPicker value={s.baseline.solidThrough} onChange={(v) => setBaseline({ solidThrough: v })} />
+        </Field>
+        <Field label="Studied through" hint="counts as Seen until reviewed">
+          <ChapterPicker value={s.baseline.studiedThrough} onChange={(v) => setBaseline({ studiedThrough: v })} />
+        </Field>
+        <p className="font-mono text-[11px] text-ink/55">
+          Solid baseline = {fmt(baseline.solid.size)} words (count as Known) · Studied = {fmt(baseline.studied.size)} words (count as Seen until reviewed)
+        </p>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={recompute}
+            className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar"
+          >
+            Recompute history
+          </button>
+          {note && <span className="font-mono text-xs text-ink/60">{note}</span>}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function DataSection({ progress, replaceProgress, forcePush, effectiveGh }) {
   const [pending, setPending] = useState(null) // { data, fileName }
   const [confirmText, setConfirmText] = useState('')

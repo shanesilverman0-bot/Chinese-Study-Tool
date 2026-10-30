@@ -402,8 +402,39 @@ function CCCCMasteryPanel({ vocab, progress }) {
   )
 }
 
+function TodayCard({ counts, baseline, settings }) {
+  const b = settings?.baseline
+  const sol = b?.solidThrough ?? { book: 3, chapter: 9 }
+  const stu = b?.studiedThrough ?? { book: 4, chapter: 4 }
+  const fmt = (n) => n.toLocaleString('en-US')
+  const nums = [
+    { label: 'Seen', value: counts.seen, accent: '#1a6b8a' },
+    { label: 'Known', value: counts.known, accent: '#2d6a4f' },
+    { label: 'Context', value: counts.context, accent: '#b8860b' },
+  ]
+  return (
+    <div className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-3 font-display text-sm font-bold tracking-wide text-ink/70">今天 · Today</h3>
+      <div className="grid grid-cols-3 gap-2">
+        {nums.map((n) => (
+          <div key={n.label} className="flex flex-col items-center">
+            <span className="font-display text-3xl font-bold" style={{ color: n.accent }}>{fmt(n.value)}</span>
+            <span className="mt-1 font-mono text-[10px] uppercase tracking-widest text-ink/45">{n.label}</span>
+            {n.label === 'Context' && <span className="font-mono text-[10px] text-ink/30">(Phase 14)</span>}
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 font-mono text-[11px] leading-relaxed text-ink/45">
+        baseline: {fmt(baseline.solid.size)} solid (to B{sol.book} Ch {sol.chapter}) + {fmt(baseline.studied.size)} studied, unconfirmed (to B{stu.book} Ch {stu.chapter})
+      </p>
+    </div>
+  )
+}
+
 export default function Dashboard({
   progress,
+  counts,
+  baseline,
   vocab,
   filter,
   toggleTocflBand,
@@ -416,6 +447,7 @@ export default function Dashboard({
 
   return (
     <div className="brush-in flex flex-col gap-5">
+      <TodayCard counts={counts} baseline={baseline} settings={progress.studySettings} />
       <div className="grid grid-cols-2 gap-3">
         <Stat value={s.due} label="due today" accent="#c0392b" />
         <Stat value={s.streak} label="day streak" accent="#b8860b" />

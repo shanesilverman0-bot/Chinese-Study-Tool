@@ -3,6 +3,8 @@ import { SEED_VOCAB } from './data/vocab.js'
 import { CCC_VOCAB, CCC_PACK_NAMES } from './data/ccc.js'
 import { loadVocabPacksFromGitHub, filterVocab } from './lib/vocab.js'
 import { useProgress } from './hooks/useProgress.js'
+import { useCounts } from './hooks/useCounts.js'
+import { recomputeHistory } from './lib/counts.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
 import { isDue, cardKey, newCardState } from './lib/fsrs.js'
@@ -32,6 +34,10 @@ export default function App() {
     saveNow,
     githubReady,
     replaceProgress,
+    updateProgress,
+    updateStudySettings,
+    dataReady,
+    isBlocked,
     gh,
   } = useProgress(vocab)
 
@@ -45,6 +51,9 @@ export default function App() {
   )
   const itemIndexRef = useRef(itemIndex)
   itemIndexRef.current = itemIndex
+  const { counts, today, baseline } = useCounts({ progress, itemIndex, dataReady, isBlocked, updateProgress })
+  const countsRef = useRef(counts)
+  countsRef.current = counts
   useEffect(() => {
     if (DATA_MODE === 'live') return
     window.__tt = {
@@ -57,11 +66,24 @@ export default function App() {
       get items() {
         return itemIndexRef.current
       },
+      get counts() {
+        return countsRef.current
+      },
       get progress() {
         return progressRef.current
       },
     }
   }, [])
+
+  const recompute = () => {
+    let changed = 0
+    updateProgress((prev) => {
+      const r = recomputeHistory({ progress: prev, index: itemIndex, settings: prev.studySettings, baseline })
+      changed = r.changed
+      return r.progress
+    })
+    return changed
+  }
 
   const {
     filter,
@@ -218,6 +240,8 @@ export default function App() {
             {view === 'home' && (
               <Dashboard
                 progress={progress}
+                counts={counts}
+                baseline={baseline}
                 vocab={vocab}
                 filter={filter}
                 toggleTocflBand={toggleTocflBand}
@@ -265,6 +289,9 @@ export default function App() {
                 forcePush={forcePush}
                 saveNow={saveNow}
                 progress={progress}
+                baseline={baseline}
+                updateStudySettings={updateStudySettings}
+                onRecompute={recompute}
                 replaceProgress={replaceProgress}
                 effectiveGh={gh}
                 vocabInfo={vocabInfo}

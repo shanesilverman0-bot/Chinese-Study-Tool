@@ -153,6 +153,7 @@ export function useProgress(vocab = SEED_VOCAB) {
   const dirtyRef = useRef(false) // local changes not yet saved
   const latestRef = useRef(initial.progress) // always the newest local state
   const saveRef = useRef(null)
+  const [pullSettled, setPullSettled] = useState(false) // first pull finished (ok or failed)
 
   // Single entry point for state changes so latestRef never lags behind.
   const apply = useCallback((fn) => {
@@ -204,6 +205,8 @@ export function useProgress(vocab = SEED_VOCAB) {
       }
     } catch (e) {
       setSyncState({ status: 'error', message: e.message })
+    } finally {
+      setPullSettled(true)
     }
   }, [githubReady, gh, vocab, apply, block])
 
@@ -367,6 +370,26 @@ export function useProgress(vocab = SEED_VOCAB) {
     [githubReady, gh]
   )
 
+  // Apply fn(progress) → progress and schedule a save (DESIGN §8.5 snapshots, settings edits).
+  const updateProgress = useCallback(
+    (fn) => {
+      apply(fn)
+      scheduleSync()
+    },
+    [apply, scheduleSync]
+  )
+
+  // Merge a patch into progress.studySettings (synced) and stamp updatedAt.
+  const updateStudySettings = useCallback(
+    (patch) => {
+      updateProgress((prev) => ({
+        ...prev,
+        studySettings: { ...prev.studySettings, ...patch, updatedAt: new Date().toISOString() },
+      }))
+    },
+    [updateProgress]
+  )
+
   const updateSettings = useCallback((patch) => {
     setSettings((prev) => ({ ...prev, ...patch }))
   }, [])
@@ -392,6 +415,11 @@ export function useProgress(vocab = SEED_VOCAB) {
     settings,
     updateSettings,
     progress,
+    updateProgress,
+    updateStudySettings,
+    // Data is ready for a snapshot: migration succeeded and the first pull settled (or no GitHub).
+    dataReady: !initial.error && (!githubReady || pullSettled),
+    isBlocked: () => blockedRef.current,
     replaceProgress,
     gh,
     rate,
