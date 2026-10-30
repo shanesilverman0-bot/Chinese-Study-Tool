@@ -487,7 +487,7 @@ node scripts/check-migration.mjs local-data/progress.copy.json
 
 **Files**
 - `src/lib/lists.js` (new): `cccLists(cccVocab)` → virtual lists `ccc:b{book}c{chapter}`, named `當代 B{book} 第{chapter}課`, plus one per part present, `ccc:b{book}c{chapter}p{part}`, named `當代 B{book} 第{chapter}課 {part}`. `getAllLists(progress, cccVocab)`. `createCustomList(name)`. `addItems(listId, keys)`. `removeItems(listId, keys)`. `renameList`. `deleteList` (tombstone; CCC lists can't be deleted).
-- `src/lib/queue.js` (new): `buildFlashcardQueue({ selection, lists, index, progress, baseline, settings, now })` → `{ queue, stats: {due, fresh, baselineSkipped, total} }`, exactly per DESIGN §9.4. `requeueAfterRating(queue, pos, key, card, now)` → the learning re-show rule in §9.4.
+- `src/lib/queue.js` (new): `buildFlashcardQueue({ selection, lists, index, progress, baseline, settings, now })` → `{ queue, stats: {due, fresh, baselineSkipped, total} }`, exactly per DESIGN §9.4. Every item key goes through `index.studyKeyOf(key, progress.cards)` first (DESIGN §4.3), and the queue dedupes by study key. `requeueAfterRating(queue, pos, key, card, now)` → the learning re-show rule in §9.4.
 - `src/components/StudyPicker.jsx` (new; replaces FilterCard + DangdaiFilter): activity tabs (only **Flashcards** for now). Selection UI:
   - TOCFL level chips (Novice / A1 / A2 / B1 / B2 / C).
   - CCC: Book accordion, each with a "whole book" checkbox, then chapter checkboxes showing `due·new`; each chapter row has a small ▸ that reveals its part checkboxes (I / II / III) with their own `due·new`. Any mix of chapters and parts can be selected.

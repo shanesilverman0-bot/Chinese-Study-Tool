@@ -166,6 +166,8 @@ Built from: `SEED_VOCAB` (one entry per TOCFL sense, already built by `scripts/b
 
 Variant forms count as hanzi here: `她|tā` matches `他|tā` through its `variants` at tier 1. After a word is matched, **pick the sense** with `pickSense(mainKey, pos)`: the sense whose `pos` equals the given POS, or contains it in a `/` list (`M/Prep/V` contains `Prep`). If none fits, use the main sense. CCC rows pass their own `pos`, so 筆 in Book 4 (M) maps to `筆|bǐ#M` and 筆 in Book 2 (N) maps to `筆|bǐ`.
 
+**Study key (added in the Phase 3 review).** A CCC row matched at tier 1–3 studies under the TOCFL sense key. Cards you reviewed earlier under the row's raw CCC spelling (e.g. `事|shì` before it mapped to `事|shì/shìr`) must keep being used. `index.studyKeyOf(key, cards)` returns `key` if it has a reviewed card. Otherwise it returns the raw CCC key that maps to it and has a reviewed card (latest review wins). Otherwise it returns `key`. The queue (old `buildQueue`, and `buildFlashcardQueue` in Phase 8) and `rate()` always use the study key. Never create a second card for a word that already has history under a raw key.
+
 How each consumer uses the tiers:
 - **Baseline and counting** (CCC words → TOCFL): tiers 1–4 are accepted. 5–6 are excluded.
 - **Pleco import**: tiers 1–3 are accepted automatically. Tier 4 and tier 5 go to the resolve screen. Tier 6 becomes an `outside-TOCFL` custom item.

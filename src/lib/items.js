@@ -33,6 +33,7 @@ export function buildItemIndex({ tocfl = [], ccc = [], customItems = {}, grammar
   const normMap = new Map() // `${hanzi}|${normPinyin(pinyin)}` -> main key
   const partMap = new Map() // same, per `/`-separated reading
   const aliases = new Map() // tocflKey -> Set of other item keys that count as it
+  const rawAliases = new Map() // item key -> raw CCC hanzi|pinyin keys that now study as it
   const addTo = (map, k, v) => { if (!map.has(k)) map.set(k, v) }
   const addHanzi = (h, mainKey) => {
     if (!byHanzi.has(h)) byHanzi.set(h, new Set())
@@ -42,7 +43,7 @@ export function buildItemIndex({ tocfl = [], ccc = [], customItems = {}, grammar
   for (const v of tocfl) {
     items.set(v.key, {
       key: v.key, type: 'word', hanzi: v.hanzi, pinyin: v.pinyin, english: v.english,
-      glossSource: v.glossSource, level: v.level ?? null, band: v.band?.[0] ?? v.band ?? null,
+      glossSource: v.glossSource, level: v.level ?? null, band: (Array.isArray(v.band) ? v.band[0] : v.band) ?? null,
       pos: v.pos, senseOf: v.senseOf, senses: v.senses, variants: v.variants, tocflId: v.tocflId,
       inTocfl: true, tocflKey: v.key, ccc: [], sources: ['tocfl'], tags: [],
     })
@@ -139,9 +140,12 @@ export function buildItemIndex({ tocfl = [], ccc = [], customItems = {}, grammar
       items.set(raw, {
         key: raw, type: 'word', hanzi: row.hanzi, pinyin: row.pinyin, english: row.english,
         level: null, band: null, pos: row.pos, inTocfl: false, tocflKey: info.tocflKey,
+        rawAliasOf: info.key, // this row now studies as info.key; older cards may sit here
         ccc: [loc], sources: ['ccc'], tags: [],
       })
       addAlias(info.tocflKey, raw)
+      if (!rawAliases.has(info.key)) rawAliases.set(info.key, new Set())
+      rawAliases.get(info.key).add(raw)
     }
   }
 
@@ -184,6 +188,18 @@ export function buildItemIndex({ tocfl = [], ccc = [], customItems = {}, grammar
     pickSense,
     rowInfo,
     aliasesOf: (tocflKey) => [...(aliases.get(tocflKey) ?? [])],
+    // The card key to study `key` under (DESIGN §4.3): `key` itself if it has a card,
+    // else a raw CCC key that now maps to it and already has a reviewed card (latest
+    // review wins), so history recorded under the old CCC spelling keeps being used.
+    studyKeyOf(key, cards = {}) {
+      if ((cards[key]?.reps ?? 0) > 0) return key
+      let best = null
+      for (const r of rawAliases.get(key) ?? []) {
+        const c = cards[r]
+        if (c && (c.reps ?? 0) > 0 && (!best || (c.last_review ?? '') > (cards[best].last_review ?? ''))) best = r
+      }
+      return best ?? key
+    },
     firstChapterOf: (tocflKey) => firstChapters.get(tocflKey) ?? null,
   }
 }

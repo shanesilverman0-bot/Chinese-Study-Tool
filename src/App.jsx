@@ -150,8 +150,11 @@ export default function App() {
     const due = []
     const unseen = []
     const rest = []
+    const queued = new Set()
     for (const v of filteredVocab) {
-      const key = cardKey(v)
+      const key = itemIndex.studyKeyOf(cardKey(v), progress.cards)
+      if (queued.has(key)) continue // two list entries resolved to the same card
+      queued.add(key)
       const card = progress.cards[key]
       if (!card || card.reps === 0) unseen.push(key) // no card = new
       else if (isDue(card, now)) due.push(key)
@@ -171,12 +174,16 @@ export default function App() {
 
   function handleRate(ratingKey) {
     const key = queue[pos]
-    rate(vocabByKey[key] ?? key, ratingKey)
+    // An existing card (possibly under an older CCC key) is rated by its key;
+    // a new word passes its vocab entry so the card gets the right key and fields.
+    rate(progress.cards[key] ? key : (vocabByKey[key] ?? key), ratingKey)
     if (pos + 1 < queue.length) setPos(pos + 1)
     else setView('home')
   }
 
-  const currentWord = queue[pos] ? vocabByKey[queue[pos]] : null
+  const currentWord = queue[pos]
+    ? vocabByKey[queue[pos]] ?? vocabByKey[itemIndex.get(queue[pos])?.rawAliasOf] ?? null
+    : null
   const currentCard = queue[pos]
     ? progress.cards[queue[pos]] ?? (currentWord ? newCardState(currentWord) : null)
     : null
