@@ -10,13 +10,14 @@
 
 import React, { useMemo, useState } from 'react'
 import { filterVocab } from '../lib/vocab.js'
+import { cardKey } from '../lib/fsrs.js'
 
 // Count cards that are due, seen (not due), and unseen for a vocab slice.
 function countCards(vocab, progressCards) {
   let due = 0, seen = 0, unseen = 0
   const now = Date.now()
   for (const v of vocab) {
-    const id = `${v.hanzi}|${v.pinyin}`
+    const id = cardKey(v)
     const card = progressCards?.[id]
     if (!card) { unseen++; continue }
     const dueDate = card.due ? new Date(card.due).getTime() : 0

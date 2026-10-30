@@ -6,6 +6,12 @@ import { cardKey } from '../lib/fsrs.js'
 import ToneCurve from './ToneCurve.jsx'
 import AITutor from './AITutor.jsx'
 
+// Small POS chip under the hanzi for words with more than one sense (DESIGN §4.4).
+const POS_LABELS = {
+  N: '名', V: '動', Vs: '狀', Vi: '動', Vst: '動', Vp: '動', 'V-sep': '離',
+  M: '量', Adv: '副', Prep: '介', Conj: '連', Ptc: '助', Det: '定',
+}
+
 const RATINGS = [
   { key: 'again', label: 'Again', color: '#a8201a' },
   { key: 'hard', label: 'Hard', color: '#b8860b' },
@@ -127,8 +133,13 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
           {word.band}
         </span>
         <span className="font-display text-7xl font-bold leading-none text-ink sm:text-8xl">
-          {word.hanzi}
+          {[word.hanzi, ...(word.variants ?? []).map((v) => v.hanzi)].join('／')}
         </span>
+        {(word.senseOf || word.senses?.length) && word.pos && (
+          <span className="mt-3 rounded-full border border-ink/15 px-2.5 py-0.5 font-mono text-[11px] text-ink/60">
+            {POS_LABELS[word.pos] ? `${POS_LABELS[word.pos]} ${word.pos}` : word.pos}
+          </span>
+        )}
 
         {ttsSupported() && (
           <button

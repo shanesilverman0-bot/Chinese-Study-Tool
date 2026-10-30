@@ -120,6 +120,11 @@ function normalizeEntry(raw) {
   if (list != null) entry.list = list
   if (raw.pos != null) entry.pos = String(raw.pos)
 
+  // DESIGN §4.4 fields from scripts/build-vocab.mjs, kept when present.
+  for (const f of ['key', 'level', 'senseOf', 'senses', 'variants', 'glossSource', 'id', 'tags']) {
+    if (raw[f] != null) entry[f] = raw[f]
+  }
+
   return entry
 }
 
@@ -127,7 +132,7 @@ function normalizeEntry(raw) {
 // Stable across loads: hanzi + pinyin so homophones with different meanings
 // don't collide, and same word in two packs shares progress.
 export function vocabId(entry) {
-  return `${entry.hanzi}|${entry.pinyin}`
+  return entry.key ?? `${entry.hanzi}|${entry.pinyin}`
 }
 
 // ─── Pack loader ──────────────────────────────────────────────────────────────
@@ -188,9 +193,9 @@ export const BANDS = ['Novice', 'A', 'B', 'C']
 // ─── GitHub vocab pack loader ─────────────────────────────────────────────────
 // Reads all .json files from the vocab/ folder in the user's repo, normalizes
 // them, tags each entry source:'cccc', and returns { vocab, packs, errors }.
-// vocab contains ALL cccc entries (including those whose hanzi overlaps with
+// vocab contains ALL cccc rows (no dedupe, even where hanzi overlaps with
 // SEED_VOCAB) so that chapter-level filtering can find every word in a lesson.
-// Callers prepend SEED_VOCAB and deduplicate by composite key when building
+// Callers prepend SEED_VOCAB and deduplicate by card key when building
 // the study queue.
 export async function loadVocabPacksFromGitHub(githubConfig) {
   const result = { vocab: [], packs: [], errors: [] }
@@ -222,13 +227,10 @@ export async function loadVocabPacksFromGitHub(githubConfig) {
         : null
       if (!rawArr) throw new Error(`${f.name}: expected a JSON array or { "vocab": [...] } or { "words": [...] }`)
       const words = rawArr.map(normalizeEntry)
-      const seenInThisPack = new Set()
+      // Every row is kept (DESIGN §4.4): rows are distinct by `id`, not hanzi+pinyin.
       let added = 0
       for (const w of words) {
         if (!w.hanzi) continue
-        const key = `${w.hanzi}|${w.pinyin}`
-        if (seenInThisPack.has(key)) continue   // exact dupe within this file — skip
-        seenInThisPack.add(key)
         result.vocab.push({ ...w, source: 'cccc' })
         added++
       }

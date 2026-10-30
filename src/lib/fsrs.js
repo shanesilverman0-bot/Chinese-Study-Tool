@@ -22,6 +22,7 @@ export const RATING = {
 export function cardKey(word) {
   if (!word) return ''
   if (typeof word === 'string') return word // tolerate a bare key passed straight through
+  if (word.key) return word.key // extra senses carry `hanzi|pinyin#POS` (DESIGN §4.1)
   return `${word.hanzi}|${word.pinyin ?? ''}`
 }
 
@@ -35,9 +36,13 @@ export function newCardState(word) {
 // We persist hanzi + pinyin so each card is self-describing: its key can be
 // rebuilt from the card alone, without consulting the vocab list.
 function serializeCard(word, card) {
+  const pinyin = word.pinyin ?? ''
   return {
     hanzi: word.hanzi,
-    pinyin: word.pinyin ?? '',
+    pinyin,
+    // Only extra senses differ from hanzi|pinyin; keep their key on the card so
+    // cardKey(card) re-keys them correctly.
+    ...(word.key && word.key !== `${word.hanzi}|${pinyin}` ? { key: word.key } : {}),
     due: card.due.toISOString(),
     stability: card.stability,
     difficulty: card.difficulty,

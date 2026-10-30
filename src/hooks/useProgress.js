@@ -302,7 +302,7 @@ export function useProgress(vocab = SEED_VOCAB) {
         // First rating: create the card now (no stubs, DESIGN §5.1).
         const word =
           typeof wordOrKey === 'string'
-            ? { hanzi: key.split('|')[0], pinyin: key.split('|').slice(1).join('|') }
+            ? { key, hanzi: key.split('|')[0], pinyin: key.split('|').slice(1).join('|').split('#')[0] }
             : wordOrKey
         if (!word.hanzi || !key.includes('|')) return
         card = newCardState(word)

@@ -85,8 +85,13 @@ export default function App() {
 
   // Look up the word behind a card key. Keyed by hanzi+pinyin so homographs
   // resolve to the correct word.
+  // Built from CCC rows first, then TOCFL, so the TOCFL entry (its own sense
+  // gloss, level, POS) wins over a CCC row with the same key.
   const vocabByKey = useMemo(
-    () => Object.fromEntries(vocab.map((v) => [cardKey(v), v])),
+    () => Object.fromEntries(
+      [...vocab.filter((v) => v.source !== 'tocfl'), ...vocab.filter((v) => v.source === 'tocfl')]
+        .map((v) => [cardKey(v), v])
+    ),
     [vocab]
   )
 
@@ -156,7 +161,7 @@ export default function App() {
 
   function handleRate(ratingKey) {
     const key = queue[pos]
-    rate(key, ratingKey)
+    rate(vocabByKey[key] ?? key, ratingKey)
     if (pos + 1 < queue.length) setPos(pos + 1)
     else setView('home')
   }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { storageKey } from '../lib/dataMode.js'
+import { cardKey } from '../lib/fsrs.js'
 
 const FILTER_KEY = storageKey('studyFilter')
 
@@ -76,7 +77,7 @@ export function useStudyFilter(vocab) {
     // cccc entry when TOCFL and dangdai filters overlap.
     const seen = new Set()
     return filtered.filter((v) => {
-      const k = `${v.hanzi}|${v.pinyin}`
+      const k = cardKey(v)
       if (seen.has(k)) return false
       seen.add(k)
       return true
