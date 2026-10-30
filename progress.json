@@ -1609,15 +1609,15 @@
     "真|zhēn": {
       "hanzi": "真",
       "pinyin": "zhēn",
-      "due": "2026-10-28T18:09:27.436Z",
-      "stability": 3.173,
-      "difficulty": 5.28243442,
-      "elapsed_days": 0,
-      "scheduled_days": 0,
-      "reps": 1,
+      "due": "2026-11-06T12:54:46.957Z",
+      "stability": 7.48750228,
+      "difficulty": 4.51098561,
+      "elapsed_days": 2,
+      "scheduled_days": 7,
+      "reps": 2,
       "lapses": 0,
-      "state": 1,
-      "last_review": "2026-10-28T17:59:27.436Z"
+      "state": 2,
+      "last_review": "2026-10-30T12:54:46.957Z"
     },
     "電腦|diànnǎo": {
       "hanzi": "電腦",
@@ -116455,7 +116455,14 @@
       "pinyin": "duì",
       "rating": "easy",
       "at": "2026-10-28T18:00:50.762Z"
+    },
+    {
+      "key": "真|zhēn",
+      "hanzi": "真",
+      "pinyin": "zhēn",
+      "rating": "easy",
+      "at": "2026-10-30T12:54:46.964Z"
     }
   ],
-  "updatedAt": "2026-10-28T18:00:52.264Z"
+  "updatedAt": "2026-10-30T12:54:48.465Z"
 }
