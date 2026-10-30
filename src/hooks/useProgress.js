@@ -95,10 +95,21 @@ function reconcile(progress, vocab) {
   for (const v of vocab) (byHanzi[v.hanzi] ||= []).push(v)
 
   const migrated = {}
+  // Modern keys (hanzi|pinyin, or hanzi|pinyin#POS for an extra sense) stay
+  // exactly where they are. Re-keying them from card contents could collide
+  // and silently overwrite another card. Only legacy keys are re-mapped below.
   for (const [key, card] of Object.entries(p.cards)) {
+    if (key.includes('|')) migrated[key] = card
+  }
+  const place = (k, card, fallbackKey) => {
+    if (migrated[k] === undefined) migrated[k] = card
+    else migrated[fallbackKey] = card // target taken: keep the legacy record untouched
+  }
+  for (const [key, card] of Object.entries(p.cards)) {
+    if (key.includes('|')) continue
     if (card.hanzi && card.pinyin != null && card.pinyin !== '') {
-      // Already self-describing (hanzi + pinyin) — key directly from the card.
-      migrated[cardKey(card)] = card
+      // Legacy key, self-describing card: key it from the card.
+      place(cardKey(card), card, key)
     } else if (card.hanzi) {
       // Legacy hanzi-only card (pre-pinyin schema). Disambiguate by reading
       // when the hanzi maps to exactly one word; otherwise keep it untouched
@@ -106,14 +117,14 @@ function reconcile(progress, vocab) {
       const matches = byHanzi[card.hanzi] || []
       if (matches.length === 1) {
         const w = matches[0]
-        migrated[cardKey(w)] = { ...card, hanzi: w.hanzi, pinyin: w.pinyin ?? '' }
+        place(cardKey(w), { ...card, hanzi: w.hanzi, pinyin: w.pinyin ?? '' }, key)
       } else {
         migrated[key] = card
       }
     } else if (vocabById[key]) {
       // Very old id-keyed card.
       const w = vocabById[key]
-      migrated[cardKey(w)] = { ...card, hanzi: w.hanzi, pinyin: w.pinyin ?? '' }
+      place(cardKey(w), { ...card, hanzi: w.hanzi, pinyin: w.pinyin ?? '' }, key)
     } else {
       // Unmappable for now (pack not loaded) — keep as-is for a later pass.
       migrated[key] = card
