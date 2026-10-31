@@ -11,7 +11,7 @@ const API = 'https://api.github.com'
 
 function headers(token) {
   return {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${String(token ?? "").trim()}`,
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   }

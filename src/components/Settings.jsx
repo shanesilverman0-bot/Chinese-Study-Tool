@@ -84,7 +84,7 @@ export default function Settings({
               type="password"
               className={inputCls}
               value={gh.token}
-              onChange={(e) => setGh({ token: e.target.value })}
+              onChange={(e) => setGh({ token: e.target.value.trim() })}
               placeholder="ghp_…"
             />
           </Field>
