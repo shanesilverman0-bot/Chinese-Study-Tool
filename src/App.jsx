@@ -279,6 +279,7 @@ export default function App() {
                 vocab={vocab}
                 upsertList={upsertList}
                 deleteList={deleteList}
+                updateProgress={updateProgress}
                 onStudyList={studyList}
               />
             )}

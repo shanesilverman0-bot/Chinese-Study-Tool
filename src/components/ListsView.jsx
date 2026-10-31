@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { TOCFLMasteryPanel, CCCTree, StatusBar, StatusNums, StatusLegend } from './MasteryPanels.jsx'
 import ListDetail from './ListDetail.jsx'
+import PlecoImport from './PlecoImport.jsx'
 import { useWide } from '../lib/layout.js'
 import { createCustomList, statusSummary } from '../lib/lists.js'
 
@@ -9,10 +10,11 @@ const GROUPS = [
   ['pleco', 'Pleco'],
   ['custom', '自訂 · Custom'],
 ]
-export default function ListsView({ lists, index, progress, baseline, vocab, upsertList, deleteList, onStudyList }) {
+export default function ListsView({ lists, index, progress, baseline, vocab, upsertList, deleteList, updateProgress, onStudyList }) {
   const [openId, setOpenId] = useState(null)
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)
+  const [importing, setImporting] = useState(false)
   const [treeOpen, setTreeOpen] = useState({ books: {}, chapters: {} })
   const settings = progress.studySettings
   const wide = useWide()
@@ -63,12 +65,20 @@ export default function ListsView({ lists, index, progress, baseline, vocab, ups
           <section key={type} className="rounded-2xl border border-ink/10 bg-white/50 p-5">
             <div className="mb-2 flex items-center justify-between">
               <h3 className="font-display text-sm font-bold tracking-wide text-ink/70">{title}</h3>
+              {type === 'pleco' && !importing && (
+                <button onClick={() => setImporting(true)} className="rounded-full border border-ink/20 px-3 py-1 font-sans text-xs text-ink/70 hover:border-jade hover:text-jade">
+                  匯入 Pleco
+                </button>
+              )}
               {type === 'custom' && !creating && (
                 <button onClick={() => setCreating(true)} className="rounded-full border border-ink/20 px-3 py-1 font-sans text-xs text-ink/70 hover:border-jade hover:text-jade">
                   新清單 · New custom list
                 </button>
               )}
             </div>
+            {type === 'pleco' && importing && (
+              <PlecoImport index={index} progress={progress} updateProgress={updateProgress} onClose={() => setImporting(false)} />
+            )}
             {type === 'custom' && creating && (
               <div className="mb-3 flex gap-2">
                 <input
@@ -83,7 +93,7 @@ export default function ListsView({ lists, index, progress, baseline, vocab, ups
             {type === 'ccc' && <CCCTree lists={group} ctx={ctx} onOpen={setOpenId} open={treeOpen} setOpen={setTreeOpen} />}
             {type !== 'ccc' && group.length === 0 && (
               <p className="font-sans text-sm text-ink/50">
-                {type === 'pleco' ? 'No Pleco lists yet (import comes in a later update).' : type === 'custom' ? 'No custom lists yet.' : 'No CCC lists.'}
+                {type === 'pleco' ? 'No Pleco lists yet. Use 匯入 Pleco to import a flashcard XML export.' : type === 'custom' ? 'No custom lists yet.' : 'No CCC lists.'}
               </p>
             )}
             {type !== 'ccc' && (

@@ -75,15 +75,24 @@ export default function ListDetail({ list, index, progress, baseline, upsertList
       <div className="flex flex-col">
         {rows.length === 0 && <p className="py-4 text-center font-sans text-sm text-ink/50">This list is empty.</p>}
         {rows.map(({ key, it, status }) => (
-          <div key={key} className="flex min-h-[44px] items-center gap-2 border-b border-ink/5 py-1.5">
+          <div key={key} className="border-b border-ink/5">
+          <div className="flex min-h-[44px] items-center gap-2 py-1.5">
             <span className="font-display text-base text-ink">{it?.hanzi ?? key.split('|')[0]}</span>
             <span className="font-mono text-xs text-cinnabar">{it?.pinyin ?? ''}</span>
             <span className="min-w-0 flex-1 truncate font-sans text-xs text-ink/55">{it?.english ?? ''}</span>
+            {it?.tags?.includes('outside-TOCFL') && <span className="rounded-full bg-ink/10 px-2 py-0.5 font-mono text-[10px] text-ink/50">非TOCFL</span>}
             {it?.band && <span className="font-mono text-[10px] text-ink/40">{it.level ?? it.band}</span>}
             <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] ${CHIP[status]}`}>{status}</span>
             {custom && (
               <button onClick={() => upsertList(removeItems(list, [key]))} className="font-sans text-xs text-ink/40 hover:text-cinnabar">Remove</button>
             )}
+          </div>
+          {progress.itemNotes?.[key]?.pleco?.defn && (
+            <details className="pb-1.5 pl-1">
+              <summary className="cursor-pointer font-mono text-[10px] text-ink/45">Pleco</summary>
+              <p className="whitespace-pre-wrap font-sans text-xs text-ink/60">{progress.itemNotes[key].pleco.defn}</p>
+            </details>
+          )}
           </div>
         ))}
       </div>
