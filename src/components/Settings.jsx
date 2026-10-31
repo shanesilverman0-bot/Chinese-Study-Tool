@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { BANDS, BAND_LABELS } from '../data/vocab.js'
 import { fetchProgress, putTextFile, verifyAccess } from '../lib/github.js'
 import { DATA_MODE, dataPath } from '../lib/dataMode.js'
 import { PROVIDERS } from '../lib/tutor.js'
@@ -55,13 +54,6 @@ export default function Settings({
 
   function setDataRepo(patch) {
     updateSettings({ data: { ...dataRepo, ...patch } })
-  }
-
-  function toggleBand(band) {
-    const enabled = new Set(settings.enabledBands)
-    if (enabled.has(band)) enabled.delete(band)
-    else enabled.add(band)
-    updateSettings({ enabledBands: [...enabled] })
   }
 
   async function testGitHub() {
@@ -276,36 +268,6 @@ export default function Settings({
 
       {/* Mic diagnostics */}
       <MicTest />
-
-      {/* Band selection */}
-      <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
-        <h3 className="mb-3 font-display text-base font-bold text-ink">學習等級 · Study levels</h3>
-        <div className="flex flex-col gap-2">
-          {BANDS.map((band) => {
-            const on = settings.enabledBands.includes(band)
-            return (
-              <button
-                key={band}
-                onClick={() => toggleBand(band)}
-                className={`flex items-center justify-between rounded-xl border px-4 py-3 transition ${
-                  on ? 'border-cinnabar bg-cinnabar/5' : 'border-ink/10'
-                }`}
-              >
-                <span className="font-sans text-sm text-ink/80">
-                  {BAND_LABELS[band]} <span className="font-mono text-xs text-ink/40">{band}</span>
-                </span>
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${
-                    on ? 'bg-cinnabar text-paper' : 'border border-ink/20 text-transparent'
-                  }`}
-                >
-                  ✓
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      </section>
     </div>
   )
 }

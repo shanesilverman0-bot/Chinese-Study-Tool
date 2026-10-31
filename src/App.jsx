@@ -1,17 +1,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SEED_VOCAB } from './data/vocab.js'
 import { CCC_VOCAB, CCC_PACK_NAMES } from './data/ccc.js'
-import { loadVocabPacksFromGitHub, filterVocab } from './lib/vocab.js'
+import { loadVocabPacksFromGitHub } from './lib/vocab.js'
 import { useProgress, clearLogArchiveStamp } from './hooks/useProgress.js'
 import { useCounts } from './hooks/useCounts.js'
 import { recomputeHistory } from './lib/counts.js'
-import { useStudyFilter } from './hooks/useStudyFilter.js'
 import { primeVoices } from './lib/speech.js'
-import { isDue, cardKey, newCardState } from './lib/fsrs.js'
+import { cardKey, newCardState } from './lib/fsrs.js'
+import { getAllLists } from './lib/lists.js'
+import { requeueAfterRating } from './lib/queue.js'
+import { loadSelection, saveSelection } from './lib/selection.js'
 import { migrate } from './lib/migrate.js'
 import { mergeProgress } from './lib/merge.js'
 import { itemTypeOf, buildItemIndex } from './lib/items.js'
 import Dashboard from './components/Dashboard.jsx'
+import ListsView from './components/ListsView.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
 import RepoFiles from './components/RepoFiles.jsx'
@@ -40,6 +43,8 @@ export default function App() {
     updateStudySettings,
     addSession,
     upsertManualEntry,
+    upsertList,
+    deleteList,
     dataReady,
     isBlocked,
     gh,
@@ -98,36 +103,17 @@ export default function App() {
     return changed
   }
 
-  const {
-    filter,
-    toggleTocflBand,
-  } = useStudyFilter(vocab)
-
-  const [dangdaiFilter, setDangdaiFilter] = useState({ book: null, chapter: null, list: null })
-
-  const filteredVocab = useMemo(() => {
-    const tocflVocab = vocab.filter(
-      (v) => v.source === 'tocfl' && filter.tocfl[v.level] === true
-    )
-    const ccccVocab = dangdaiFilter.book != null
-      ? filterVocab(vocab.filter((v) => v.source === 'cccc'), dangdaiFilter)
-      : []
-    // Deduplicate by composite key — a word may exist as both a tocfl and a
-    // cccc entry when it appears in both SEED_VOCAB and a dangdai pack.
-    // Without this, the same card key ends up in the review queue twice.
-    const seenKeys = new Set()
-    return [...tocflVocab, ...ccccVocab].filter((v) => {
-      const k = cardKey(v)
-      if (seenKeys.has(k)) return false
-      seenKeys.add(k)
-      return true
-    })
-  }, [vocab, filter.tocfl, dangdaiFilter])
+  const allLists = useMemo(() => getAllLists(progress, CCC_VOCAB), [progress.lists]) // eslint-disable-line react-hooks/exhaustive-deps
+  const [selection, setSelection] = useState(() =>
+    loadSelection(allLists.filter((l) => l.sourceType === 'ccc' && l.source.part == null).map((l) => l.source))
+  )
+  useEffect(() => { saveSelection(selection) }, [selection])
 
   const [manualOpen, setManualOpen] = useState(false)
-  const [view, setView] = useState('home') // home | review | settings | files
+  const [view, setView] = useState('home') // home | lists | review | settings | files
   const [queue, setQueue] = useState([]) // holds composite card keys
   const [pos, setPos] = useState(0)
+  const [stillLearning, setStillLearning] = useState(null) // keys, at the end of the queue
 
   // Look up the word behind a card key. Keyed by hanzi+pinyin so homographs
   // resolve to the correct word.
@@ -180,46 +166,49 @@ export default function App() {
     reloadVocab()
   }, [reloadVocab])
 
-  // Build a review queue: due cards first, then unseen, from filtered vocab, capped.
-  const buildQueue = () => {
-    const now = new Date()
-    const due = []
-    const unseen = []
-    const rest = []
-    const queued = new Set()
-    for (const v of filteredVocab) {
-      const key = itemIndex.studyKeyOf(cardKey(v), progress.cards)
-      if (queued.has(key)) continue // two list entries resolved to the same card
-      queued.add(key)
-      const card = progress.cards[key]
-      if (!card || card.reps === 0) unseen.push(key) // no card = new
-      else if (isDue(card, now)) due.push(key)
-      else rest.push(key)
-    }
-    const primary = [...due, ...unseen].slice(0, 40)
-    if (primary.length > 0) return primary
-    return rest.slice(0, 20)
-  }
-
-  function startReview() {
-    const q = buildQueue()
+  function startReview(q) {
     setQueue(q)
     setPos(0)
+    setStillLearning(null)
     setView(q.length ? 'review' : 'home')
   }
+
+  function studyList(id) {
+    setSelection((sel) => ({ ...sel, listIds: [id], tocflLevels: [] }))
+    setView('home')
+    setTimeout(() => document.getElementById('study-picker')?.scrollIntoView({ behavior: 'smooth' }), 50)
+  }
+
+  const wordFor = (key) =>
+    vocabByKey[key] ?? vocabByKey[itemIndex.get(key)?.rawAliasOf] ?? itemIndex.get(key) ?? null
 
   function handleRate(ratingKey) {
     const key = queue[pos]
     // An existing card (possibly under an older CCC key) is rated by its key;
-    // a new word passes its vocab entry so the card gets the right key and fields.
-    rate(progress.cards[key] ? key : (vocabByKey[key] ?? key), ratingKey, []) // list ids: Phase 8
-    if (pos + 1 < queue.length) setPos(pos + 1)
+    // a new word passes its entry so the card gets the right key and fields.
+    const updated = rate(progress.cards[key] ? key : (wordFor(key) ?? key), ratingKey, selection.listIds)
+    const now = new Date()
+    const next = updated ? requeueAfterRating(queue, pos, key, updated, now) : queue
+    if (next !== queue) setQueue(next)
+    if (pos + 1 < next.length) { setPos(pos + 1); return }
+    // End of the queue: offer any cards still in Learning/Relearning.
+    const cards = { ...progress.cards, [key]: updated ?? progress.cards[key] }
+    const waiting = [...new Set(next)].filter((k) => {
+      const c = cards[k]
+      return c && (c.state === 1 || c.state === 3) && new Date(c.due).getTime() - now.getTime() <= 60 * 60 * 1000
+    })
+    if (waiting.length) setStillLearning(waiting)
     else setView('home')
   }
 
-  const currentWord = queue[pos]
-    ? vocabByKey[queue[pos]] ?? vocabByKey[itemIndex.get(queue[pos])?.rawAliasOf] ?? null
-    : null
+  function continueLearning() {
+    const keys = stillLearning
+    setQueue([...queue, ...keys])
+    setPos(pos + 1)
+    setStillLearning(null)
+  }
+
+  const currentWord = queue[pos] ? wordFor(queue[pos]) : null
   const currentCard = queue[pos]
     ? progress.cards[queue[pos]] ?? (currentWord ? newCardState(currentWord) : null)
     : null
@@ -245,6 +234,7 @@ export default function App() {
             <SyncDot syncState={syncState} githubReady={githubReady} />
             <SessionTimer addSession={addSession} snapshotNow={snapshotNow} />
             <NavBtn active={view === 'home'} onClick={() => setView('home')}>首頁</NavBtn>
+            <NavBtn active={view === 'lists'} onClick={() => setView('lists')}>清單</NavBtn>
             <NavBtn active={view === 'files'} onClick={() => setView('files')}>檔案</NavBtn>
             <NavBtn active={view === 'settings'} onClick={() => setView('settings')}>設定</NavBtn>
           </div>
@@ -261,17 +251,37 @@ export default function App() {
                 updateGoals={updateGoals}
                 updateStudySettings={updateStudySettings}
                 vocab={vocab}
-                filter={filter}
-                toggleTocflBand={toggleTocflBand}
-                filteredVocab={filteredVocab}
-                dangdaiFilter={dangdaiFilter}
-                setDangdaiFilter={setDangdaiFilter}
-                onStart={startReview}
+                pickerProps={{
+                  selection, setSelection, lists: allLists, index: itemIndex, progress, baseline, onStart: startReview,
+                }}
                 onAddManual={() => setManualOpen(true)}
               />
             )}
 
-            {view === 'review' && currentWord && (
+            {view === 'lists' && (
+              <ListsView
+                lists={allLists}
+                index={itemIndex}
+                progress={progress}
+                baseline={baseline}
+                vocab={vocab}
+                upsertList={upsertList}
+                deleteList={deleteList}
+                onStudyList={studyList}
+              />
+            )}
+
+            {view === 'review' && stillLearning && (
+              <div className="py-10 text-center">
+                <p className="font-display text-lg text-ink">{stillLearning.length} cards still learning</p>
+                <div className="mt-6 flex justify-center gap-3">
+                  <button onClick={continueLearning} className="rounded-xl bg-cinnabar px-6 py-3 font-display font-bold text-paper">Continue</button>
+                  <button onClick={() => { setStillLearning(null); setView('home') }} className="rounded-xl border border-ink/20 px-6 py-3 font-display text-ink/70">Finish</button>
+                </div>
+              </div>
+            )}
+
+            {view === 'review' && !stillLearning && currentWord && (
               <div>
                 <div className="mb-4 flex items-center justify-between">
                   <button
@@ -281,7 +291,7 @@ export default function App() {
                     ← 結束
                   </button>
                   <span className="font-mono text-xs text-ink/45">
-                    {pos + 1} / {queue.length}
+                    {(pos + 1).toLocaleString('en-US')} / {queue.length.toLocaleString('en-US')}
                   </span>
                 </div>
                 <Flashcard

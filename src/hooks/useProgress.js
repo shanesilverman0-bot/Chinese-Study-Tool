@@ -13,6 +13,7 @@ import { archiveLog } from '../lib/logArchive.js'
 import { retirePlaceholderGoals } from '../lib/goals.js'
 import { localDate } from '../lib/dates.js'
 import { noteActivity } from '../lib/sessions.js'
+import { deleteList as tombstoneList } from '../lib/lists.js'
 
 const SAVE_DEBOUNCE_MS = 4000
 const MAX_SAVE_TRIES = 3
@@ -40,7 +41,6 @@ const DEFAULT_SETTINGS = {
   claudeModel: 'claude-sonnet-4-20250514',
   deepseekApiKey: '',
   deepseekModel: 'deepseek-chat',
-  enabledBands: ['Novice'],
   unlockedBands: ['Novice'],
 }
 
@@ -367,6 +367,7 @@ export function useProgress(vocab = SEED_VOCAB) {
       }))
       noteActivity('flashcards', listIds, 'review')
       scheduleSync()
+      return updated
     },
     [scheduleSync, apply]
   )
@@ -438,6 +439,22 @@ export function useProgress(vocab = SEED_VOCAB) {
     [updateProgress]
   )
 
+  // Insert or replace a stored list (pleco/custom) by id.
+  const upsertList = useCallback(
+    (l) => updateProgress((prev) => ({ ...prev, lists: { ...(prev.lists ?? {}), [l.id]: l } })),
+    [updateProgress]
+  )
+
+  // Tombstone a stored list (DESIGN §7); CCC lists are virtual and ignored.
+  const deleteList = useCallback(
+    (id) => updateProgress((prev) => {
+      const l = prev.lists?.[id]
+      if (!l || l.deleted) return prev
+      return { ...prev, lists: { ...prev.lists, [id]: tombstoneList(l) } }
+    }),
+    [updateProgress]
+  )
+
   const updateSettings = useCallback((patch) => {
     setSettings((prev) => ({ ...prev, ...patch }))
   }, [])
@@ -467,6 +484,8 @@ export function useProgress(vocab = SEED_VOCAB) {
     updateStudySettings,
     addSession,
     upsertManualEntry,
+    upsertList,
+    deleteList,
     // Data is ready for a snapshot: migration succeeded and the first pull settled (or no GitHub).
     dataReady: !initial.error && (!githubReady || pullSettled),
     isBlocked: () => blockedRef.current,
