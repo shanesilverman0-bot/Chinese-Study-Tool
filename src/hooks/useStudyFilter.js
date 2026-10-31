@@ -7,11 +7,25 @@ const FILTER_KEY = storageKey('studyFilter')
 const DEFAULT_FILTER = {
   tocfl: {
     Novice: true,
-    A: true,
-    B: false,
+    A1: true,
+    A2: true,
+    B1: false,
+    B2: false,
     C: false,
   },
   cccc: {},
+}
+
+// Phase 5b: the four bands became six levels. A stored band choice converts once:
+// A -> A1 + A2, B -> B1 + B2 (the old keys are dropped).
+function convertBands(tocfl) {
+  const out = { ...tocfl }
+  for (const [band, levels] of [['A', ['A1', 'A2']], ['B', ['B1', 'B2']]]) {
+    if (!(band in out)) continue
+    for (const l of levels) if (!(l in out)) out[l] = out[band] === true
+    delete out[band]
+  }
+  return out
 }
 
 function loadFilter() {
@@ -19,12 +33,12 @@ function loadFilter() {
     const raw = localStorage.getItem(FILTER_KEY)
     if (!raw) return structuredClone(DEFAULT_FILTER)
     const stored = JSON.parse(raw)
-    // Deep-merge tocfl so per-band defaults apply to bands absent from storage
+    // Deep-merge tocfl so per-level defaults apply to levels absent from storage
     // (e.g. a returning user who never saw the new UI gets sane defaults).
     return {
       ...structuredClone(DEFAULT_FILTER),
       ...stored,
-      tocfl: { ...DEFAULT_FILTER.tocfl, ...(stored.tocfl || {}) },
+      tocfl: { ...DEFAULT_FILTER.tocfl, ...convertBands(stored.tocfl || {}) },
       cccc: { ...(stored.cccc || {}) },
     }
   } catch {
@@ -65,7 +79,7 @@ export function useStudyFilter(vocab) {
     if (!vocab) return []
     const filtered = vocab.filter((v) => {
       if (v.source === 'tocfl') {
-        return filter.tocfl[v.band] === true
+        return filter.tocfl[v.level] === true
       }
       if (v.source === 'cccc') {
         const key = `${v.book}-${v.chapter}-${v.list}`

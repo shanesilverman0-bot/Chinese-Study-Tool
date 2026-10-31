@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { storageKey } from '../lib/dataMode.js'
 import { goalEndDate } from '../data/exams.js'
-import { dateT, goalStartValue, liveGoals } from '../lib/pace.js'
+import { dateT, goalStartValue, liveGoals, compareRows, compareColor } from '../lib/pace.js'
 
 const SERIES = [
   { key: 'seen', label: 'Seen', color: '#8a8178', width: 2 },
@@ -39,7 +39,7 @@ function Chip({ on, color, onClick, children }) {
   )
 }
 
-export default function ProgressChart({ snapshots, today, counts, goals, onToggleGoal }) {
+export default function ProgressChart({ snapshots, today, counts, goals, goal, compareExamIds = [], onToggleGoal }) {
   const [hidden, setHidden] = useState(loadHidden)
   const toggleSeries = (k) => {
     const next = { ...hidden, [k]: !hidden[k] }
@@ -86,8 +86,27 @@ export default function ProgressChart({ snapshots, today, counts, goals, onToggl
     }
   })
 
+  // One dashed line per checked, upcoming exam other than the main one (that is the goal line).
+  const compareLines = goal
+    ? compareRows({ goal, examIds: compareExamIds, snapshots, knownToday: counts.known, today })
+      .filter((r) => !r.isMain)
+      .map((r) => {
+        const endT = dateT(r.exam.date)
+        return {
+          id: r.id,
+          label: fmtTick(endT),
+          color: compareColor(compareExamIds, r.id),
+          endT,
+          data: [
+            { t: Math.max(dateT(goal.startDate), data[0].t), v: goalStartValue(goal, snapshots, counts.known) },
+            { t: endT, v: goal.target },
+          ],
+        }
+      })
+    : []
+
   const firstT = data[0].t
-  const lastT = Math.max(todayT, ...goalLines.map((l) => l.endT))
+  const lastT = Math.max(todayT, ...goalLines.map((l) => l.endT), ...compareLines.map((l) => l.endT))
   const domain = [firstT, lastT > firstT ? lastT : firstT + DAY]
   // Explicit whole-day ticks so a short span never yields duplicate labels.
   const spanDays = Math.round((domain[1] - domain[0]) / DAY)
@@ -133,6 +152,16 @@ export default function ProgressChart({ snapshots, today, counts, goals, onToggl
             />
           ))}
           {goalLines.map((l) => (
+            <Line
+              key={l.id} data={l.data} dataKey="v" name={l.label} stroke={l.color}
+              strokeWidth={1.5} strokeDasharray="5 4" dot={false} isAnimationActive={false}
+              legendType="none" activeDot={false}
+              label={({ x, y, index }) => index === 1 ? (
+                <text x={x} y={y - 6} textAnchor="end" fontSize={10} fill={l.color}>{l.label}</text>
+              ) : null}
+            />
+          ))}
+          {compareLines.map((l) => (
             <Line
               key={l.id} data={l.data} dataKey="v" name={l.label} stroke={l.color}
               strokeWidth={1.5} strokeDasharray="5 4" dot={false} isAnimationActive={false}

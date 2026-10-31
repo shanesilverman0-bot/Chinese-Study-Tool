@@ -130,7 +130,7 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
       {/* Character face */}
       <div className="relative flex min-h-[180px] w-full flex-col items-center justify-center rounded-3xl border border-ink/10 bg-white/50 px-6 py-10 shadow-sm">
         <span className="absolute right-4 top-3 font-mono text-[10px] uppercase tracking-widest text-ink/30">
-          {word.band}
+          {word.level ?? word.band}
         </span>
         <span className="font-display text-7xl font-bold leading-none text-ink sm:text-8xl">
           {[word.hanzi, ...(word.variants ?? []).map((v) => v.hanzi)].join('／')}

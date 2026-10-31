@@ -3,6 +3,7 @@
 
 import { THRESHOLD_EDGES, DEFAULT_STUDY_SETTINGS } from './schema.js'
 import { localDate } from './dates.js'
+import { LEVELS } from '../data/vocab.js'
 
 export { THRESHOLD_EDGES }
 
@@ -80,7 +81,14 @@ export function computeCounts({ progress, index, settings, baseline, contextQual
   const tails = {}
   const tailsReviewState = {}
   for (const e of THRESHOLD_EDGES) { tails[e] = 0; tailsReviewState[e] = 0 }
+  const byLevel = Object.fromEntries(LEVELS.map((l) => [l, { total: 0, seen: 0, known: 0 }]))
+  const levelOf = (k) => byLevel[index.get(k)?.level]
+  for (const k of index.tocflKeys) { const b = levelOf(k); if (b) b.total++ }
   let known = 0
+  for (const [k, { card }] of cards) {
+    const b = levelOf(k)
+    if (b) { b.seen++; if (isKnownCard(card, s)) b.known++ }
+  }
   for (const { card } of cards.values()) {
     const st = card.stability ?? 0
     for (const e of THRESHOLD_EDGES) {
@@ -94,8 +102,8 @@ export function computeCounts({ progress, index, settings, baseline, contextQual
 
   let baselineUntouched = 0
   let studiedUntouched = 0
-  for (const k of solid) if (!cards.has(k)) baselineUntouched++
-  for (const k of studied) if (!cards.has(k)) studiedUntouched++
+  for (const k of solid) if (!cards.has(k)) { baselineUntouched++; const b = levelOf(k); if (b) { b.seen++; b.known++ } }
+  for (const k of studied) if (!cards.has(k)) { studiedUntouched++; const b = levelOf(k); if (b) b.seen++ }
 
   let context = 0
   for (const k of index.tocflKeys) if (contextQualified(k)) context++
@@ -105,6 +113,7 @@ export function computeCounts({ progress, index, settings, baseline, contextQual
     seen: reviewedTocfl + baselineUntouched + studiedUntouched,
     known: known + baselineUntouched,
     context,
+    byLevel,
     raw: { reviewedTocfl, tails, tailsReviewState, baselineUntouched, studiedUntouched, contextQualified: context },
   }
 }

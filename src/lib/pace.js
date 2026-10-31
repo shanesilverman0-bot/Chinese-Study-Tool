@@ -1,7 +1,7 @@
 // Goal lines and pace (DESIGN §8.6). Pure.
 
 import { daysBetween } from './dates.js'
-import { goalEndDate } from '../data/exams.js'
+import { goalEndDate, examById } from '../data/exams.js'
 
 export const dateT = (ymd) => Date.parse(`${ymd}T00:00:00Z`)
 
@@ -32,9 +32,10 @@ export function pickGoal(goals, selectedId, today) {
   return future[0] ?? enabled[0] ?? null
 }
 
-export function computePace({ goal, snapshots, knownToday, today }) {
+// Pace toward `goal.target` if the goal ended on `endDate`.
+export function computePaceFor({ goal, endDate, snapshots, knownToday, today }) {
   if (!goal) return null
-  const end = goalEndDate(goal)
+  const end = endDate
   const daysLeft = daysBetween(today, end)
   const needed = Math.max(0, goal.target - knownToday) / Math.max(1 / 7, daysLeft / 7)
 
@@ -56,3 +57,26 @@ export function computePace({ goal, snapshots, knownToday, today }) {
   const gap = actual == null ? null : needed - actual
   return { end, daysLeft, needed, actual, basis, gap }
 }
+
+export function computePace({ goal, snapshots, knownToday, today }) {
+  if (!goal) return null
+  return computePaceFor({ goal, endDate: goalEndDate(goal), snapshots, knownToday, today })
+}
+
+// One row per checked exam that is still upcoming (DESIGN §8.6), in checklist order.
+// `isMain` marks the goal's own exam: the table lists it once, the chart draws it as the goal line.
+export function compareRows({ goal, examIds, snapshots, knownToday, today }) {
+  if (!goal) return []
+  const rows = []
+  for (const id of new Set(examIds ?? [])) {
+    const exam = examById(id)
+    if (!exam || exam.kind !== 'LR' || exam.date < today) continue
+    const pace = computePaceFor({ goal, endDate: exam.date, snapshots, knownToday, today })
+    rows.push({ id, exam, isMain: id === goal.examId, weeks: pace.daysLeft / 7, ...pace })
+  }
+  return rows.sort((a, b) => a.exam.date.localeCompare(b.exam.date))
+}
+
+// Fixed palette for the comparison lines; a color follows the exam's position in compareExamIds.
+export const COMPARE_COLORS = ['#1a6b8a', '#7b4b94', '#c26a1b', '#2a9d8f', '#8a5a44']
+export const compareColor = (ids, id) => COMPARE_COLORS[Math.max(0, ids.indexOf(id)) % COMPARE_COLORS.length]

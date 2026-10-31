@@ -130,6 +130,21 @@ if (fs.existsSync(progressFile)) {
   for (const T of [3, 7]) for (const wb of [true, false]) {
     ok(`known(review on) <= known(review off) [T=${T}, baseline ${wb}]`, get(T, true, wb).known <= get(T, false, wb).known)
   }
+  hr('Counts by level (DESIGN §8.7)')
+  console.log('level    total   seen  known')
+  let sumSeen = 0, sumKnown = 0, sumTotal = 0
+  for (const l of LEVELS) {
+    const b = d.byLevel[l]
+    console.log(`${l.padEnd(7)} ${String(b.total).padStart(6)} ${String(b.seen).padStart(6)} ${String(b.known).padStart(6)}`)
+    sumSeen += b.seen; sumKnown += b.known; sumTotal += b.total
+  }
+  console.log(`${'Sum'.padEnd(7)} ${String(sumTotal).padStart(6)} ${String(sumSeen).padStart(6)} ${String(sumKnown).padStart(6)}`)
+  ok('sum of byLevel.known = known', sumKnown === d.known, `(${sumKnown} vs ${d.known})`)
+  ok('sum of byLevel.seen = seen', sumSeen === d.seen, `(${sumSeen} vs ${d.seen})`)
+  ok('sum of byLevel.total = TOCFL keys', sumTotal === [...index.tocflKeys].length, `(${sumTotal} vs ${[...index.tocflKeys].length})`)
+  const nb = run(3, true, false)
+  ok('byLevel sums hold with baseline off', LEVELS.reduce((n, l) => n + nb.byLevel[l].known, 0) === nb.known && LEVELS.reduce((n, l) => n + nb.byLevel[l].seen, 0) === nb.seen)
+
   const off = run(3, true, false)
   ok('baseline off: Known drops by exactly baselineUntouched', d.known - off.known === baselineUntouched, `(${d.known} - ${off.known} = ${d.known - off.known})`)
   ok('baseline off: Seen drops by baselineUntouched + studiedUntouched', d.seen - off.seen === baselineUntouched + studiedUntouched, `(${d.seen - off.seen})`)

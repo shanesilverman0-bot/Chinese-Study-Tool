@@ -46,7 +46,7 @@ A.snapshots.push({ date: '2026-11-01', computedAt: '2026-11-01T11:00:00.000Z', s
 B.snapshots.push({ date: '2026-11-01', computedAt: '2026-11-01T12:00:00.000Z', seen: 2, known: 2, context: 0 })
 A.sessions.push({ id: 'sA', updatedAt: T1 })
 B.sessions.push({ id: 'sB', updatedAt: T2 })
-const goalB = B.goals.find((g) => g.id === 'goal-jun-2027')
+const goalB = B.goals.find((g) => g.id === 'goal-exam')
 goalB.deleted = true
 goalB.updatedAt = '2026-11-01T09:00:00.000Z'
 
@@ -73,7 +73,7 @@ const results = [
   ['both card updates present', M.cards[KA]?.last_review === T1 && M.cards[KB]?.last_review === T2],
   ['both sessions present', sessionIds(M).has('sA') && sessionIds(M).has('sB')],
   ['later snapshot wins', M.snapshots.length === 1 && M.snapshots[0].computedAt === '2026-11-01T12:00:00.000Z'],
-  ['goal tombstoned', M.goals.find((g) => g.id === 'goal-jun-2027')?.deleted === true && M.goals.length === base.goals.length],
+  ['goal tombstoned', M.goals.find((g) => g.id === 'goal-exam')?.deleted === true && M.goals.length === base.goals.length],
   ['log not truncated (>6,000 kept)', M.log.length === logBefore + 2 && M.log.length > 6000],
   ['both new log entries exactly once', count(M, `${KA}|${T1}`) === 1 && count(M, `${KB}|${T2}`) === 1],
   ['log sorted by at', M.log.every((e, i, a) => i === 0 || a[i - 1].at <= e.at)],

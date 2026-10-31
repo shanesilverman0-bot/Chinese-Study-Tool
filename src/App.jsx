@@ -103,7 +103,7 @@ export default function App() {
 
   const filteredVocab = useMemo(() => {
     const tocflVocab = vocab.filter(
-      (v) => v.source === 'tocfl' && filter.tocfl[v.band] === true
+      (v) => v.source === 'tocfl' && filter.tocfl[v.level] === true
     )
     const ccccVocab = dangdaiFilter.book != null
       ? filterVocab(vocab.filter((v) => v.source === 'cccc'), dangdaiFilter)

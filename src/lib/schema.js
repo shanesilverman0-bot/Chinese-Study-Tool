@@ -37,7 +37,10 @@ export const DEFAULT_STUDY_SETTINGS = {
   selectedGoalId: null,
   attemptLogMax: 3000,
   logKeepDays: 90,
+  compareExamIds: ['lr-2027-03', 'lr-2027-05', 'lr-2027-06'],
 }
+
+export const EPOCH_STAMP = EPOCH
 
 export const DEFAULT_GOALS = [
   {
@@ -45,18 +48,6 @@ export const DEFAULT_GOALS = [
     startDate: '2026-11-01', startValue: null,
     endDate: '2027-05-15', examId: 'lr-2027-05',
     target: 5000, enabled: true, updatedAt: EPOCH,
-  },
-  {
-    id: 'goal-jun-2027', label: 'June 2027', metric: 'known',
-    startDate: '2027-05-17', startValue: null,
-    endDate: '2027-06-30', examId: null,
-    target: 5500, enabled: false, updatedAt: EPOCH,
-  },
-  {
-    id: 'goal-dec-2027', label: 'Jul–Dec 2027', metric: 'known',
-    startDate: '2027-07-01', startValue: null,
-    endDate: '2027-12-31', examId: null,
-    target: 6500, enabled: false, updatedAt: EPOCH,
   },
 ]
 

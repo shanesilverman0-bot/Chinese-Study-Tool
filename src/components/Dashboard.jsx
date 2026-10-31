@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react'
-import { BANDS, BAND_LABELS } from '../data/vocab.js'
+import { LEVELS, LEVEL_LABELS } from '../data/vocab.js'
 import { isDue, State, cardKey } from '../lib/fsrs.js'
 import DangdaiFilter from './DangdaiFilter.jsx'
 import ProgressChart from './ProgressChart.jsx'
 import PaceBox from './PaceBox.jsx'
 import GoalsEditor from './GoalsEditor.jsx'
 import { pickGoal } from '../lib/pace.js'
+import { DEFAULT_STUDY_SETTINGS } from '../lib/schema.js'
 
 // Computes study stats from the progress object.
 function computeStats(progress, vocab) {
@@ -48,14 +49,11 @@ function Stat({ value, label, accent }) {
   )
 }
 
-// Bucket a band's cards into four mutually-exclusive groups so the stacked bar
-// segments sum to the band total. Order matters: unseen → due → mastered →
+// Bucket a level's cards into four mutually-exclusive groups so the stacked bar
+// segments sum to the level total. Order matters: unseen → due → mastered →
 // learned. Null-safe because vocab can grow a render before progress reconciles.
-function computeBandStats(vocab, progress, band) {
-  const bandVocab = vocab.filter(
-    (v) => v.source === 'tocfl' &&
-           (Array.isArray(v.band) ? v.band.includes(band) : v.band === band)
-  )
+function computeBandStats(vocab, progress, level) {
+  const bandVocab = vocab.filter((v) => v.source === 'tocfl' && v.level === level)
   const now = new Date()
   let mastered = 0
   let learned = 0
@@ -153,7 +151,7 @@ function FilterCard({
       <div className="mb-5 flex flex-col gap-2">
         {activeTab === 'tocfl' && (
           <div className="space-y-3">
-            {BANDS.map((band) => {
+            {LEVELS.map((band) => {
               const stats = computeBandStats(vocab, progress, band)
               const isEnabled = filter.tocfl[band] === true
               return (
@@ -170,7 +168,7 @@ function FilterCard({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span className="font-sans text-sm font-medium text-ink">
-                        {BAND_LABELS[band]}
+                        {LEVEL_LABELS[band]}
                       </span>
                       <span className="font-mono text-xs text-ink/60">
                         {stats.total} cards
@@ -249,14 +247,14 @@ function TOCFLMasteryPanel({ vocab, progress }) {
 
       {expanded && (
         <div className="mt-4 space-y-3">
-          {BANDS.map((band) => {
+          {LEVELS.map((band) => {
             const stats = computeBandStats(vocab, progress, band)
             if (stats.total === 0) return null
             return (
               <div key={band}>
                 <div className="mb-1 flex items-baseline justify-between">
                   <span className="font-sans text-sm text-ink/80">
-                    {BAND_LABELS[band]}{' '}
+                    {LEVEL_LABELS[band]}{' '}
                     <span className="font-mono text-xs text-ink/40">{band}</span>
                   </span>
                   <span className="font-mono text-xs text-ink/50">
@@ -428,6 +426,17 @@ function TodayCard({ counts, baseline, settings, due }) {
           </div>
         ))}
       </div>
+      {counts.byLevel && (
+        <div className="mt-3 grid grid-cols-6 gap-1 border-t border-ink/10 pt-3">
+          {LEVELS.map((l) => (
+            <div key={l} className="flex flex-col items-center">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-ink/45">{l}</span>
+              <span className="font-mono text-xs font-semibold text-ink/80">{fmt(counts.byLevel[l].known)}</span>
+              <span className="font-mono text-[10px] text-ink/40">/{fmt(counts.byLevel[l].total)}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <p className="mt-3 font-mono text-[11px] leading-relaxed text-ink/45">
         Due today: <span className="font-semibold text-cinnabar">{fmt(due)}</span>
       </p>
@@ -457,6 +466,7 @@ export default function Dashboard({
   const [editing, setEditing] = useState(false)
   const goals = progress.goals ?? []
   const goal = pickGoal(goals, progress.studySettings?.selectedGoalId, todayDate)
+  const compareExamIds = progress.studySettings?.compareExamIds ?? DEFAULT_STUDY_SETTINGS.compareExamIds
 
   const updateGoal = (id, patch) =>
     updateGoals((gs) => gs.map((g) => (g.id === id ? { ...g, ...patch, updatedAt: new Date().toISOString() } : g)))
@@ -475,6 +485,8 @@ export default function Dashboard({
           today={todayDate}
           counts={counts}
           goals={goals}
+          goal={goal}
+          compareExamIds={compareExamIds}
           onToggleGoal={toggleGoal}
         />
         {editing ? (
@@ -486,6 +498,8 @@ export default function Dashboard({
             snapshots={progress.snapshots}
             knownToday={counts.known}
             today={todayDate}
+            compareExamIds={compareExamIds}
+            onChangeCompare={(ids) => updateStudySettings({ compareExamIds: ids })}
             onSelectGoal={(id) => updateStudySettings({ selectedGoalId: id })}
             onUpdateGoal={updateGoal}
             onEditGoals={() => setEditing(true)}

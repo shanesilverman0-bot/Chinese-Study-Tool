@@ -10,6 +10,7 @@ import { freshV3 } from '../lib/schema.js'
 import { migrate, needsPreV3Backup } from '../lib/migrate.js'
 import { mergeProgress } from '../lib/merge.js'
 import { archiveLog } from '../lib/logArchive.js'
+import { retirePlaceholderGoals } from '../lib/goals.js'
 import { localDate } from '../lib/dates.js'
 
 const SAVE_DEBOUNCE_MS = 4000
@@ -213,7 +214,7 @@ export function useProgress(vocab = SEED_VOCAB) {
       if (data) {
         const { progress: remote, error } = migrateSafe(data)
         if (error) return block(error.message)
-        apply((prev) => reconcile(mergeProgress(prev, remote), vocab))
+        apply((prev) => retirePlaceholderGoals(reconcile(mergeProgress(prev, remote), vocab)))
         setSyncState({ status: 'ok', message: 'Synced' })
       } else {
         setSyncState({ status: 'ok', message: 'No remote file yet — will create on first save' })
@@ -402,6 +403,13 @@ export function useProgress(vocab = SEED_VOCAB) {
     [apply, scheduleSync]
   )
 
+  // Retire the old June / Jul–Dec placeholder goals on load (DESIGN §5.5); a no-op once done.
+  // Runs again after the first pull, since a remote file may still carry them.
+  useEffect(() => {
+    if (blockedRef.current) return
+    updateProgress((prev) => retirePlaceholderGoals(prev))
+  }, [updateProgress, pullSettled])
+
   // Merge a patch into progress.studySettings (synced) and stamp updatedAt.
   const updateStudySettings = useCallback(
     (patch) => {
@@ -426,7 +434,7 @@ export function useProgress(vocab = SEED_VOCAB) {
         block(error.message)
         return null
       }
-      const next = reconcile(migrated, vocab)
+      const next = retirePlaceholderGoals(reconcile(migrated, vocab))
       latestRef.current = next
       setProgress(next)
       return next
