@@ -9,6 +9,8 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 // `--mode phone` serves over https (self-signed) so the iPhone gets mic access.
 export default defineConfig(({ mode }) => ({
   plugins: [react(), ...(mode === 'phone' ? [basicSsl()] : [])],
+  // No live reload on the phone: iOS refuses the self-signed wss:// socket. Reload by hand.
+  server: mode === 'phone' ? { hmr: false } : {},
   base: './',
   build: {
     outDir: 'dist',
