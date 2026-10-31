@@ -85,18 +85,8 @@ export default function Settings({
               className={inputCls}
               value={gh.token}
               onChange={(e) => setGh({ token: e.target.value.trim() })}
-              placeholder="github_pat_…"
-              autoComplete="off"
-              autoCapitalize="off"
-              autoCorrect="off"
-              spellCheck={false}
-              name="tocfl-github-token"
+              placeholder="ghp_…"
             />
-            {gh.token && (
-              <p className="mt-1 font-mono text-[10px] text-ink/45">
-                {gh.token.length} characters · starts {gh.token.slice(0, 11)} · ends …{gh.token.slice(-4)}
-              </p>
-            )}
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Owner" hint="GitHub username">
