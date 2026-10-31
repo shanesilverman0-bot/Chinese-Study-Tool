@@ -15,6 +15,8 @@ import Dashboard from './components/Dashboard.jsx'
 import Flashcard from './components/Flashcard.jsx'
 import Settings from './components/Settings.jsx'
 import RepoFiles from './components/RepoFiles.jsx'
+import SessionTimer from './components/SessionTimer.jsx'
+import ManualEntryForm from './components/ManualEntryForm.jsx'
 import DataBanner from './components/DataBanner.jsx'
 import { DATA_MODE, assertWriteAllowed, dataPath } from './lib/dataMode.js'
 
@@ -36,6 +38,8 @@ export default function App() {
     replaceProgress,
     updateProgress,
     updateStudySettings,
+    addSession,
+    upsertManualEntry,
     dataReady,
     isBlocked,
     gh,
@@ -51,7 +55,7 @@ export default function App() {
   )
   const itemIndexRef = useRef(itemIndex)
   itemIndexRef.current = itemIndex
-  const { counts, today, baseline } = useCounts({ progress, itemIndex, dataReady, isBlocked, updateProgress })
+  const { counts, today, baseline, snapshotNow } = useCounts({ progress, itemIndex, dataReady, isBlocked, updateProgress })
   const updateStudySettingsRef = useRef(updateStudySettings)
   updateStudySettingsRef.current = updateStudySettings
   const countsRef = useRef(counts)
@@ -120,6 +124,7 @@ export default function App() {
     })
   }, [vocab, filter.tocfl, dangdaiFilter])
 
+  const [manualOpen, setManualOpen] = useState(false)
   const [view, setView] = useState('home') // home | review | settings | files
   const [queue, setQueue] = useState([]) // holds composite card keys
   const [pos, setPos] = useState(0)
@@ -207,7 +212,7 @@ export default function App() {
     const key = queue[pos]
     // An existing card (possibly under an older CCC key) is rated by its key;
     // a new word passes its vocab entry so the card gets the right key and fields.
-    rate(progress.cards[key] ? key : (vocabByKey[key] ?? key), ratingKey)
+    rate(progress.cards[key] ? key : (vocabByKey[key] ?? key), ratingKey, []) // list ids: Phase 8
     if (pos + 1 < queue.length) setPos(pos + 1)
     else setView('home')
   }
@@ -238,6 +243,7 @@ export default function App() {
 
           <div className="flex items-center gap-1">
             <SyncDot syncState={syncState} githubReady={githubReady} />
+            <SessionTimer addSession={addSession} snapshotNow={snapshotNow} />
             <NavBtn active={view === 'home'} onClick={() => setView('home')}>首頁</NavBtn>
             <NavBtn active={view === 'files'} onClick={() => setView('files')}>檔案</NavBtn>
             <NavBtn active={view === 'settings'} onClick={() => setView('settings')}>設定</NavBtn>
@@ -261,6 +267,7 @@ export default function App() {
                 dangdaiFilter={dangdaiFilter}
                 setDangdaiFilter={setDangdaiFilter}
                 onStart={startReview}
+                onAddManual={() => setManualOpen(true)}
               />
             )}
 
@@ -316,6 +323,14 @@ export default function App() {
           </div>
         </main>
       </div>
+      {manualOpen && (
+        <ManualEntryForm
+          entries={progress.manualEntries ?? []}
+          tz={progress.studySettings?.timeZone}
+          upsertManualEntry={upsertManualEntry}
+          onClose={() => setManualOpen(false)}
+        />
+      )}
     </div>
   )
 }

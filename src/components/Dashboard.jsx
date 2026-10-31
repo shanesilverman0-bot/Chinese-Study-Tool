@@ -4,6 +4,7 @@ import { isDue, State, cardKey } from '../lib/fsrs.js'
 import DangdaiFilter from './DangdaiFilter.jsx'
 import ProgressChart from './ProgressChart.jsx'
 import PaceBox from './PaceBox.jsx'
+import HoursChart from './HoursChart.jsx'
 import GoalsEditor from './GoalsEditor.jsx'
 import { pickGoal } from '../lib/pace.js'
 import { DEFAULT_STUDY_SETTINGS } from '../lib/schema.js'
@@ -461,6 +462,7 @@ export default function Dashboard({
   dangdaiFilter,
   setDangdaiFilter,
   onStart,
+  onAddManual,
 }) {
   const s = computeStats(progress, vocab)
   const [editing, setEditing] = useState(false)
@@ -506,6 +508,13 @@ export default function Dashboard({
           />
         )}
       </div>
+
+      <HoursChart
+        sessions={progress.sessions}
+        manualEntries={progress.manualEntries}
+        tz={progress.studySettings?.timeZone}
+        onAddManual={onAddManual}
+      />
 
       <FilterCard
         filter={filter}

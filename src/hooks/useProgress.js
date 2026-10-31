@@ -12,6 +12,7 @@ import { mergeProgress } from '../lib/merge.js'
 import { archiveLog } from '../lib/logArchive.js'
 import { retirePlaceholderGoals } from '../lib/goals.js'
 import { localDate } from '../lib/dates.js'
+import { noteActivity } from '../lib/sessions.js'
 
 const SAVE_DEBOUNCE_MS = 4000
 const MAX_SAVE_TRIES = 3
@@ -332,7 +333,7 @@ export function useProgress(vocab = SEED_VOCAB) {
   // Accepts the composite card key (string) or a vocab/word object, from which
   // the key is derived.
   const rate = useCallback(
-    (wordOrKey, ratingKey) => {
+    (wordOrKey, ratingKey, listIds = []) => {
       const key = typeof wordOrKey === 'string' ? wordOrKey : cardKey(wordOrKey)
       const prev = latestRef.current
       let card = prev.cards[key]
@@ -364,6 +365,7 @@ export function useProgress(vocab = SEED_VOCAB) {
           },
         ], // no cap: old entries move to log archive files (DESIGN §8.5, Phase 6)
       }))
+      noteActivity('flashcards', listIds, 'review')
       scheduleSync()
     },
     [scheduleSync, apply]
@@ -421,6 +423,21 @@ export function useProgress(vocab = SEED_VOCAB) {
     [updateProgress]
   )
 
+  const addSession = useCallback(
+    (s) => updateProgress((prev) => ({ ...prev, sessions: [...(prev.sessions ?? []), s] })),
+    [updateProgress]
+  )
+
+  // Insert or replace a manual entry by id (deletes are tombstones: deleted: true).
+  const upsertManualEntry = useCallback(
+    (e) => updateProgress((prev) => {
+      const list = prev.manualEntries ?? []
+      const i = list.findIndex((x) => x.id === e.id)
+      return { ...prev, manualEntries: i < 0 ? [...list, e] : list.map((x, j) => (j === i ? e : x)) }
+    }),
+    [updateProgress]
+  )
+
   const updateSettings = useCallback((patch) => {
     setSettings((prev) => ({ ...prev, ...patch }))
   }, [])
@@ -448,6 +465,8 @@ export function useProgress(vocab = SEED_VOCAB) {
     progress,
     updateProgress,
     updateStudySettings,
+    addSession,
+    upsertManualEntry,
     // Data is ready for a snapshot: migration succeeded and the first pull settled (or no GitHub).
     dataReady: !initial.error && (!githubReady || pullSettled),
     isBlocked: () => blockedRef.current,
