@@ -31,6 +31,7 @@ Read `docs/DESIGN.md` first. Section references like §8.2 point there. **Revise
 | 3 | Item registry, bundled CCC, TOCFL matching, baseline set | 2.5 | **Yes** | Sonnet |
 | 4 | Counts engine (two-tier baseline), daily snapshots, counting settings | 3 | **Yes** | Sonnet |
 | 5 | Dashboard: chart, goals, exam-date selector, pace box | 4 | No | Sonnet |
+| 5b | Exam comparison (checkboxes, lines, pace table), B1/B2 levels on the dashboard | 5, 4 | No | Sonnet |
 | 6 | Review-log archive, FSRS backfill, course-history estimate | 4, 2 | **Yes** | Sonnet; Opus if the replay check fails |
 | 7 | Session timer, manual entries, hours chart | 1B (5 for placement) | No | Sonnet |
 | 8 | Lists (incl. CCC parts), multi-select picker, queue rewrite (no cap, learning re-show) | 3, 4 | **Yes** | Sonnet |
@@ -404,6 +405,42 @@ node scripts/check-migration.mjs local-data/progress.copy.json
 5. Enable "June 2027": a second dashed line appears.
 
 **Migration:** none.
+
+---
+
+## Phase 5b — Exam comparison, levels on the dashboard
+
+**Session prompt:**
+> Read CLAUDE.md, docs/DESIGN.md §5.5, §8.6 and §8.7, and Phase 5b in docs/PHASES.md. Implement only Phase 5b. Run scripts/check-counts.mjs, then npm run build and fix errors. Before committing, list every file that reads goals, BANDS or band chips, and check each one. Commit and push to v2-update.
+
+- **Depends on:** 5, 4 (6 done is fine).
+- **Review with Opus?** No (display, plus one guarded tombstone).
+- **Model:** Sonnet.
+
+**Why:** Shane wants to compare the study pace needed for several TOCFL dates at once, not separate June/December goals. He also wants to see B1 and B2 separately.
+
+**Files**
+- `src/lib/schema.js`: `DEFAULT_GOALS` = only `goal-exam`. `DEFAULT_STUDY_SETTINGS.compareExamIds = ['lr-2027-03','lr-2027-05','lr-2027-06']`.
+- `src/lib/goals.js` (new, pure): `retirePlaceholderGoals(progress, now)` per DESIGN §5.5 (returns the same object when there's nothing to do). Call it in `useProgress` right after `migrate()` on every load path, through `updateProgress` so it saves once.
+- `src/lib/pace.js`: `computePaceFor({ goal, endDate, snapshots, knownToday, today })` (the existing math with an explicit end date), and `compareRows(...)` → one row per checked, upcoming exam.
+- `src/components/PaceBox.jsx`: under the main exam dropdown, the checklist (checkbox, date, registration status) and a compact table: Exam · Wks · Needed/wk · Gap (red behind, green ahead). It must fit at 375 px with no sideways scroll.
+- `src/components/ProgressChart.jsx`: one dashed line per checked exam (fixed palette of 5 colors, label `M/D` at the line's end). The June/Jul–Dec goal chips disappear with those goals.
+- `src/lib/counts.js`: `byLevel` per DESIGN §8.7. `scripts/check-counts.mjs` prints it and asserts that the sum of `known` over levels equals `known`, and the same for `seen`.
+- `src/components/Dashboard.jsx`: the Today card gets the six-level row. The Details panels use `LEVELS`/`LEVEL_LABELS`.
+- `src/hooks/useStudyFilter.js` + its UI: level chips (Novice, A1, A2, B1, B2, C) filtering by `v.level`. The stored old band filter converts once: A → A1 + A2, B → B1 + B2.
+
+**Edge cases**
+- An exam that has passed drops out of the checklist and the table (its id stays in `compareExamIds`; that's harmless).
+- A checked exam equal to the main exam: show it once, as the main line.
+- Goals Shane edited (non-epoch `updatedAt`) are never tombstoned.
+
+**Acceptance checks**
+1. Dev app at 375 px: the June 2027 and Jul–Dec 2027 lines and chips are gone. GitHub `dev/progress.json` shows both goals with `"deleted": true`.
+2. Pace box: check 2027-03-06, 2027-05-15 and 2027-06-26 → three dashed lines on the chart and three table rows. Needed/week is highest for March and lowest for June. Uncheck March → its line and row go.
+3. Today card shows six levels. B1 and B2 sum with the other four to the Known total.
+4. Old study filter: the B1 chip alone selects only B1 words.
+
+**Migration:** none (no schema bump; one guarded tombstone of untouched default goals).
 
 ---
 

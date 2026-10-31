@@ -340,7 +340,9 @@ Session size is **not** a synced setting any more: you choose it each time in th
 
 Also listed (not goal defaults): Speaking/Writing Band B on 2026-11-15, 2027-03-07, 2027-11-07; Band C speaking/writing 2027-05-16; pilot Listening & Reading tests (NT$200) 2027-04-17 and 2027-10-16. The dashboard has an exam selector (§8.6) that sets `examId` on the selected goal.
 
-Defaults written by migration (editable):
+**Changed 2026-10-31 (Phase 5b):** the June and Jul–Dec placeholder goals are removed. Exam comparison replaces them: `studySettings.compareExamIds: string[]` (synced, default `['lr-2027-03','lr-2027-05','lr-2027-06']`) lists the exams to compare side by side against the one exam goal (§8.6). New files get only `goal-exam`. Existing files: on load, `retirePlaceholderGoals(progress)` tombstones `goal-jun-2027` and `goal-dec-2027` (`deleted: true`, `updatedAt` now), but only if their `updatedAt` is still the epoch default, so a goal you edited is kept.
+
+Defaults written by migration (editable; the last two are no longer created, see above):
 ```json
 [
  {"id":"goal-exam","label":"TOCFL exam","metric":"known","startDate":"2026-11-01","startValue":null,"endDate":"2027-05-15","examId":"lr-2027-05","target":5000,"enabled":true},
@@ -630,11 +632,18 @@ Rule (2026-10-29): **Known = stability > 3 days AND graduated (Review state).** 
 ### 8.6 Goal lines, exam selector, pace
 - A goal line is a straight segment from `(startDate, startValue ?? Known on startDate)` to `(endDate, target)`, where `endDate` comes from `EXAM_DATES[examId]` when `examId` is set. If `startDate` is before the first snapshot, use the first snapshot's Known.
 - **Exam selector** on the dashboard: a dropdown of upcoming Listening & Reading dates from `EXAM_DATES` (with registration window and "registration open/closed" shown). Choosing one sets `examId` on the selected goal. The goal line, pace box and "days left" update immediately.
+- **Exam comparison (Phase 5b):** under the dropdown, a checklist of the same upcoming exams with a checkbox each (`compareExamIds`). Every checked exam gets:
+  - its own dashed line on the chart, from the exam goal's start point to `(exam date, goal.target)`, labelled with the date (`3/6`), each in a distinct color from a fixed palette;
+  - a row in a **pace comparison table**: Exam · Weeks left · Needed / week · Gap vs your actual / week (same formulas as the pace box, with `endDate` = that exam).
+  The dropdown's exam stays the main one (solid emphasis, the full pace box). Unchecking all leaves just the main line.
 - The pace box uses `selectedGoalId` (default: the enabled goal with the nearest future end date):
   - `needed/week = max(0, target − knownToday) / max(1/7, daysLeft/7)`
   - `actual/week` = (knownToday − Known at the latest snapshot on or before today−28) / 4. If history covers less than 28 days, use the available span `s` days: `(knownToday − knownFirst) / (s/7)`, and label it "based on s days". Fewer than 3 days → show "—".
   - `gap = needed − actual` (positive = behind, shown in cinnabar; negative = ahead, shown in jade).
 - Pace is for Known only. Context has no pace or goals.
+
+### 8.7 Levels on the dashboard (Phase 5b)
+`computeCounts` also returns `byLevel = { Novice|A1|A2|B1|B2|C: { total, seen, known } }`, using each TOCFL sense's `level`. Untouched baseline keys count in their own level. The Today card shows a compact six-column row ("B1 412/1,170"). The old "Details" mastery panels and the old study-filter chips use the six levels instead of the four bands.
 
 ## 9. Lists
 
