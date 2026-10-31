@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { fetchProgress, putTextFile, verifyAccess } from '../lib/github.js'
 import { DATA_MODE, dataPath } from '../lib/dataMode.js'
 import { PROVIDERS } from '../lib/tutor.js'
@@ -9,6 +9,7 @@ import { planHistory } from '../lib/backfill.js'
 import { loadFullLog } from '../lib/logArchive.js'
 import { localDate, addDays } from '../lib/dates.js'
 import MicTest from './MicTest.jsx'
+import { listVoices, getTtsPrefs, setTtsPrefs, speak, isBetterVoice } from '../lib/speech.js'
 
 
 function Field({ label, hint, children }) {
@@ -265,6 +266,8 @@ export default function Settings({
           Reload vocab packs
         </button>
       </section>
+
+      <AudioSection />
 
       {/* Mic diagnostics */}
       <MicTest />
@@ -629,6 +632,74 @@ function DataSection({ progress, replaceProgress, forcePush, effectiveGh }) {
           {status.message}
         </p>
       )}
+    </section>
+  )
+}
+
+function AudioSection() {
+  const [voices, setVoices] = useState(() => listVoices())
+  const [prefs, setPrefs] = useState(() => getTtsPrefs())
+
+  useEffect(() => {
+    const refresh = () => setVoices(listVoices())
+    window.addEventListener('tts-voices-changed', refresh)
+    refresh()
+    return () => window.removeEventListener('tts-voices-changed', refresh)
+  }, [])
+
+  function update(patch) {
+    const next = { ...prefs, ...patch }
+    setPrefs(next)
+    setTtsPrefs(next)
+  }
+
+  // A saved voice missing on this device shows as the default entry.
+  const selected = voices.some((v) => v.voiceURI === prefs.voiceURI) ? prefs.voiceURI : ''
+
+  return (
+    <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-1 font-display text-base font-bold text-ink">聲音 · Audio</h3>
+      <div className="flex flex-col gap-3">
+        <Field label="Voice">
+          {voices.length === 0 ? (
+            <p className="font-sans text-sm text-ink/50">Loading voices…</p>
+          ) : (
+            <select value={selected} onChange={(e) => update({ voiceURI: e.target.value })} className={inputCls}>
+              <option value="">Default (automatic)</option>
+              {voices.map((v) => (
+                <option key={v.voiceURI} value={v.voiceURI}>
+                  {isBetterVoice(v) ? '★ ' : ''}
+                  {v.name} ({v.lang})
+                </option>
+              ))}
+            </select>
+          )}
+        </Field>
+        <Field label={`Rate: ${prefs.rate.toFixed(2)}`}>
+          <input
+            type="range"
+            min="0.6"
+            max="1.1"
+            step="0.05"
+            value={prefs.rate}
+            onChange={(e) => update({ rate: Number(e.target.value) })}
+            className="w-full"
+          />
+        </Field>
+        <div>
+          <button
+            onClick={() => speak('今天天氣很好，我們去散步吧。')}
+            className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-jade hover:text-jade"
+          >
+            Test
+          </button>
+        </div>
+        <p className="font-sans text-xs text-ink/50">
+          For more natural voices on iPhone: iOS Settings → Accessibility → Spoken Content → Voices →
+          Chinese (Taiwan) → Meijia, and download an Enhanced or Premium version. Reload this page
+          afterwards; such voices are marked ★.
+        </p>
+      </div>
     </section>
   )
 }
