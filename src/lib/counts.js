@@ -177,7 +177,7 @@ export function recomputeHistory({ progress, index, settings, baseline, now = ne
   let changed = 0
   const snapshots = (progress.snapshots ?? []).map((snap) => {
     const tails = snap.raw?.tails
-    if (!tails) return snap
+    if (!tails || snap.source === 'estimate') return snap // course estimates have no review data to recompute
     const tail = (s.knownRequiresReviewState ? snap.raw.tailsReviewState : tails)?.[s.knownThreshold]
     if (tail == null) return snap
     const bu = untouchedAt(solid, snap.date)

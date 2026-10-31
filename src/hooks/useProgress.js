@@ -9,12 +9,26 @@ import { DEFAULT_DATA_REPO, dataPath, effectiveGithub, storageKey } from '../lib
 import { freshV3 } from '../lib/schema.js'
 import { migrate, needsPreV3Backup } from '../lib/migrate.js'
 import { mergeProgress } from '../lib/merge.js'
+import { archiveLog } from '../lib/logArchive.js'
+import { localDate } from '../lib/dates.js'
 
 const SAVE_DEBOUNCE_MS = 4000
 const MAX_SAVE_TRIES = 3
 
 const SETTINGS_KEY = storageKey('settings')
 const LOCAL_PROGRESS_KEY = storageKey('progress')
+const ARCHIVE_DAY_KEY = storageKey('logArchiveDay')
+
+// Log archiving runs at most once per local day per device (DESIGN §7).
+function archiveDoneToday(tz) {
+  try { return localStorage.getItem(ARCHIVE_DAY_KEY) === localDate(new Date(), tz) } catch { return false }
+}
+function markArchiveDone(tz) {
+  try { localStorage.setItem(ARCHIVE_DAY_KEY, localDate(new Date(), tz)) } catch { /* private mode */ }
+}
+export function clearLogArchiveStamp() {
+  try { localStorage.removeItem(ARCHIVE_DAY_KEY) } catch { /* private mode */ }
+}
 
 const DEFAULT_SETTINGS = {
   github: { token: '', owner: '', repo: '', branch: 'main', path: 'progress.json' }, // owner/repo/branch/path ignored since Phase 1A
@@ -253,6 +267,14 @@ export function useProgress(vocab = SEED_VOCAB) {
               m.backupPath == null && m.from < 3 ? { ...m, backupPath } : m
             ),
           }
+        }
+        // Move old log entries to log/YYYY-MM.json (guarded writes). Any failure leaves `merged`
+        // untouched; the PUT still goes ahead and archiving retries on a later save.
+        const tz = merged.studySettings?.timeZone
+        if (!archiveDoneToday(tz)) {
+          const r = await archiveLog(gh, merged, new Date())
+          if (r.error) console.warn('Log archive failed:', r.error)
+          else { merged = r.progress; markArchiveDone(tz) }
         }
         const payload = { ...merged, updatedAt: new Date().toISOString() }
         const res = await saveProgress(gh, payload, sha)

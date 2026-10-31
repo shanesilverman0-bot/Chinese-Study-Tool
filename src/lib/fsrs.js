@@ -3,7 +3,7 @@
 // that are easy to serialize into progress.json.
 import { createEmptyCard, fsrs, generatorParameters, Rating, State } from 'ts-fsrs'
 
-const params = generatorParameters({ enable_fuzz: true, maximum_interval: 36500 })
+export const params = generatorParameters({ enable_fuzz: true, maximum_interval: 36500 })
 const scheduler = fsrs(params)
 
 // Map our UI buttons to FSRS ratings.

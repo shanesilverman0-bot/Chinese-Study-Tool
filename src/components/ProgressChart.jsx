@@ -54,10 +54,22 @@ export default function ProgressChart({ snapshots, today, counts, goals, onToggl
   const data = useMemo(() => {
     const rows = (snapshots ?? [])
       .filter((s) => s.date !== today)
-      .map((s) => ({ t: dateT(s.date), seen: s.seen, known: s.known, context: s.context }))
-    rows.push({ t: todayT, seen: counts.seen, known: counts.known, context: counts.context })
-    return rows.sort((a, b) => a.t - b.t)
+      .map((s) => ({ t: dateT(s.date), est: s.source === 'estimate', seen: s.seen, known: s.known, context: s.context }))
+    rows.push({ t: todayT, est: false, seen: counts.seen, known: counts.known, context: counts.context })
+    rows.sort((a, b) => a.t - b.t)
+    // Estimated points sit in `<key>_e` (dashed); the first real point also carries them so the segments join.
+    const firstReal = rows.findIndex((r) => !r.est)
+    return rows.map((r, i) => {
+      if (!r.est && i !== firstReal) return r
+      const out = { ...r }
+      for (const k of ['seen', 'known', 'context']) {
+        out[`${k}_e`] = r[k]
+        if (r.est) out[k] = undefined
+      }
+      return out
+    })
   }, [snapshots, today, todayT, counts])
+  const hasEstimate = data.some((r) => r.est)
 
   const goalLines = enabled.map((g, i) => {
     const endT = dateT(goalEndDate(g))
@@ -101,7 +113,7 @@ export default function ProgressChart({ snapshots, today, counts, goals, onToggl
                 <div className="rounded-lg border border-ink/10 bg-paper px-3 py-2 font-mono text-[11px] shadow">
                   <div className="mb-1 text-ink/60">{new Date(label).toISOString().slice(0, 10)}</div>
                   {SERIES.map((s) => (
-                    <div key={s.key} style={{ color: s.color }}>{s.label}: {row[s.key]}</div>
+                    <div key={s.key} style={{ color: s.color }}>{s.label}: {row[s.key] ?? row[`${s.key}_e`]}{row.est ? ' (est.)' : ''}</div>
                   ))}
                 </div>
               )
@@ -111,6 +123,13 @@ export default function ProgressChart({ snapshots, today, counts, goals, onToggl
             <Line
               key={s.key} data={data} dataKey={s.key} name={s.label} type="monotone"
               stroke={s.color} strokeWidth={s.width} dot={data.length < 3} isAnimationActive={false}
+            />
+          ))}
+          {hasEstimate && SERIES.filter((s) => !hidden[s.key]).map((s) => (
+            <Line
+              key={`${s.key}_e`} data={data} dataKey={`${s.key}_e`} name={`${s.label} (est.)`} type="monotone"
+              stroke={s.color} strokeWidth={s.width} strokeDasharray="2 3" dot={false} isAnimationActive={false}
+              legendType="none" activeDot={false}
             />
           ))}
           {goalLines.map((l) => (
@@ -135,6 +154,7 @@ export default function ProgressChart({ snapshots, today, counts, goals, onToggl
           </Chip>
         ))}
       </div>
+      {hasEstimate && <p className="mt-2 font-mono text-[10px] text-ink/45">dashed = estimated from course</p>}
     </div>
   )
 }

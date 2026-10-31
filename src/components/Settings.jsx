@@ -5,6 +5,10 @@ import { DATA_MODE, dataPath } from '../lib/dataMode.js'
 import { PROVIDERS } from '../lib/tutor.js'
 import { CCC_VOCAB } from '../data/ccc.js'
 import { THRESHOLD_EDGES, countingSettings } from '../lib/counts.js'
+import { DEFAULT_STUDY_SETTINGS } from '../lib/schema.js'
+import { planHistory } from '../lib/backfill.js'
+import { loadFullLog } from '../lib/logArchive.js'
+import { localDate, addDays } from '../lib/dates.js'
 import MicTest from './MicTest.jsx'
 
 
@@ -31,6 +35,8 @@ export default function Settings({
   progress,
   baseline,
   updateStudySettings,
+  updateProgress,
+  itemIndex,
   onRecompute,
   replaceProgress,
   effectiveGh,
@@ -159,6 +165,9 @@ export default function Settings({
         progress={progress}
         baseline={baseline}
         updateStudySettings={updateStudySettings}
+        updateProgress={updateProgress}
+        itemIndex={itemIndex}
+        effectiveGh={effectiveGh}
         onRecompute={onRecompute}
       />
 
@@ -347,7 +356,7 @@ function ChapterPicker({ value, onChange }) {
 const chapterCmp = (a, b) => (a.book - b.book) || (a.chapter - b.chapter)
 
 // DESIGN §5.4 / §8: counting settings (synced in progress.studySettings).
-function CountingSection({ progress, baseline, updateStudySettings, onRecompute }) {
+function CountingSection({ progress, baseline, updateStudySettings, updateProgress, itemIndex, effectiveGh, onRecompute }) {
   const s = countingSettings(progress.studySettings)
   const [note, setNote] = useState('')
   const snapCount = (progress.snapshots ?? []).length
@@ -361,6 +370,50 @@ function CountingSection({ progress, baseline, updateStudySettings, onRecompute 
     updateStudySettings({ baseline: next })
   }
   const fmt = (n) => n.toLocaleString('en-US')
+
+  const ch = progress.studySettings?.courseHistory === undefined
+    ? DEFAULT_STUDY_SETTINGS.courseHistory
+    : progress.studySettings.courseHistory
+  const setCourse = (edge, patch) => {
+    const cur = ch ?? DEFAULT_STUDY_SETTINGS.courseHistory
+    updateStudySettings({ courseHistory: { ...cur, [edge]: { ...cur[edge], ...patch } } })
+    setHistPlan(null)
+  }
+  const [histPlan, setHistPlan] = useState(null)
+  const [histBusy, setHistBusy] = useState(false)
+
+  async function previewHistory() {
+    setHistBusy(true)
+    setNote('')
+    try {
+      const log = await loadFullLog(effectiveGh, progress)
+      const tz = s.timeZone
+      const plan = planHistory({
+        log, progress, index: itemIndex, cccEntries: CCC_VOCAB,
+        settings: { ...progress.studySettings, courseHistory: ch },
+        toDate: addDays(localDate(new Date(), tz), -1),
+      })
+      setHistPlan(plan)
+    } catch (e) {
+      setNote(`Build history failed: ${e.message}`)
+    } finally {
+      setHistBusy(false)
+    }
+  }
+
+  function confirmHistory() {
+    const add = [...histPlan.estimate, ...histPlan.backfill]
+    updateProgress((prev) => {
+      const have = new Set((prev.snapshots ?? []).map((x) => x.date))
+      const fresh = add.filter((x) => !have.has(x.date)) // never overwrite an existing snapshot
+      if (!fresh.length) return prev
+      return { ...prev, snapshots: [...(prev.snapshots ?? []), ...fresh].sort((a, b) => a.date.localeCompare(b.date)) }
+    })
+    setNote(`Added ${add.length} snapshot${add.length === 1 ? '' : 's'}.`)
+    setHistPlan(null)
+  }
+
+  const range = (list) => (list.length ? `${list[0].date} to ${list[list.length - 1].date}` : '—')
 
   function recompute() {
     if (!window.confirm(`Rewrite ${snapCount} past snapshots with the current settings?`)) return
@@ -430,6 +483,57 @@ function CountingSection({ progress, baseline, updateStudySettings, onRecompute 
             Recompute history
           </button>
           {note && <span className="font-mono text-xs text-ink/60">{note}</span>}
+        </div>
+
+        <div className="border-t border-ink/10 pt-4">
+          <h4 className="mb-1 font-sans text-sm font-semibold text-ink/80">Course history</h4>
+          <p className="mb-3 font-mono text-[11px] text-ink/45">
+            Used to estimate Seen/Known before your review log starts. Chapters are spread evenly between the two dates.
+          </p>
+          {['start', 'end'].map((edge) => {
+            const e = (ch ?? DEFAULT_STUDY_SETTINGS.courseHistory)[edge]
+            return (
+              <Field key={edge} label={edge === 'start' ? 'Started (date, first chapter)' : 'Finished (date, last chapter done)'}>
+                <input
+                  type="date" className={`${inputCls} mb-2`} value={e.date}
+                  onChange={(ev) => ev.target.value && setCourse(edge, { date: ev.target.value })}
+                />
+                <ChapterPicker value={e} onChange={(v) => setCourse(edge, v)} />
+              </Field>
+            )
+          })}
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button
+              onClick={previewHistory}
+              disabled={histBusy}
+              className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar disabled:opacity-50"
+            >
+              {histBusy ? 'Reading log…' : 'Build history'}
+            </button>
+          </div>
+          {histPlan && (
+            <div className="mt-3 rounded-xl border border-ink/10 bg-white/60 p-3">
+              <p className="font-mono text-xs text-ink/70">
+                Will add {histPlan.estimate.length} course-estimate snapshot{histPlan.estimate.length === 1 ? '' : 's'} ({range(histPlan.estimate)})
+                {' '}and {histPlan.backfill.length} review-log snapshot{histPlan.backfill.length === 1 ? '' : 's'} ({range(histPlan.backfill)}).
+              </p>
+              {histPlan.skippedKeys > 0 && (
+                <p className="mt-1 font-mono text-[11px] text-ink/45">{histPlan.skippedKeys} logged item(s) have no card and were skipped.</p>
+              )}
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={confirmHistory}
+                  disabled={!histPlan.estimate.length && !histPlan.backfill.length}
+                  className="rounded-full bg-cinnabar px-4 py-1.5 font-sans text-sm text-paper disabled:opacity-40"
+                >
+                  Add
+                </button>
+                <button onClick={() => setHistPlan(null)} className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

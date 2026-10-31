@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SEED_VOCAB } from './data/vocab.js'
 import { CCC_VOCAB, CCC_PACK_NAMES } from './data/ccc.js'
 import { loadVocabPacksFromGitHub, filterVocab } from './lib/vocab.js'
-import { useProgress } from './hooks/useProgress.js'
+import { useProgress, clearLogArchiveStamp } from './hooks/useProgress.js'
 import { useCounts } from './hooks/useCounts.js'
 import { recomputeHistory } from './lib/counts.js'
 import { useStudyFilter } from './hooks/useStudyFilter.js'
@@ -52,6 +52,8 @@ export default function App() {
   const itemIndexRef = useRef(itemIndex)
   itemIndexRef.current = itemIndex
   const { counts, today, baseline } = useCounts({ progress, itemIndex, dataReady, isBlocked, updateProgress })
+  const updateStudySettingsRef = useRef(updateStudySettings)
+  updateStudySettingsRef.current = updateStudySettings
   const countsRef = useRef(counts)
   countsRef.current = counts
   useEffect(() => {
@@ -71,6 +73,11 @@ export default function App() {
       },
       get progress() {
         return progressRef.current
+      },
+      // Phase 6 check: archive entries older than n days on the next save.
+      setLogKeepDays(n) {
+        clearLogArchiveStamp()
+        updateStudySettingsRef.current({ logKeepDays: n })
       },
     }
   }, [])
@@ -296,6 +303,8 @@ export default function App() {
                 progress={progress}
                 baseline={baseline}
                 updateStudySettings={updateStudySettings}
+                updateProgress={updateProgress}
+                itemIndex={itemIndex}
                 onRecompute={recompute}
                 replaceProgress={replaceProgress}
                 effectiveGh={gh}
