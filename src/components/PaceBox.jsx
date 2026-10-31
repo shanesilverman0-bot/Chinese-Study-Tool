@@ -58,7 +58,7 @@ export default function PaceBox({ goals, goal, snapshots, knownToday, today, com
       </div>
 
       {!goal ? (
-        <p className="font-sans text-xs text-ink/50">No enabled goal. Turn one on under the chart.</p>
+        <p className="font-sans text-xs text-ink/50">No enabled goal. Turn one on under Goals ✎.</p>
       ) : (
         <>
           {enabled.length > 1 && (

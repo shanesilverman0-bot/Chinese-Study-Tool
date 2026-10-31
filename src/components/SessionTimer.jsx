@@ -42,7 +42,7 @@ export default function SessionTimer({ addSession, snapshotNow }) {
       {active && !stale ? (
         <button
           onClick={() => finish(new Date())}
-          className="mr-1 rounded-full bg-cinnabar px-2.5 py-1 font-mono text-[11px] text-paper"
+          className="mr-1 whitespace-nowrap rounded-full bg-cinnabar px-2 py-1 font-mono text-[11px] text-paper"
           aria-label="End session"
         >
           {fmt(Date.now() - Date.parse(active.start))} ■
@@ -51,7 +51,7 @@ export default function SessionTimer({ addSession, snapshotNow }) {
         !stale && (
           <button
             onClick={() => setActive(startSession())}
-            className="mr-1 rounded-full border border-paper/40 px-2.5 py-1 font-sans text-[11px] text-paper/80"
+            className="mr-1 whitespace-nowrap rounded-full border border-paper/40 px-2 py-1 font-sans text-[11px] text-paper/80"
           >
             ▶ 開始
           </button>

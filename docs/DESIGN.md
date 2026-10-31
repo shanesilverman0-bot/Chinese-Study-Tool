@@ -340,7 +340,7 @@ Session size is **not** a synced setting any more: you choose it each time in th
 
 Also listed (not goal defaults): Speaking/Writing Band B on 2026-11-15, 2027-03-07, 2027-11-07; Band C speaking/writing 2027-05-16; pilot Listening & Reading tests (NT$200) 2027-04-17 and 2027-10-16. The dashboard has an exam selector (§8.6) that sets `examId` on the selected goal.
 
-**Changed 2026-10-31 (Phase 5b):** the June and Jul–Dec placeholder goals are removed. Exam comparison replaces them: `studySettings.compareExamIds: string[]` (synced, default `['lr-2027-03','lr-2027-05','lr-2027-06']`) lists the exams to compare side by side against the one exam goal (§8.6). New files get only `goal-exam`. Existing files: on load, `retirePlaceholderGoals(progress)` tombstones `goal-jun-2027` and `goal-dec-2027` (`deleted: true`, `updatedAt` now), but only if their `updatedAt` is still the epoch default, so a goal you edited is kept.
+**Changed 2026-10-31 (Phase 5b):** the June and Jul–Dec placeholder goals are removed. Exam comparison replaces them: `studySettings.compareExamIds: string[]` (synced, default `['lr-2027-03','lr-2027-05','lr-2027-06']`) lists the exams to compare side by side against the one exam goal (§8.6). New files get only `goal-exam`. Existing files: on load, `retirePlaceholderGoals(progress)` tombstones `goal-jun-2027` and `goal-dec-2027` (`deleted: true`, `updatedAt` now), but only if their `updatedAt` is still the epoch default, so a goal you edited is kept. **Changed 2026-10-31 (Phase 8 review):** they are retired even if edited (tapping their old chart chip stamped `updatedAt`, which kept them alive); the goal on/off chips under the chart are removed, and goals are switched on/off only in Goals ✎.
 
 Defaults written by migration (editable; the last two are no longer created, see above):
 ```json
@@ -644,6 +644,10 @@ Rule (2026-10-29): **Known = stability > 3 days AND graduated (Review state).** 
 
 ### 8.7 Levels on the dashboard (Phase 5b)
 `computeCounts` also returns `byLevel = { Novice|A1|A2|B1|B2|C: { total, seen, known } }`, using each TOCFL sense's `level`. Untouched baseline keys count in their own level. The Today card shows a compact six-column row ("B1 412/1,170"). The old "Details" mastery panels and the old study-filter chips use the six levels instead of the four bands.
+
+**Lists page bars (Phase 8 review, 2026-10-31).** The 清單 page has one CCC section: a tree Book → Chapter → Part (± expands; tapping a chapter or part opens that list). Every row, the TOCFL level panel, and Pleco/custom rows use `statusSummary(keys)` (`src/lib/lists.js`), built on `itemStatus`, so the bars follow the Known rules above: known (reviewed), known (untouched solid baseline), learning, new; numbers are `items · due·new·known`. Studied-tier words that are still untouched show as new, and CCC rows with no TOCFL match never count as baseline.
+
+**Wide layout (Phase 8 review).** On screens ≥ 1024px the app uses a wide layout (max 72rem): chart + pace box side by side with a taller chart, hours + study picker side by side, Lists in two columns. A header button (⇥⇤ / ⇤⇥, desktop only) switches back to the phone layout; the choice is per device (`localStorage`, `storageKey('layoutWide')`). Phones always get the single column. Flashcards stay at phone width.
 
 ## 9. Lists
 

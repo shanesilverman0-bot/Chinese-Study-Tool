@@ -7,6 +7,7 @@ import PaceBox from './PaceBox.jsx'
 import HoursChart from './HoursChart.jsx'
 import GoalsEditor from './GoalsEditor.jsx'
 import { pickGoal } from '../lib/pace.js'
+import { useWide } from '../lib/layout.js'
 import { DEFAULT_STUDY_SETTINGS } from '../lib/schema.js'
 
 // Computes study stats from the progress object.
@@ -108,6 +109,7 @@ export default function Dashboard({
   onAddManual,
 }) {
   const s = computeStats(progress, vocab)
+  const wide = useWide()
   const [editing, setEditing] = useState(false)
   const goals = progress.goals ?? []
   const goal = pickGoal(goals, progress.studySettings?.selectedGoalId, todayDate)
@@ -115,16 +117,12 @@ export default function Dashboard({
 
   const updateGoal = (id, patch) =>
     updateGoals((gs) => gs.map((g) => (g.id === id ? { ...g, ...patch, updatedAt: new Date().toISOString() } : g)))
-  const toggleGoal = (id) => {
-    const g = goals.find((x) => x.id === id)
-    if (g) updateGoal(id, { enabled: !g.enabled })
-  }
 
   return (
-    <div className="brush-in mx-auto flex w-full flex-col gap-5 md:max-w-3xl">
+    <div className="brush-in mx-auto flex w-full flex-col gap-5">
       <TodayCard counts={counts} baseline={baseline} settings={progress.studySettings} due={s.due} />
 
-      <div className="grid gap-5 md:grid-cols-[1fr_220px]">
+      <div className={`grid gap-5 ${wide ? 'grid-cols-[1fr_320px] items-start' : ''}`}>
         <ProgressChart
           snapshots={progress.snapshots}
           today={todayDate}
@@ -132,7 +130,6 @@ export default function Dashboard({
           goals={goals}
           goal={goal}
           compareExamIds={compareExamIds}
-          onToggleGoal={toggleGoal}
         />
         {editing ? (
           <GoalsEditor goals={goals} onSave={(gs) => updateGoals(() => gs)} onClose={() => setEditing(false)} />
@@ -152,6 +149,7 @@ export default function Dashboard({
         )}
       </div>
 
+      <div className={wide ? 'grid grid-cols-2 items-start gap-5' : 'flex flex-col gap-5'}>
       <HoursChart
         sessions={progress.sessions}
         manualEntries={progress.manualEntries}
@@ -161,6 +159,7 @@ export default function Dashboard({
 
       <div id="study-picker">
         <StudyPicker {...pickerProps} />
+      </div>
       </div>
 
       <details className="rounded-2xl border border-ink/10 bg-white/30 p-4">

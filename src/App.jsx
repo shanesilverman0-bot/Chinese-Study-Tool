@@ -22,6 +22,7 @@ import SessionTimer from './components/SessionTimer.jsx'
 import ManualEntryForm from './components/ManualEntryForm.jsx'
 import DataBanner from './components/DataBanner.jsx'
 import { DATA_MODE, assertWriteAllowed, dataPath } from './lib/dataMode.js'
+import { WideContext, useWideLayout } from './lib/layout.js'
 
 export default function App() {
   // Vocab starts as the bundled seed, then grows when packs load from the repo.
@@ -111,6 +112,7 @@ export default function App() {
 
   const [manualOpen, setManualOpen] = useState(false)
   const [view, setView] = useState('home') // home | lists | review | settings | files
+  const layout = useWideLayout()
   const [queue, setQueue] = useState([]) // holds composite card keys
   const [pos, setPos] = useState(0)
   const [stillLearning, setStillLearning] = useState(null) // keys, at the end of the queue
@@ -214,29 +216,39 @@ export default function App() {
     : null
 
   return (
+    <WideContext.Provider value={layout.wide}>
     <div className="ink-texture min-h-screen">
       <DataBanner gh={gh} />
-      <div className="mx-auto flex min-h-screen max-w-lg flex-col">
-        <header className="flex items-center justify-between px-5 pb-3 pt-6">
+      <div className={`mx-auto flex min-h-screen flex-col ${layout.wide ? 'max-w-6xl' : 'max-w-lg'}`}>
+        <header className="flex items-center justify-between gap-2 px-3 pb-3 pt-6 sm:px-5">
           <button onClick={() => setView('home')} className="flex items-center gap-2.5 text-left">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-cinnabar font-display text-lg font-bold text-paper">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cinnabar font-display text-lg font-bold text-paper">
               習
             </span>
-            <div>
+            <div className="hidden min-[400px]:block">
               <div className="font-display text-base font-bold leading-none text-paper">習字</div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-paper/40">
+              <div className="whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-paper/40">
                 TOCFL Tutor
               </div>
             </div>
           </button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
             <SyncDot syncState={syncState} githubReady={githubReady} />
             <SessionTimer addSession={addSession} snapshotNow={snapshotNow} />
             <NavBtn active={view === 'home'} onClick={() => setView('home')}>首頁</NavBtn>
             <NavBtn active={view === 'lists'} onClick={() => setView('lists')}>清單</NavBtn>
             <NavBtn active={view === 'files'} onClick={() => setView('files')}>檔案</NavBtn>
             <NavBtn active={view === 'settings'} onClick={() => setView('settings')}>設定</NavBtn>
+            {layout.desktop && (
+              <button
+                onClick={layout.toggle}
+                title={layout.wide ? 'Narrow (phone) layout' : 'Wide (desktop) layout'}
+                className="ml-1 rounded-full px-2 py-1.5 font-mono text-sm text-paper/60 hover:text-paper"
+              >
+                {layout.wide ? '⇥⇤' : '⇤⇥'}
+              </button>
+            )}
           </div>
         </header>
 
@@ -282,7 +294,7 @@ export default function App() {
             )}
 
             {view === 'review' && !stillLearning && currentWord && (
-              <div>
+              <div className="mx-auto max-w-lg">
                 <div className="mb-4 flex items-center justify-between">
                   <button
                     onClick={() => setView('home')}
@@ -306,10 +318,11 @@ export default function App() {
             )}
 
             {view === 'files' && (
-              <RepoFiles github={gh} onChanged={reloadVocab} />
+              <div className="mx-auto max-w-3xl"><RepoFiles github={gh} onChanged={reloadVocab} /></div>
             )}
 
             {view === 'settings' && (
+              <div className="mx-auto max-w-3xl">
               <Settings
                 settings={settings}
                 updateSettings={updateSettings}
@@ -329,6 +342,7 @@ export default function App() {
                 vocabCount={vocab.length}
                 onReloadVocab={reloadVocab}
               />
+              </div>
             )}
           </div>
         </main>
@@ -342,6 +356,7 @@ export default function App() {
         />
       )}
     </div>
+    </WideContext.Provider>
   )
 }
 
@@ -349,7 +364,7 @@ function NavBtn({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-full px-3 py-1.5 font-sans text-sm transition ${
+      className={`whitespace-nowrap rounded-full px-2 py-1.5 font-sans text-sm transition sm:px-3 ${
         active ? 'bg-paper text-ink' : 'text-paper/60 hover:text-paper'
       }`}
     >

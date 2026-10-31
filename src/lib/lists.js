@@ -126,3 +126,22 @@ export function itemStatus(key, { index, cards, baseline, settings }) {
   const best = own.reduce((a, b) => ((b.stability ?? 0) > (a.stability ?? 0) ? b : a))
   return isKnownCard(best, settings) ? 'known' : 'learning'
 }
+
+// Status counts for a set of item keys (deduped): the bars and due·new·known numbers on
+// the Lists page. `known` includes untouched solid-baseline words, as the Today card does;
+// `baseline` is that subset. `due` = reviewed items whose study card is due now.
+export function statusSummary(keys, { index, cards, baseline, settings }, now = new Date()) {
+  const out = { total: 0, known: 0, baseline: 0, learning: 0, fresh: 0, due: 0 }
+  const t = now.getTime()
+  for (const k of new Set(keys)) {
+    out.total++
+    const st = itemStatus(k, { index, cards, baseline, settings })
+    if (st === 'new') { out.fresh++; continue }
+    if (st === 'baseline') { out.known++; out.baseline++; continue }
+    if (st === 'known') out.known++
+    else out.learning++
+    const c = cards[index.studyKeyOf(k, cards)]
+    if (c?.due && new Date(c.due).getTime() <= t) out.due++
+  }
+  return out
+}

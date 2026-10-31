@@ -1,36 +1,33 @@
 import React, { useMemo, useState } from 'react'
-import { TOCFLMasteryPanel, CCCCMasteryPanel } from './MasteryPanels.jsx'
+import { TOCFLMasteryPanel, CCCTree, StatusBar, StatusNums, StatusLegend } from './MasteryPanels.jsx'
 import ListDetail from './ListDetail.jsx'
-import { buildFlashcardQueue } from '../lib/queue.js'
-import { createCustomList, itemStatus } from '../lib/lists.js'
+import { useWide } from '../lib/layout.js'
+import { createCustomList, statusSummary } from '../lib/lists.js'
 
 const GROUPS = [
   ['ccc', '當代中文 · Contemporary Chinese'],
   ['pleco', 'Pleco'],
   ['custom', '自訂 · Custom'],
 ]
-const fmt = (n) => n.toLocaleString('en-US')
-
 export default function ListsView({ lists, index, progress, baseline, vocab, upsertList, deleteList, onStudyList }) {
   const [openId, setOpenId] = useState(null)
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)
+  const [treeOpen, setTreeOpen] = useState({ books: {}, chapters: {} })
   const settings = progress.studySettings
+  const wide = useWide()
 
-  // due·new·known per list (baseline words count in `new`'s sibling only through the status chip).
+  // One context object so the memoised summaries recompute only when cards/baseline/settings change.
+  const ctx = useMemo(
+    () => ({ index, cards: progress.cards, baseline, settings }),
+    [index, progress.cards, baseline, settings]
+  )
+  // due·new·known + bar for Pleco and custom lists (CCC rows are summarised inside CCCTree).
   const stats = useMemo(() => {
     const out = new Map()
-    for (const l of lists) {
-      const { stats: s } = buildFlashcardQueue({
-        selection: { listIds: [l.id], tocflLevels: [], includeBaseline: true, size: null, newMax: null },
-        lists, index, progress, baseline,
-      })
-      let known = 0
-      for (const k of l.itemKeys) if (itemStatus(k, { index, cards: progress.cards, baseline, settings }) === 'known') known++
-      out.set(l.id, { due: s.due, fresh: s.fresh, known })
-    }
+    for (const l of lists) if (l.sourceType !== 'ccc') out.set(l.id, statusSummary(l.itemKeys, ctx))
     return out
-  }, [lists, index, progress.cards, baseline, settings]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lists, ctx])
 
   const open = openId ? lists.find((l) => l.id === openId) : null
   if (open) {
@@ -54,11 +51,10 @@ export default function ListsView({ lists, index, progress, baseline, vocab, ups
   }
 
   return (
-    <div className="brush-in flex flex-col gap-5">
+    <div className={`brush-in gap-5 ${wide ? 'grid grid-cols-2 items-start' : 'flex flex-col'}`}>
       <section className="flex flex-col gap-3">
         <h3 className="font-display text-base font-bold text-ink">概覽 · Overview</h3>
-        <TOCFLMasteryPanel vocab={vocab} progress={progress} />
-        <CCCCMasteryPanel vocab={vocab} progress={progress} />
+        <TOCFLMasteryPanel vocab={vocab} ctx={ctx} />
       </section>
 
       {GROUPS.map(([type, title]) => {
@@ -84,25 +80,29 @@ export default function ListsView({ lists, index, progress, baseline, vocab, ups
                 <button onClick={() => setCreating(false)} className="px-2 font-sans text-sm text-ink/50">Cancel</button>
               </div>
             )}
-            {group.length === 0 && (
+            {type === 'ccc' && <CCCTree lists={group} ctx={ctx} onOpen={setOpenId} open={treeOpen} setOpen={setTreeOpen} />}
+            {type !== 'ccc' && group.length === 0 && (
               <p className="font-sans text-sm text-ink/50">
                 {type === 'pleco' ? 'No Pleco lists yet (import comes in a later update).' : type === 'custom' ? 'No custom lists yet.' : 'No CCC lists.'}
               </p>
             )}
-            <div className="flex flex-col">
-              {group.map((l) => {
-                const s = stats.get(l.id) ?? { due: 0, fresh: 0, known: 0 }
-                return (
-                  <button key={l.id} onClick={() => setOpenId(l.id)} className="flex min-h-[40px] items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-ink/5">
-                    <span className="min-w-0 flex-1 truncate font-sans text-sm text-ink/80">{l.name}</span>
-                    <span className="font-mono text-[11px] text-ink/45">
-                      {fmt(l.itemKeys.length)} · <span className={s.due ? 'text-cinnabar' : ''}>{fmt(s.due)}</span>·{fmt(s.fresh)}·{fmt(s.known)}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-            {group.length > 0 && <p className="mt-2 font-mono text-[10px] text-ink/35">items · due·new·known</p>}
+            {type !== 'ccc' && (
+              <div className="flex flex-col">
+                {group.map((l) => {
+                  const s = stats.get(l.id)
+                  return (
+                    <button key={l.id} onClick={() => setOpenId(l.id)} className="flex min-h-[40px] flex-col rounded-lg px-2 py-1.5 text-left hover:bg-ink/5">
+                      <span className="flex w-full items-baseline justify-between gap-2">
+                        <span className="min-w-0 flex-1 truncate font-sans text-sm text-ink/80">{l.name}</span>
+                        {s && <StatusNums s={s} />}
+                      </span>
+                      <span className="w-full"><StatusBar s={s} /></span>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            {(type === 'ccc' || group.length > 0) && <StatusLegend />}
           </section>
         )
       })}

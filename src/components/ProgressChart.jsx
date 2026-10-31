@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { storageKey } from '../lib/dataMode.js'
+import { useWide } from '../lib/layout.js'
 import { goalEndDate } from '../data/exams.js'
 import { dateT, goalStartValue, liveGoals, compareRows, compareColor } from '../lib/pace.js'
 
@@ -39,8 +40,9 @@ function Chip({ on, color, onClick, children }) {
   )
 }
 
-export default function ProgressChart({ snapshots, today, counts, goals, goal, compareExamIds = [], onToggleGoal }) {
+export default function ProgressChart({ snapshots, today, counts, goals, goal, compareExamIds = [] }) {
   const [hidden, setHidden] = useState(loadHidden)
+  const wide = useWide()
   const toggleSeries = (k) => {
     const next = { ...hidden, [k]: !hidden[k] }
     setHidden(next)
@@ -115,7 +117,8 @@ export default function ProgressChart({ snapshots, today, counts, goals, goal, c
 
   return (
     <div className="rounded-2xl border border-ink/10 bg-white/50 p-4">
-      <ResponsiveContainer width="100%" height={240}>
+      <div className={wide ? 'h-96' : 'h-60'}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart margin={{ top: 8, right: 36, bottom: 0, left: -12 }}>
           <CartesianGrid stroke="#1a161412" />
           <XAxis
@@ -173,15 +176,12 @@ export default function ProgressChart({ snapshots, today, counts, goals, goal, c
           ))}
         </LineChart>
       </ResponsiveContainer>
+      </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {SERIES.map((s) => (
           <Chip key={s.key} on={!hidden[s.key]} color={s.color} onClick={() => toggleSeries(s.key)}>{s.label}</Chip>
         ))}
-        {allGoals.map((g, i) => (
-          <Chip key={g.id} on={g.enabled} color={GOAL_COLORS[i % GOAL_COLORS.length]} onClick={() => onToggleGoal(g.id)}>
-            {g.label}
-          </Chip>
-        ))}
+        {/* Goal on/off chips removed: the exam comparison checkboxes in the pace box do this job. */}
       </div>
       {hasEstimate && <p className="mt-2 font-mono text-[10px] text-ink/45">dashed = estimated from course</p>}
     </div>
