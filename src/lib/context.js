@@ -221,7 +221,9 @@ export function contextQualified(key, progress, rule, group) {
 export function makeContextQualified(progress, settings) {
   const group = groupAttempts(progress)
   const rule = contextRuleOf(settings)
-  return (key) => contextQualified(key, progress, rule, group)
+  const archived = progress?.contextArchive?.items ?? {}
+  // Most of the ~7,500 TOCFL keys have no attempts at all: skip them without building stats.
+  return (key) => (group.has(key) || key in archived) && contextQualified(key, progress, rule, group)
 }
 
 // DESIGN §11.6. Known words with no attempts, or n >= 2 and recentAcc < 0.6. Sorted by
