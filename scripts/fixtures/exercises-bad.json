@@ -1,0 +1,43 @@
+{
+  "format": "tocfl-tutor.exercises",
+  "formatVersion": 1,
+  "listId": "pleco:11月學字",
+  "batch": 1,
+  "variant": 2,
+  "itemType": "word",
+  "generator": "fixture",
+  "exercises": [
+    {
+      "id": "bad-01-answer-not-in-options", "type": "fill", "band": "B", "targets": ["溫馨|wēnxīn"],
+      "sentence": "這家咖啡店佈置得很[[1]]，讓人覺得像在家一樣。",
+      "questions": [ { "blank": 1, "target": "溫馨|wēnxīn", "options": ["溫和", "熱烈", "親切", "舒服"], "answer": "溫馨", "explanation": "x" } ]
+    },
+    {
+      "id": "bad-02-cloze-two-blanks", "type": "cloze", "band": "B", "targets": ["完整|wánzhěng", "實際|shíjì"],
+      "passage": "這個計畫很[[1]]，可是[[2]]做起來並不容易。",
+      "questions": [
+        { "blank": 1, "target": "完整|wánzhěng", "options": ["完整", "完全", "整齊", "完成"], "answer": "完整", "explanation": "x" },
+        { "blank": 2, "target": "實際|shíjì", "options": ["事實", "現實", "實際", "真實"], "answer": "實際", "explanation": "x" }
+      ]
+    },
+    {
+      "id": "bad-03-unknown-target", "type": "usage", "band": "B", "targets": ["不存在|bùcúnzài"],
+      "questions": [ { "target": "不存在|bùcúnzài", "prompt": "哪一個句子正確？", "options": ["不存在甲", "不存在乙", "不存在丙", "不存在丁"], "answer": "不存在甲", "explanation": "x" } ]
+    },
+    {
+      "id": "bad-04-duplicate-options", "type": "listening", "band": "A", "targets": ["外婆|wàipó"],
+      "audioText": "我外婆今年八十歲了，身體還很好。",
+      "questions": [ { "target": "外婆|wàipó", "prompt": "說話的人在說誰？", "options": ["媽媽的媽媽", "爸爸的媽媽", "爸爸的媽媽", "太太的媽媽"], "answer": "媽媽的媽媽", "explanation": "x" } ]
+    },
+    {
+      "id": "bad-05-simplified-char", "type": "fill", "band": "B", "targets": ["完整|wánzhěng"],
+      "sentence": "我们的計畫很[[1]]，大家都很滿意。",
+      "questions": [ { "blank": 1, "target": "完整|wánzhěng", "options": ["完整", "完全", "整齊", "完成"], "answer": "完整", "explanation": "Valid except for the simplified 们, which only warns." } ]
+    },
+    {
+      "id": "bad-06-fill-answer-not-target", "type": "fill", "band": "B", "targets": ["實際|shíjì"],
+      "sentence": "他說得很好聽，[[1]]做起來卻不一樣。",
+      "questions": [ { "blank": 1, "target": "實際|shíjì", "options": ["事實", "現實", "真實", "實在"], "answer": "事實", "explanation": "x" } ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@ const GROUPS = [
   ['pleco', 'Pleco'],
   ['custom', '自訂 · Custom'],
 ]
-export default function ListsView({ lists, index, progress, baseline, vocab, upsertList, deleteList, updateProgress, onStudyList }) {
+export default function ListsView({ lists, index, progress, baseline, vocab, upsertList, deleteList, updateProgress, deviceSettings, onStudyList }) {
   const [openId, setOpenId] = useState(null)
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)
@@ -36,7 +36,7 @@ export default function ListsView({ lists, index, progress, baseline, vocab, ups
     return (
       <ListDetail
         list={open} index={index} progress={progress} baseline={baseline}
-        upsertList={upsertList}
+        upsertList={upsertList} updateProgress={updateProgress} deviceSettings={deviceSettings}
         onBack={() => setOpenId(null)}
         onDelete={() => { deleteList(open.id); setOpenId(null) }}
         onStudy={() => onStudyList(open.id)}

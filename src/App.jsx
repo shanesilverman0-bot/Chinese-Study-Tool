@@ -280,6 +280,7 @@ export default function App() {
                 upsertList={upsertList}
                 deleteList={deleteList}
                 updateProgress={updateProgress}
+                deviceSettings={settings}
                 onStudyList={studyList}
               />
             )}

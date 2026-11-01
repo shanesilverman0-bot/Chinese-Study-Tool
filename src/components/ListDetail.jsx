@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react'
+import ExerciseImport from './ExerciseImport.jsx'
 import { addItems, removeItems, renameList, searchItems, itemStatus } from '../lib/lists.js'
 
 const CHIP = {
@@ -8,9 +9,10 @@ const CHIP = {
   baseline: 'bg-[#b8860b]/15 text-[#b8860b]',
 }
 
-export default function ListDetail({ list, index, progress, baseline, upsertList, onBack, onDelete, onStudy }) {
+export default function ListDetail({ list, index, progress, baseline, upsertList, updateProgress, deviceSettings, onBack, onDelete, onStudy }) {
   const custom = list.sourceType === 'custom'
   const [q, setQ] = useState('')
+  const [tab, setTab] = useState('items')
   const settings = progress.studySettings
 
   const results = useMemo(() => (custom ? searchItems(index, q, 50) : []), [custom, index, q])
@@ -47,7 +49,20 @@ export default function ListDetail({ list, index, progress, baseline, upsertList
       )}
       <p className="font-mono text-xs text-ink/45">{rows.length} items</p>
 
-      {custom && (
+      <div className="flex gap-2">
+        {[['items', '字詞 · Items'], ['ex', '練習題 · Exercises']].map(([id, label]) => (
+          <button
+            key={id} onClick={() => setTab(id)}
+            className={`rounded-full px-3 py-1.5 font-sans text-xs ${tab === id ? 'bg-ink text-paper' : 'border border-ink/20 text-ink/60'}`}
+          >{label}</button>
+        ))}
+      </div>
+
+      {tab === 'ex' && (
+        <ExerciseImport list={list} index={index} progress={progress} updateProgress={updateProgress} settings={deviceSettings} />
+      )}
+
+      {tab === 'items' && custom && (
         <div className="rounded-2xl border border-ink/10 bg-white/50 p-4">
           <input
             value={q} onChange={(e) => setQ(e.target.value)} placeholder="Add words: 漢字, pinyin or English"
@@ -72,7 +87,7 @@ export default function ListDetail({ list, index, progress, baseline, upsertList
         </div>
       )}
 
-      <div className="flex flex-col">
+      {tab === 'items' && <div className="flex flex-col">
         {rows.length === 0 && <p className="py-4 text-center font-sans text-sm text-ink/50">This list is empty.</p>}
         {rows.map(({ key, it, status }) => (
           <div key={key} className="border-b border-ink/5">
@@ -95,9 +110,9 @@ export default function ListDetail({ list, index, progress, baseline, upsertList
           )}
           </div>
         ))}
-      </div>
+      </div>}
 
-      {custom && (
+      {tab === 'items' && custom && (
         <button
           onClick={() => { if (window.confirm(`Delete "${list.name}"?`)) onDelete() }}
           className="self-start font-sans text-xs text-ink/40 hover:text-cinnabar"
