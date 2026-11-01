@@ -6,6 +6,7 @@ import { previewIntervals } from '../lib/fsrs.js'
 import { cardKey } from '../lib/fsrs.js'
 import ToneCurve from './ToneCurve.jsx'
 import AITutor from './AITutor.jsx'
+import SentenceBox from './SentenceBox.jsx'
 
 // Small POS chip under the hanzi for words with more than one sense (DESIGN §4.4).
 const POS_LABELS = {
@@ -20,7 +21,7 @@ const RATINGS = [
   { key: 'easy', label: 'Easy', color: '#1a6b8a' },
 ]
 
-export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig, understanding }) {
+export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig, understanding, sentences, onAddSentence }) {
   const [revealed, setRevealed] = useState(false)
   const [activeRating, setActiveRating] = useState(null)
   const [recording, setRecording] = useState(false)
@@ -203,6 +204,8 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
           )
         })}
       </div>
+
+      <SentenceBox wordKey={wordKey} sentences={sentences} onAdd={onAddSentence} />
 
       {/* Tone trainer */}
       <div className="mt-5 w-full rounded-2xl border border-ink/10 bg-white/40 p-4">

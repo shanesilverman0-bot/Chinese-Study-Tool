@@ -15,6 +15,7 @@ import { localDate } from '../lib/dates.js'
 import { noteActivity } from '../lib/sessions.js'
 import { deleteList as tombstoneList } from '../lib/lists.js'
 import { recordAttempt, rollupAttempts } from '../lib/context.js'
+import { makeSentence, applyGradesTo } from '../lib/sentences.js'
 
 const SAVE_DEBOUNCE_MS = 4000
 const MAX_SAVE_TRIES = 3
@@ -418,6 +419,39 @@ export function useProgress(vocab = SEED_VOCAB) {
     [apply, scheduleSync]
   )
 
+  // Sentences (DESIGN §12). addSentence → the new queue length.
+  const addSentence = useCallback(
+    (key, sentence) => {
+      apply((prev) => ({ ...prev, sentences: [...(prev.sentences ?? []), makeSentence({ key, sentence })] }))
+      scheduleSync()
+      return (latestRef.current.sentences ?? []).filter((s) => !s.deleted && s.status === 'queued').length
+    },
+    [apply, scheduleSync]
+  )
+
+  const markExported = useCallback(
+    (ids) => {
+      const set = new Set(ids)
+      const now = new Date().toISOString()
+      if (apply((prev) => ({
+        ...prev,
+        sentences: (prev.sentences ?? []).map((s) =>
+          set.has(s.id) && s.status === 'queued' ? { ...s, status: 'exported', exportedAt: now, updatedAt: now } : s),
+      }))) scheduleSync()
+    },
+    [apply, scheduleSync]
+  )
+
+  // → { graded, unknown, invalid }
+  const applyGrades = useCallback(
+    (results) => {
+      const { next, report } = applyGradesTo(latestRef.current, results)
+      if (apply(() => next)) scheduleSync()
+      return report
+    },
+    [apply, scheduleSync]
+  )
+
   // Test runs (DESIGN §5.14). Latest score = the most recent finished run.
   const patchRun = useCallback(
     (id, patch) => updateProgress((prev) => {
@@ -518,6 +552,9 @@ export function useProgress(vocab = SEED_VOCAB) {
     updateStudySettings,
     addSession,
     addAttempt,
+    addSentence,
+    markExported,
+    applyGrades,
     startTestRun,
     finishTestRun,
     abandonTestRun,

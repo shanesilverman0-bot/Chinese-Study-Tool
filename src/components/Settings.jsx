@@ -10,6 +10,8 @@ import { loadFullLog } from '../lib/logArchive.js'
 import { localDate, addDays } from '../lib/dates.js'
 import { contextRuleOf, understandingOf } from '../lib/context.js'
 import MicTest from './MicTest.jsx'
+import gradePromptRaw from '../../docs/prompts/grade-sentences.md?raw'
+import { buildPacket, packetFileName, parseGrades, queuedOf, countBy } from '../lib/sentences.js'
 import { listVoices, getTtsPrefs, setTtsPrefs, speak, isBetterVoice } from '../lib/speech.js'
 
 
@@ -37,6 +39,8 @@ export default function Settings({
   baseline,
   updateStudySettings,
   updateProgress,
+  markExported,
+  applyGrades,
   itemIndex,
   onRecompute,
   replaceProgress,
@@ -267,6 +271,8 @@ export default function Settings({
           Reload vocab packs
         </button>
       </section>
+
+      <SentencesSection progress={progress} itemIndex={itemIndex} markExported={markExported} applyGrades={applyGrades} />
 
       <AudioSection />
 
@@ -765,6 +771,94 @@ function AudioSection() {
           afterwards; such voices are marked ★.
         </p>
       </div>
+    </section>
+  )
+}
+
+// The prompt proper is everything below the "---" line (above it are usage notes for Shane).
+const GRADE_PROMPT = gradePromptRaw.includes('\n---\n')
+  ? gradePromptRaw.slice(gradePromptRaw.indexOf('\n---\n') + 5).trim()
+  : gradePromptRaw
+
+// 造句 · Sentences (DESIGN §12, Phase 15): export the queue, import the grader's reply.
+function SentencesSection({ progress, itemIndex, markExported, applyGrades }) {
+  const [msg, setMsg] = useState('')
+  const [text, setText] = useState('')
+  const [report, setReport] = useState(null)
+  const sentences = progress.sentences ?? []
+  const queued = queuedOf(sentences).length
+  const btn = 'rounded-full border border-ink/20 px-3 py-1.5 font-sans text-xs text-ink/70 hover:border-jade hover:text-jade disabled:opacity-40'
+  const tz = progress.studySettings?.timezone
+
+  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 2500) }
+  const packet = () => buildPacket(sentences, (k) => itemIndex.get(k), { tz })
+  const done = (p) => markExported(p.items.map((i) => i.id))
+
+  const download = () => {
+    const p = packet()
+    if (!p.items.length) return
+    const url = URL.createObjectURL(new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = packetFileName(new Date(), tz)
+    a.click()
+    URL.revokeObjectURL(url)
+    done(p)
+  }
+  const copyPacket = async () => {
+    const p = packet()
+    if (!p.items.length) return
+    try { await navigator.clipboard.writeText(JSON.stringify(p, null, 2)); done(p); flash('Packet copied.') } catch { flash('Copy failed. Use Export instead.') }
+  }
+  const copyPrompt = async () => {
+    try { await navigator.clipboard.writeText(GRADE_PROMPT); flash('Prompt copied.') } catch { flash('Copy failed.') }
+  }
+  const onFile = async (e) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setText(await f.text())
+    setReport(null)
+    e.target.value = ''
+  }
+  const importGrades = () => {
+    const parsed = parseGrades(text)
+    if (parsed.error) { setReport({ error: parsed.error }); return }
+    setReport(applyGrades(parsed.results))
+    setText('')
+  }
+
+  return (
+    <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-1 font-display text-base font-bold text-ink">造句 · Sentences</h3>
+      <p className="mb-3 font-mono text-[11px] text-ink/55">
+        {queued} queued · {countBy(sentences, 'exported')} exported · {countBy(sentences, 'graded')} graded
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <button className={btn} disabled={!queued} onClick={download}>Export grading packet</button>
+        <button className={btn} disabled={!queued} onClick={copyPacket}>Copy packet</button>
+        <button className={btn} onClick={copyPrompt}>Copy grading prompt</button>
+      </div>
+      {msg && <p className="mt-2 font-mono text-[11px] text-jade">{msg}</p>}
+
+      <h4 className="mb-1 mt-4 font-sans text-sm font-semibold text-ink/80">Import grades</h4>
+      <textarea
+        className={inputCls} rows={4} value={text}
+        onChange={(e) => { setText(e.target.value); setReport(null) }}
+        placeholder="Paste the grader's JSON reply here"
+      />
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <button className={btn} disabled={!text.trim()} onClick={importGrades}>Import grades</button>
+        <label className={`${btn} cursor-pointer`}>
+          Choose file…
+          <input type="file" accept=".json,application/json" className="hidden" onChange={onFile} />
+        </label>
+      </div>
+      {report?.error && <p className="mt-2 rounded-lg bg-cinnabar/10 px-3 py-2 font-mono text-xs text-seal">{report.error}</p>}
+      {report && !report.error && (
+        <p className="mt-2 font-mono text-xs text-ink/70">
+          {[`${report.graded} graded`, report.unknown ? `${report.unknown} unknown id` : '', report.invalid ? `${report.invalid} invalid` : ''].filter(Boolean).join(', ')}
+        </p>
+      )}
     </section>
   )
 }

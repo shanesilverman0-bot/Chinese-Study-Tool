@@ -49,6 +49,9 @@ export default function App() {
     updateStudySettings,
     addSession,
     addAttempt,
+    addSentence,
+    markExported,
+    applyGrades,
     startTestRun,
     finishTestRun,
     abandonTestRun,
@@ -381,6 +384,8 @@ export default function App() {
                   onPrev={pos > 0 ? () => setPos(pos - 1) : undefined}
                   onNext={pos + 1 < queue.length ? () => setPos(pos + 1) : undefined}
                   tutorConfig={tutorConfig}
+                  sentences={progress.sentences}
+                  onAddSentence={addSentence}
                   understanding={queue[pos] ? contextStats(queue[pos], progress, progress.studySettings) : null}
                 />
               </div>
@@ -435,6 +440,8 @@ export default function App() {
                 baseline={baseline}
                 updateStudySettings={updateStudySettings}
                 updateProgress={updateProgress}
+                markExported={markExported}
+                applyGrades={applyGrades}
                 itemIndex={itemIndex}
                 onRecompute={recompute}
                 replaceProgress={replaceProgress}
