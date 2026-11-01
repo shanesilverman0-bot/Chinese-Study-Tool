@@ -131,7 +131,7 @@ export default function PlecoImport({ index, progress, updateProgress, onClose }
                   return (
                     <label key={k} className="flex min-h-[40px] items-center gap-2 font-sans text-sm">
                       <input type="radio" name={name} checked={choice[i] === k} onChange={() => setChoice((p) => ({ ...p, [i]: k }))} />
-                      {it?.hanzi} {it?.pinyin} — {it?.english} [{it?.band ?? '–'}]
+                      {it?.hanzi} {it?.pinyin}{it?.pos ? ` (${it.pos})` : ''} — {it?.english} [{it?.level ?? it?.band ?? '–'}]
                     </label>
                   )
                 })}

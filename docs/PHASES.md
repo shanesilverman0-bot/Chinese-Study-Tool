@@ -589,7 +589,7 @@ node scripts/check-migration.mjs local-data/progress.copy.json
 2. Import → Lists shows "11月學字" with 10 items, and the 3 outside ones carry 非TOCFL. Dashboard Known/Seen do not change.
 3. 奶奶 shows pinyin `nǎinai`, english from the dataset (not Pleco).
 4. Import the same file again → "0 new words".
-5. Edit a copy of the sample so that one card has `<headword charset="tc">行</headword>` and `<pron …>xing2</pron>` → that card lands in **resolve** with the 行 candidates listed.
+5. ~~行 xing2~~ (that is an exact match for `行|xíng`, so it is correctly auto). **Corrected in review:** a card for a word with several TOCFL meanings under the same pinyin (e.g. 在 `zai4`) lands in **resolve** listing every meaning (`在|zài`, `在|zài#Adv`, `在|zài#Vst`) with POS, english and level.
 
 **Migration:** none.
 

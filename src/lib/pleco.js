@@ -89,6 +89,11 @@ export function classify(card, index) {
   if (!card.tc) return { status: 'resolve', key: null, candidates: [], reason: 'no traditional headword', via: 'none' }
   const m = index.match(card.tc, card.pinyin)
   if (['exact', 'normalized', 'variant'].includes(m.status)) {
+    // Same hanzi + pinyin but several TOCFL meanings (DESIGN §4.1): let Shane pick the sense.
+    const senses = index.get(m.key)?.senses ?? []
+    if (senses.length) {
+      return { status: 'resolve', key: null, candidates: [m.key, ...senses], reason: 'several meanings', via: m.status }
+    }
     return { status: 'auto', key: m.key, candidates: [m.key], reason: '', via: m.status }
   }
   if (m.status === 'hanzi-unique' || m.status === 'ambiguous') {

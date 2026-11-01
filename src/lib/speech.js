@@ -81,14 +81,29 @@ export function speak(text, rateOverride) {
   return true
 }
 
-// Resolves when playback ends (or errors / is unsupported).
+// Keeps the active utterance referenced: WebKit/Chrome can garbage-collect it and never fire onend.
+let activeUtterance = null
+
+// Resolves when playback ends (or errors / is unsupported). iOS sometimes never fires
+// onend, so a timeout based on text length resolves it anyway.
 export function speakAsync(text) {
   return new Promise((resolve) => {
     if (!('speechSynthesis' in window)) return resolve()
     window.speechSynthesis.cancel()
     const u = makeUtterance(text)
-    u.onend = () => resolve()
-    u.onerror = () => resolve()
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      clearTimeout(timer)
+      if (activeUtterance === u) activeUtterance = null
+      resolve()
+    }
+    const ms = Math.min(30000, 1500 + (String(text).length * 450) / (u.rate || 1))
+    const timer = setTimeout(finish, ms)
+    u.onend = finish
+    u.onerror = finish
+    activeUtterance = u
     window.speechSynthesis.speak(u)
   })
 }
