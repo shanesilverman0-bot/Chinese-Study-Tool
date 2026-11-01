@@ -224,7 +224,7 @@ export default function StudyPicker({ selection, setSelection, lists, index, pro
       <h4 className="mb-1 font-display text-xs font-bold tracking-wide text-ink/60">Pleco</h4>
       <div className="mb-4">
         {stored('pleco').length === 0
-          ? <p className="py-1 font-sans text-sm text-ink/50">No Pleco lists yet (import comes in a later update).</p>
+          ? <p className="py-1 font-sans text-sm text-ink/50">No Pleco lists yet. Import one under 清單 → 匯入 Pleco.</p>
           : stored('pleco').map((l) => <Row key={l.id} id={l.id} label={`${l.name} (${l.itemKeys.length})`} />)}
       </div>
 
