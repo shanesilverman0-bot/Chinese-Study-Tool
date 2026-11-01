@@ -24,7 +24,7 @@ import DataBanner from './components/DataBanner.jsx'
 import ExercisePlayer from './components/ExercisePlayer.jsx'
 import { loadExerciseFile } from './lib/exerciseStore.js'
 import { variantFiles } from './lib/lists.js'
-import { questionRefs } from './lib/context.js'
+import { questionRefs, contextStats, pickPracticeQuestions } from './lib/context.js'
 import { newId } from './lib/ids.js'
 import { DATA_MODE, assertWriteAllowed, dataPath } from './lib/dataMode.js'
 import { WideContext, useWideLayout } from './lib/layout.js'
@@ -70,7 +70,7 @@ export default function App() {
   )
   const itemIndexRef = useRef(itemIndex)
   itemIndexRef.current = itemIndex
-  const { counts, today, baseline, snapshotNow } = useCounts({ progress, itemIndex, dataReady, isBlocked, updateProgress })
+  const { counts, today, baseline, snapshotNow, gaps } = useCounts({ progress, itemIndex, dataReady, isBlocked, updateProgress })
   const updateStudySettingsRef = useRef(updateStudySettings)
   updateStudySettingsRef.current = updateStudySettings
   const countsRef = useRef(counts)
@@ -216,6 +216,18 @@ export default function App() {
     setView('test')
   }
 
+  // DESIGN §11.6: practice over questions whose target is in the gap list. Reports gap words with no exercises.
+  async function practiceGaps() {
+    const gapKeys = gaps.map((g) => g.key)
+    const gapSet = new Set(gapKeys)
+    const metas = Object.values(progressRef.current.exerciseFiles ?? {}).filter((m) => m && !m.deleted)
+    const loaded = await Promise.all(metas.map(async (meta) => ({ meta, json: await loadFile(meta.id) })))
+    const all = questionRefs(loaded.filter((f) => f.json), progressRef.current.exerciseFlags).filter((r) => gapSet.has(r.key))
+    if (!all.length) { window.alert('None of the gap words have exercises yet.'); return }
+    const picked = pickPracticeQuestions({ refs: all, progress: progressRef.current, types: null, count: 20, gapKeys })
+    startPractice({ refs: picked, listIds: [...new Set(picked.map((r) => progressRef.current.exerciseFiles?.[r.fileId]?.listId).filter(Boolean))] })
+  }
+
   function practiceList(id) {
     setSelection((sel) => ({ ...sel, listIds: [id], tocflLevels: [] }))
     setPickerTab('mixed')
@@ -306,6 +318,9 @@ export default function App() {
               <Dashboard
                 progress={progress}
                 counts={counts}
+                gaps={gaps}
+                itemIndex={itemIndex}
+                onPracticeGaps={practiceGaps}
                 baseline={baseline}
                 todayDate={today.date}
                 updateGoals={updateGoals}
@@ -313,7 +328,7 @@ export default function App() {
                 vocab={vocab}
                 pickerProps={{
                   selection, setSelection, lists: allLists, index: itemIndex, progress, baseline, onStart: startReview,
-                  onStartPractice: startPractice, loadFile, tab: pickerTab, setTab: setPickerTab,
+                  onStartPractice: startPractice, loadFile, gapKeys: gaps.map((g) => g.key), tab: pickerTab, setTab: setPickerTab,
                 }}
                 onAddManual={() => setManualOpen(true)}
               />
@@ -366,6 +381,7 @@ export default function App() {
                   onPrev={pos > 0 ? () => setPos(pos - 1) : undefined}
                   onNext={pos + 1 < queue.length ? () => setPos(pos + 1) : undefined}
                   tutorConfig={tutorConfig}
+                  understanding={queue[pos] ? contextStats(queue[pos], progress, progress.studySettings) : null}
                 />
               </div>
             )}

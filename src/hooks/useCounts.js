@@ -6,6 +6,7 @@ import {
   computeCounts, buildSnapshot, upsertSnapshot, sameSnapshot, countingSettings, effectiveCards,
 } from '../lib/counts.js'
 import { localDate } from '../lib/dates.js'
+import { makeContextQualified, gapList } from '../lib/context.js'
 import { CCC_VOCAB } from '../data/ccc.js'
 
 const MIN_HIDDEN_UPSERT_MS = 10 * 60 * 1000
@@ -17,9 +18,17 @@ export function useCounts({ progress, itemIndex, dataReady, isBlocked, updatePro
     () => baselineSets(itemIndex, CCC_VOCAB, countingSettings({ baseline: bl }).baseline),
     [itemIndex, bl]
   )
+  const eff = useMemo(() => effectiveCards(progress, itemIndex), [progress.cards, itemIndex]) // eslint-disable-line react-hooks/exhaustive-deps
   const counts = useMemo(
-    () => computeCounts({ progress, index: itemIndex, settings, baseline, eff: effectiveCards(progress, itemIndex) }),
-    [progress.cards, settings, itemIndex, baseline] // eslint-disable-line react-hooks/exhaustive-deps
+    () => computeCounts({
+      progress, index: itemIndex, settings, baseline, eff,
+      contextQualified: makeContextQualified(progress, settings),
+    }),
+    [eff, settings, itemIndex, baseline, progress.attempts, progress.contextArchive, progress.sentences] // eslint-disable-line react-hooks/exhaustive-deps
+  )
+  const gaps = useMemo(
+    () => gapList(progress, itemIndex, settings, eff),
+    [eff, settings, itemIndex, progress.attempts, progress.contextArchive, progress.sentences] // eslint-disable-line react-hooks/exhaustive-deps
   )
   const tz = countingSettings(settings).timeZone
   const today = useMemo(
@@ -63,5 +72,5 @@ export function useCounts({ progress, itemIndex, dataReady, isBlocked, updatePro
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [snapshotNow])
 
-  return { counts, today, baseline, snapshotNow }
+  return { counts, today, baseline, snapshotNow, gaps }
 }

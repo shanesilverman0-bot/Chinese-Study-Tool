@@ -1,3 +1,4 @@
+import UnderstandingBar from './UnderstandingBar.jsx'
 import React, { useEffect, useRef, useState } from 'react'
 import { speak, ttsSupported } from '../lib/speech.js'
 import { startRecording, scoreAgainstTone, primaryTone } from '../lib/pitch.js'
@@ -19,7 +20,7 @@ const RATINGS = [
   { key: 'easy', label: 'Easy', color: '#1a6b8a' },
 ]
 
-export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig }) {
+export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig, understanding }) {
   const [revealed, setRevealed] = useState(false)
   const [activeRating, setActiveRating] = useState(null)
   const [recording, setRecording] = useState(false)
@@ -157,6 +158,9 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
           <div className="brush-in rounded-2xl bg-mist/60 px-5 py-4 text-center">
             <div className="font-mono text-lg text-cinnabar">{word.pinyin}</div>
             <div className="mt-1 font-sans text-lg text-ink/80">{word.english}</div>
+            {understanding && (
+              <div className="mt-2 flex justify-center"><UnderstandingBar value={understanding.understanding} max={understanding.max} /></div>
+            )}
           </div>
         ) : (
           <button

@@ -1,5 +1,6 @@
 // Usage: node scripts/check-counts.mjs [local-data/progress.copy.json]
 // Phase 3: word data, CCC -> TOCFL matching tiers, baseline tiers, CCC/TOCFL gap table.
+// Phase 14: synthetic attempts -> Context rule, understanding, gap list.
 // Phase 4: counts engine on the progress copy (T=3/7, Review-state, baseline on/off). Read-only.
 
 import fs from 'node:fs'
@@ -11,6 +12,7 @@ import { DEFAULT_STUDY_SETTINGS } from '../src/lib/schema.js'
 import { migrate } from '../src/lib/migrate.js'
 import { computeCounts, buildSnapshot, effectiveCards } from '../src/lib/counts.js'
 import { localDate } from '../src/lib/dates.js'
+import { contextStats, contextQualified, gapList, pickPracticeQuestions } from '../src/lib/context.js'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const progressFile = process.argv[2] ?? path.join(ROOT, 'local-data/progress.copy.json')
@@ -92,6 +94,46 @@ for (const l of LEVELS) {
   tot.total += ks.length; tot.thru += thru; tot.later += later; tot.never += never
 }
 console.log(`${'Total'.padEnd(7)} ${String(tot.total).padStart(6)} ${String(tot.thru).padStart(12)} ${String(tot.later).padStart(13)} ${String(tot.never).padStart(13)}`)
+
+hr('Context rule on synthetic attempts (DESIGN §11.5–11.6)')
+{
+  const okc = (label, cond, detail = '') => console.log(`${cond ? 'PASS' : 'FAIL'}  ${label} ${detail}`)
+  const K = '遺憾|yíhàn'
+  let t = 0
+  const att = (type, exId, correct = true, key = K) => ({
+    id: 'a' + t, at: new Date(Date.UTC(2026, 10, 1, 0, 0, t++)).toISOString(), fileId: 'f1', exId, q: 0, key, type,
+    mode: 'practice', runId: null, correct, chosen: '', ms: 1000,
+  })
+  const P = (attempts, extra = {}) => ({ attempts, contextArchive: { watermark: null, items: {} }, sentences: [], ...extra })
+  const rule = DEFAULT_STUDY_SETTINGS.contextRule
+  const S = DEFAULT_STUDY_SETTINGS
+  okc('2 correct on 2 different exercises: qualified', contextQualified(K, P([att('cloze', 'e1'), att('cloze', 'e2')]), rule))
+  okc('2 correct on the same exercise: not qualified', !contextQualified(K, P([att('cloze', 'e1'), att('cloze', 'e1')]), rule))
+  okc('1 correct: not qualified', !contextQualified(K, P([att('cloze', 'e1')]), rule))
+  const three = P([att('cloze', 'e1'), att('cloze', 'e2'), att('cloze', 'e3')])
+  okc('3 correct cloze: understanding 3', contextStats(K, three, S).understanding === 3, `(${contextStats(K, three, S).understanding})`)
+  const twoClozes = P([att('cloze', 'e1'), att('cloze', 'e2')])
+  const typed = { ...rule, requireDistinctTypes: true }
+  okc('requireDistinctTypes: 2 cloze on 2 exercises: not qualified', !contextQualified(K, twoClozes, typed))
+  okc('requireDistinctTypes: cloze + usage: qualified', contextQualified(K, P([att('cloze', 'e1'), att('usage', 'e2')]), typed))
+  okc('minCorrect 3: 2 correct no longer qualify', !contextQualified(K, twoClozes, { ...rule, minCorrect: 3 }))
+  okc('low recent accuracy blocks', !contextQualified(K, P([att('cloze', 'e1', false), att('cloze', 'e2', false), att('cloze', 'e3', false), att('cloze', 'e4'), att('cloze', 'e5')]), rule))
+  const sent = P([att('sentence', 'e1'), att('sentence', 'e2')])
+  okc('sentencesCount on: graded sentences qualify', contextQualified(K, sent, rule))
+  okc('sentencesCount off: sentences ignored', !contextQualified(K, sent, { ...rule, sentencesCount: false }))
+  const arch = { attempts: [], contextArchive: { watermark: 'x', items: { [K]: { n: 4, c: 4, byType: { cloze: [4, 4] }, exCorrect: ['f1#e1', 'f1#e2'] } } }, sentences: [] }
+  okc('archive alone can qualify', contextQualified(K, arch, rule))
+  okc('understanding capped at max', contextStats(K, P(Array.from({ length: 15 }, (_, i) => att('cloze', 'e' + i))), S).understanding === 10)
+  // gap list: Known card, 0 attempts -> in; with 2 passing attempts -> out
+  const idx = { tocflKeys: [K], aliasesOf: () => [], get: () => ({}) }
+  const card = { reps: 3, stability: 10, state: 2 }
+  const gp = (attempts) => gapList({ cards: { [K]: card }, ...P(attempts) }, idx, S)
+  okc('known + 0 attempts: in gap list', gp([]).length === 1)
+  okc('known + 2 correct attempts: not in gap list', gp([att('cloze', 'e1'), att('cloze', 'e2')]).length === 0)
+  okc('known + 3 misses: in gap list', gp([att('cloze', 'e1', false), att('cloze', 'e2', false), att('cloze', 'e3', false)]).length === 1)
+  const refs = [{ ref: 'a', key: 'x', type: 'cloze' }, { ref: 'b', key: K, type: 'cloze' }]
+  okc('practice picks gap keys first', pickPracticeQuestions({ refs, progress: P([]), types: null, count: 1, gapKeys: [K] })[0].ref === 'b')
+}
 
 if (fs.existsSync(progressFile)) {
   const raw = JSON.parse(fs.readFileSync(progressFile, 'utf8'))

@@ -8,6 +8,7 @@ import { DEFAULT_STUDY_SETTINGS } from '../lib/schema.js'
 import { planHistory } from '../lib/backfill.js'
 import { loadFullLog } from '../lib/logArchive.js'
 import { localDate, addDays } from '../lib/dates.js'
+import { contextRuleOf, understandingOf } from '../lib/context.js'
 import MicTest from './MicTest.jsx'
 import { listVoices, getTtsPrefs, setTtsPrefs, speak, isBetterVoice } from '../lib/speech.js'
 
@@ -335,6 +336,10 @@ function CountingSection({ progress, baseline, updateStudySettings, updateProgre
     updateStudySettings({ baseline: next })
   }
   const fmt = (n) => n.toLocaleString('en-US')
+  const cr = contextRuleOf(progress.studySettings)
+  const us = understandingOf(progress.studySettings)
+  const setRule = (patch) => updateStudySettings({ contextRule: { ...progress.studySettings?.contextRule, ...cr, ...patch } })
+  const setUnd = (patch) => updateStudySettings({ understanding: { ...us, ...patch } })
 
   const ch = progress.studySettings?.courseHistory === undefined
     ? DEFAULT_STUDY_SETTINGS.courseHistory
@@ -439,6 +444,66 @@ function CountingSection({ progress, baseline, updateStudySettings, updateProgre
         <p className="font-mono text-[11px] text-ink/55">
           Solid baseline = {fmt(baseline.solid.size)} words (count as Known) · Studied = {fmt(baseline.studied.size)} words (count as Seen until reviewed)
         </p>
+
+        <div className="border-t border-ink/10 pt-4">
+          <h4 className="mb-1 font-sans text-sm font-semibold text-ink/80">Context rule</h4>
+          <p className="mb-3 font-mono text-[11px] text-ink/45">
+            A word counts as Context when it passes every line below. Changes update today's Context number at once; past days keep theirs.
+          </p>
+          <div className="flex flex-col gap-3">
+            {[
+              ['minCorrect', 'Min correct', 'How many times you must answer correctly about this word, in total', 1, 20, 1],
+              ['minDistinctExercises', 'Min distinct exercises', 'Those correct answers must come from this many different questions, so repeating one memorized question does not count', 1, 20, 1],
+              ['minRecentAccuracy', 'Min recent accuracy (%)', "Of this word's most recent attempts, the weighted share answered correctly", 0, 100, 5],
+              ['recentWindow', 'Recent window', 'How many recent attempts that accuracy looks at', 1, 50, 1],
+            ].map(([k, label, hint, min, max, step]) => (
+              <Field key={k} label={label} hint={hint}>
+                <input
+                  type="number" className={inputCls} min={min} max={max} step={step}
+                  value={k === 'minRecentAccuracy' ? Math.round(cr.minRecentAccuracy * 100) : cr[k]}
+                  onChange={(e) => {
+                    const v = Number(e.target.value)
+                    if (!Number.isFinite(v) || e.target.value === '') return
+                    setRule({ [k]: k === 'minRecentAccuracy' ? Math.min(100, Math.max(0, v)) / 100 : Math.max(min, Math.floor(v)) })
+                  }}
+                />
+              </Field>
+            ))}
+            <label className="flex items-start gap-3">
+              <input type="checkbox" className="mt-1 h-4 w-4" checked={!!cr.requireDistinctTypes} onChange={(e) => setRule({ requireDistinctTypes: e.target.checked })} />
+              <span>
+                <span className="font-sans text-sm font-medium text-ink/80">Require different types</span>
+                <span className="mt-0.5 block font-mono text-[11px] text-ink/45">The correct answers must also span 2+ exercise types (e.g. cloze + usage)</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-3">
+              <input type="checkbox" className="mt-1 h-4 w-4" checked={!!cr.sentencesCount} onChange={(e) => setRule({ sentencesCount: e.target.checked })} />
+              <span>
+                <span className="font-sans text-sm font-medium text-ink/80">Graded sentences count</span>
+                <span className="mt-0.5 block font-mono text-[11px] text-ink/45">A graded sentence counts as one attempt (correct = the grader's "correct")</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="border-t border-ink/10 pt-4">
+          <h4 className="mb-1 font-sans text-sm font-semibold text-ink/80">Understanding score</h4>
+          <p className="mb-3 font-mono text-[11px] text-ink/45">
+            A per-word depth meter. Each correct answer adds its points, up to the max. It does not decide the Context count.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Field label="Max" hint="Top of the bar">
+              <input type="number" className={inputCls} min={1} max={50} step={1} value={us.max}
+                onChange={(e) => { const v = Math.floor(Number(e.target.value)); if (v >= 1) setUnd({ max: v }) }} />
+            </Field>
+            {[['cloze', 'Cloze'], ['fill', 'Fill'], ['usage', 'Usage'], ['listening', 'Listening'], ['sentence', 'Graded sentence'], ['sentenceNaturalBonus', 'Bonus per natural sentence']].map(([k, label]) => (
+              <Field key={k} label={`Points: ${label}`}>
+                <input type="number" className={inputCls} min={0} max={10} step={0.5} value={us.points[k] ?? 0}
+                  onChange={(e) => { const v = Number(e.target.value); if (e.target.value !== '' && v >= 0) setUnd({ points: { ...us.points, [k]: v } }) }} />
+              </Field>
+            ))}
+          </div>
+        </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button

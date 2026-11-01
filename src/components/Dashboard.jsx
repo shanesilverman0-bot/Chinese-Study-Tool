@@ -9,6 +9,7 @@ import GoalsEditor from './GoalsEditor.jsx'
 import { pickGoal } from '../lib/pace.js'
 import { useWide } from '../lib/layout.js'
 import { DEFAULT_STUDY_SETTINGS } from '../lib/schema.js'
+import UnderstandingBar from './UnderstandingBar.jsx'
 
 // Computes study stats from the progress object.
 function computeStats(progress, vocab) {
@@ -54,6 +55,41 @@ function Stat({ value, label, accent }) {
 
 
 
+function GapsCard({ gaps, itemIndex, onPracticeGaps }) {
+  return (
+    <div className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="font-display text-sm font-bold tracking-wide text-ink/70">
+          Context gaps: <span className="text-[#b8860b]">{gaps.length.toLocaleString('en-US')}</span>
+        </h3>
+        <button
+          onClick={onPracticeGaps} disabled={!gaps.length}
+          className="rounded-full bg-cinnabar px-4 py-1.5 font-display text-sm font-bold text-paper disabled:opacity-40"
+        >Practice gaps</button>
+      </div>
+      <p className="mt-1 font-mono text-[11px] text-ink/45">Words you know from flashcards but haven't proven in context.</p>
+      {gaps.length > 0 && (
+        <details className="mt-2">
+          <summary className="cursor-pointer font-mono text-xs text-ink/50">Show list</summary>
+          <div className="mt-1 flex max-h-72 flex-col overflow-y-auto">
+            {gaps.map((g) => {
+              const it = itemIndex.get(g.key)
+              return (
+                <div key={g.key} className="flex min-h-[40px] flex-wrap items-center gap-x-2 border-b border-ink/5 py-1">
+                  <span className="font-display text-base text-ink">{it?.hanzi ?? g.key.split('|')[0]}</span>
+                  <span className="font-mono text-xs text-cinnabar">{it?.pinyin ?? ''}</span>
+                  <span className="min-w-0 flex-1 truncate font-sans text-xs text-ink/55">{it?.english ?? ''}</span>
+                  <UnderstandingBar value={g.understanding} max={g.max} />
+                </div>
+              )
+            })}
+          </div>
+        </details>
+      )}
+    </div>
+  )
+}
+
 function TodayCard({ counts, baseline, settings, due }) {
   const b = settings?.baseline
   const sol = b?.solidThrough ?? { book: 3, chapter: 9 }
@@ -72,7 +108,6 @@ function TodayCard({ counts, baseline, settings, due }) {
           <div key={n.label} className="flex flex-col items-center">
             <span className="font-display text-3xl font-bold" style={{ color: n.accent }}>{fmt(n.value)}</span>
             <span className="mt-1 font-mono text-[10px] uppercase tracking-widest text-ink/45">{n.label}</span>
-            {n.label === 'Context' && <span className="font-mono text-[10px] text-ink/30">(Phase 14)</span>}
           </div>
         ))}
       </div>
@@ -100,6 +135,9 @@ function TodayCard({ counts, baseline, settings, due }) {
 export default function Dashboard({
   progress,
   counts,
+  gaps,
+  itemIndex,
+  onPracticeGaps,
   baseline,
   todayDate,
   updateGoals,
@@ -121,6 +159,8 @@ export default function Dashboard({
   return (
     <div className="brush-in mx-auto flex w-full flex-col gap-5">
       <TodayCard counts={counts} baseline={baseline} settings={progress.studySettings} due={s.due} />
+
+      <GapsCard gaps={gaps ?? []} itemIndex={itemIndex} onPracticeGaps={onPracticeGaps} />
 
       <div className={`grid gap-5 ${wide ? 'grid-cols-[1fr_320px] items-start' : ''}`}>
         <ProgressChart

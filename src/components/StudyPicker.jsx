@@ -19,7 +19,7 @@ const fmt = (n) => n.toLocaleString('en-US')
 
 // Study picker (DESIGN §9.3–9.4): TOCFL levels, CCC books/chapters/parts, Pleco and
 // custom lists, the baseline switch, session size, and the exact queue length.
-export default function StudyPicker({ selection, setSelection, lists, index, progress, baseline, onStart, onStartPractice, loadFile, tab: tabProp, setTab: setTabProp }) {
+export default function StudyPicker({ selection, setSelection, lists, index, progress, baseline, onStart, onStartPractice, loadFile, gapKeys, tab: tabProp, setTab: setTabProp }) {
   const [tabLocal, setTabLocal] = useState('flash')
   const tab = tabProp ?? tabLocal
   const setTab = setTabProp ?? setTabLocal
@@ -69,7 +69,7 @@ export default function StudyPicker({ selection, setSelection, lists, index, pro
   const practiceMode = tab !== 'flash'
 
   const startPractice = () => {
-    const picked = pickPracticeQuestions({ refs, progress, types: tabTypes(tab), count: pCount })
+    const picked = pickPracticeQuestions({ refs, progress, types: tabTypes(tab), count: pCount, gapKeys })
     onStartPractice?.({ refs: picked, listIds: selection.listIds })
   }
 

@@ -4,6 +4,41 @@ import { batchesOf, buildInputFile, inputFileName, nextVariant } from '../lib/ex
 import { validateExerciseFile } from '../lib/exerciseValidator.js'
 import { fileIdFor, pathFor, saveExerciseFile, loadExerciseFile } from '../lib/exerciseStore.js'
 import { effectiveGithub } from '../lib/dataMode.js'
+import { questionRef } from '../lib/context.js'
+
+const REVIEW_FORMAT = 'tocfl-tutor.exercise-review'
+const DISABLING = new Set(['ambiguous', 'wrong-answer'])
+const WARNING = new Set(['unnatural', 'above-level', 'not-taiwan'])
+
+// DESIGN §10.6: match findings by exId among this list's loaded files. Pure.
+// → { fatal } | { review: true, matches: [{ ref, fileId, status, reason }], fileIds, unknown, ok, disabled, warnings }
+function planReview(text, contents) {
+  let json
+  try { json = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1)) } catch (e) { return { fatal: `Not valid JSON: ${e.message}` } }
+  if (!Array.isArray(json.findings)) return { fatal: 'Review file has no findings array.' }
+  const byEx = new Map()
+  for (const [fileId, f] of Object.entries(contents)) for (const ex of f?.exercises ?? []) byEx.set(ex.id, { fileId, ex })
+  const matches = []
+  const unknown = []
+  const fileIds = new Set()
+  let ok = 0
+  for (const fd of json.findings) {
+    const hit = byEx.get(fd?.exId)
+    const q = fd?.q ?? 0
+    if (!hit || !Number.isInteger(q) || q < 0 || q >= (hit.ex.questions?.length ?? 0)) { unknown.push(`${fd?.exId ?? '?'}${hit ? `#${q}` : ''}`); continue }
+    fileIds.add(hit.fileId)
+    if (fd.verdict === 'ok') { ok++; continue }
+    const status = DISABLING.has(fd.verdict) ? 'disabled' : WARNING.has(fd.verdict) ? 'warning' : null
+    if (!status) { unknown.push(`${fd.exId} (verdict "${fd.verdict}")`); continue }
+    const reason = [fd.verdict, fd.note, fd.alternative ? `alternative: ${fd.alternative}` : ''].filter(Boolean).join(' · ')
+    matches.push({ ref: questionRef(hit.fileId, hit.ex.id, q), fileId: hit.fileId, status, reason })
+  }
+  return {
+    review: true, matches, fileIds: [...fileIds], unknown, ok,
+    disabled: matches.filter((m) => m.status === 'disabled').length,
+    warnings: matches.filter((m) => m.status === 'warning').length,
+  }
+}
 
 // The prompt proper is everything below the "---" line (above it are usage notes for Shane).
 const PROMPT = promptRaw.includes('\n---\n') ? promptRaw.slice(promptRaw.indexOf('\n---\n') + 5).trim() : promptRaw
@@ -70,11 +105,38 @@ export default function ExerciseImport({ list, index, progress, updateProgress, 
   }
 
   const check = () => {
+    if (text.includes(REVIEW_FORMAT)) { setReport(planReview(text, contents)); return }
     // Expected targets: the batch the file claims. Peek at it so the plan check can run.
     let batchNo = null
     try { batchNo = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1)).batch } catch { /* validator reports it */ }
     const expectedTargets = Number.isInteger(batchNo) ? batches[batchNo - 1] : undefined
     setReport(validateExerciseFile(text, { itemIndex: index, listId: list.id, existingFiles, expectedTargets }))
+  }
+
+  const applyReview = () => {
+    if (!report?.review) return
+    const now = new Date().toISOString()
+    updateProgress((prev) => {
+      const flags = { ...(prev.exerciseFlags ?? {}) }
+      for (const m of report.matches) {
+        if (flags[m.ref]?.from === 'user') continue // a manual choice outranks the verify pass
+        flags[m.ref] = { status: m.status, reason: m.reason, from: 'verify-pass', at: now }
+      }
+      const files = { ...(prev.exerciseFiles ?? {}) }
+      for (const id of report.fileIds) if (files[id]) files[id] = { ...files[id], reviewed: true, updatedAt: now }
+      return { ...prev, exerciseFlags: flags, exerciseFiles: files }
+    })
+    flash(`${report.disabled} question${report.disabled === 1 ? '' : 's'} disabled, ${report.warnings} warning${report.warnings === 1 ? '' : 's'}`)
+    setText('')
+    setReport(null)
+  }
+
+  const reenable = (ref) => {
+    const now = new Date().toISOString()
+    updateProgress((prev) => ({
+      ...prev,
+      exerciseFlags: { ...(prev.exerciseFlags ?? {}), [ref]: { status: 'warning', reason: 'Re-enabled by user', from: 'user', at: now } },
+    }))
   }
 
   const doImport = async () => {
@@ -117,6 +179,18 @@ export default function ExerciseImport({ list, index, progress, updateProgress, 
     }))
   }
 
+  const disabledIn = (m) => {
+    const out = []
+    for (const ex of contents[m.id]?.exercises ?? []) {
+      ;(ex.questions ?? []).forEach((qu, q) => {
+        const ref = questionRef(m.id, ex.id, q)
+        if (progress.exerciseFlags?.[ref]?.status !== 'disabled') return
+        out.push({ ref, label: `${ex.id.split('-').slice(-1)[0]} · ${qu.target?.split('|')[0] ?? ''} · ${qu.prompt ?? ex.sentence ?? ex.passage ?? ''}` })
+      })
+    }
+    return out
+  }
+
   if (batches.length === 0) return <p className="py-4 text-center font-sans text-sm text-ink/50">Add words to this list first.</p>
 
   const sel = 'rounded-lg border border-ink/15 bg-transparent px-2 py-1.5 font-sans text-sm text-ink'
@@ -148,7 +222,7 @@ export default function ExerciseImport({ list, index, progress, updateProgress, 
         <h4 className="font-display text-sm font-bold text-ink">2 · Import</h4>
         <textarea
           value={text} onChange={(e) => { setText(e.target.value); setReport(null) }}
-          placeholder="Paste the AI's JSON" rows={6}
+          placeholder="Paste the AI's exercise JSON, or a review file" rows={6}
           className="w-full rounded-lg border border-ink/15 bg-transparent p-2 font-mono text-xs text-ink"
         />
         <div className="flex flex-wrap items-center gap-2">
@@ -160,6 +234,17 @@ export default function ExerciseImport({ list, index, progress, updateProgress, 
           <div className="flex flex-col gap-2 font-sans text-sm text-ink/80">
             {report.fatal ? (
               <p className="rounded-lg bg-cinnabar/10 p-2 text-cinnabar">{report.fatal}</p>
+            ) : report.review ? (
+              <>
+                <p className="font-mono text-xs text-ink/60">Review file</p>
+                <p><b className="text-cinnabar">{report.disabled} question{report.disabled === 1 ? '' : 's'} disabled</b>, <b className="text-[#b8860b]">{report.warnings} warning{report.warnings === 1 ? '' : 's'}</b>, {report.ok} ok</p>
+                {report.unknown.length > 0 && (
+                  <div className="rounded-lg bg-[#b8860b]/10 p-2">
+                    <p className="font-mono text-xs text-[#b8860b]">Unknown ids (not in this list's files)</p>
+                    <ul className="list-disc pl-5 text-xs">{report.unknown.map((x, j) => <li key={j}>{x}</li>)}</ul>
+                  </div>
+                )}
+              </>
             ) : (
               <>
                 <p className="font-mono text-xs text-ink/60">
@@ -180,9 +265,15 @@ export default function ExerciseImport({ list, index, progress, updateProgress, 
                 )}
               </>
             )}
-            <button onClick={doImport} disabled={busy || !report.ok} className={`self-start ${BTN_PRIMARY}`}>
-              Import {report.accepted.length} exercises
-            </button>
+            {report.review ? (
+              <button onClick={applyReview} disabled={!report.fileIds.length} className={`self-start ${BTN_PRIMARY}`}>
+                Apply review
+              </button>
+            ) : (
+              <button onClick={doImport} disabled={busy || !report.ok} className={`self-start ${BTN_PRIMARY}`}>
+                Import {report.accepted.length} exercises
+              </button>
+            )}
           </div>
         )}
       </section>
@@ -197,6 +288,12 @@ export default function ExerciseImport({ list, index, progress, updateProgress, 
             <span className="text-ink/45">{(m.importedAt ?? '').slice(0, 10)}</span>
             {m.reviewed && <span className="text-jade">reviewed ✓</span>}
             <button onClick={() => remove(m)} className="ml-auto text-ink/40 hover:text-cinnabar">Delete</button>
+            {disabledIn(m).map((d) => (
+              <div key={d.ref} className="flex w-full items-center gap-2 pl-3">
+                <span className="min-w-0 flex-1 truncate text-ink/45 line-through" title={progress.exerciseFlags?.[d.ref]?.reason}>{d.label}</span>
+                <button onClick={() => reenable(d.ref)} className="shrink-0 rounded-full border border-ink/20 px-2.5 py-1 text-ink/70 hover:border-jade hover:text-jade">Re-enable</button>
+              </div>
+            ))}
           </div>
         ))}
       </section>
