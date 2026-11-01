@@ -1,0 +1,64 @@
+{
+  "format": "tocfl-tutor.exercises",
+  "formatVersion": 1,
+  "listId": "pleco:11月學字",
+  "batch": 1,
+  "variant": 1,
+  "itemType": "word",
+  "generator": "fixture",
+  "exercises": [
+    {
+      "id": "pleco-11月學字-b1-v1-01",
+      "type": "cloze",
+      "band": "C",
+      "targets": ["遺憾|yíhàn", "完整|wánzhěng", "實際|shíjì"],
+      "passage": "小美昨天沒有趕上最後一班捷運，覺得很[[1]]。她說，這次旅行的計畫本來很[[2]]，可是[[3]]出發以後，才發現有很多地方跟想像的不一樣。",
+      "questions": [
+        { "blank": 1, "target": "遺憾|yíhàn", "options": ["可惜", "遺憾", "後悔", "抱歉"], "answer": "遺憾", "explanation": "Regret about a missed chance fits; 可惜 would need a different sentence frame." },
+        { "blank": 2, "target": "完整|wánzhěng", "options": ["完整", "完全", "整齊", "完成"], "answer": "完整", "explanation": "A plan is described as complete; the other words do not modify 計畫 like this." },
+        { "blank": 3, "target": "實際|shíjì", "options": ["事實", "現實", "實際", "真實"], "answer": "實際", "explanation": "實際 as an adverb means in actual practice; the others are nouns or adjectives." }
+      ]
+    },
+    {
+      "id": "pleco-11月學字-b1-v1-02",
+      "type": "fill",
+      "band": "C",
+      "targets": ["溫馨|wēnxīn"],
+      "sentence": "這家咖啡店佈置得很[[1]]，讓人覺得像在家一樣。",
+      "questions": [
+        { "blank": 1, "target": "溫馨|wēnxīn", "options": ["溫馨", "溫和", "熱烈", "親切"], "answer": "溫馨", "explanation": "溫馨 describes a cozy place; 溫和 describes people or weather." }
+      ]
+    },
+    {
+      "id": "pleco-11月學字-b1-v1-03",
+      "type": "usage",
+      "band": "C",
+      "targets": ["拒絕|jùjué"],
+      "questions": [
+        {
+          "target": "拒絕|jùjué",
+          "prompt": "哪一個句子的「拒絕」用得正確？",
+          "options": ["他拒絕了朋友的邀請，因為那天要上班。", "這杯咖啡很好喝，我拒絕了一杯。", "我拒絕明天去台北，所以昨天買了車票。", "老師拒絕學生，所以大家都很高興。"],
+          "answer": "他拒絕了朋友的邀請，因為那天要上班。",
+          "explanation": "拒絕 means to decline an invitation or request; the other sentences break its meaning or logic."
+        }
+      ]
+    },
+    {
+      "id": "pleco-11月學字-b1-v1-04",
+      "type": "listening",
+      "band": "C",
+      "targets": ["外婆|wàipó"],
+      "audioText": "我外婆今年八十歲了，身體還很好。",
+      "questions": [
+        {
+          "target": "外婆|wàipó",
+          "prompt": "說話的人在說誰？",
+          "options": ["媽媽的媽媽", "爸爸的媽媽", "媽媽的姊姊", "太太的媽媽"],
+          "answer": "媽媽的媽媽",
+          "explanation": "外婆 is the maternal grandmother in Taiwan usage."
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,18 @@
-import React, { useState } from 'react'
-import { BANDS, BAND_LABELS } from '../data/vocab.js'
-import { verifyAccess } from '../lib/github.js'
+import React, { useEffect, useState } from 'react'
+import { fetchProgress, putTextFile, verifyAccess } from '../lib/github.js'
+import { DATA_MODE, dataPath } from '../lib/dataMode.js'
 import { PROVIDERS } from '../lib/tutor.js'
+import { CCC_VOCAB } from '../data/ccc.js'
+import { THRESHOLD_EDGES, countingSettings } from '../lib/counts.js'
+import { DEFAULT_STUDY_SETTINGS } from '../lib/schema.js'
+import { planHistory } from '../lib/backfill.js'
+import { loadFullLog } from '../lib/logArchive.js'
+import { localDate, addDays } from '../lib/dates.js'
+import { contextRuleOf, understandingOf } from '../lib/context.js'
 import MicTest from './MicTest.jsx'
+import gradePromptRaw from '../../docs/prompts/grade-sentences.md?raw'
+import { buildPacket, packetFileName, parseGrades, queuedOf, countBy } from '../lib/sentences.js'
+import { listVoices, getTtsPrefs, setTtsPrefs, speak, isBetterVoice } from '../lib/speech.js'
 
 
 function Field({ label, hint, children }) {
@@ -24,6 +34,17 @@ export default function Settings({
   syncState,
   pull,
   forcePush,
+  saveNow,
+  progress,
+  baseline,
+  updateStudySettings,
+  updateProgress,
+  markExported,
+  applyGrades,
+  itemIndex,
+  onRecompute,
+  replaceProgress,
+  effectiveGh,
   vocabInfo,
   vocabCount,
   onReloadVocab,
@@ -31,22 +52,20 @@ export default function Settings({
   const [verify, setVerify] = useState({ status: 'idle', message: '' })
 
   const gh = settings.github
+  const dataRepo = settings.data
 
   function setGh(patch) {
     updateSettings({ github: { ...gh, ...patch } })
   }
 
-  function toggleBand(band) {
-    const enabled = new Set(settings.enabledBands)
-    if (enabled.has(band)) enabled.delete(band)
-    else enabled.add(band)
-    updateSettings({ enabledBands: [...enabled] })
+  function setDataRepo(patch) {
+    updateSettings({ data: { ...dataRepo, ...patch } })
   }
 
   async function testGitHub() {
     setVerify({ status: 'checking', message: 'Checking…' })
     try {
-      const res = await verifyAccess(gh)
+      const res = await verifyAccess(effectiveGh)
       setVerify({
         status: 'ok',
         message: `Connected · write=${res.permissions?.push ? 'yes' : 'no'} · default=${res.defaultBranch}`,
@@ -60,11 +79,10 @@ export default function Settings({
     <div className="brush-in flex flex-col gap-6 pb-10">
       {/* GitHub sync */}
       <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
-        <h3 className="mb-1 font-display text-base font-bold text-ink">GitHub 同步 · Sync</h3>
+        <h3 className="mb-1 font-display text-base font-bold text-ink">資料庫 · Data repo</h3>
         <p className="mb-4 font-sans text-xs text-ink/50">
-          Progress is committed as <span className="font-mono">progress.json</span> in your repo,
-          so the same app syncs across all devices. Token needs <span className="font-mono">repo</span>{' '}
-          scope (or fine-grained <span className="font-mono">contents: read/write</span>).
+          Progress is saved in your private data repo, so the same app syncs across all devices.
+          Use a fine-grained token with access only to this private repo (Contents: read and write).
         </p>
         <div className="flex flex-col gap-4">
           <Field label="Personal Access Token" hint="stored only in this browser's localStorage">
@@ -72,7 +90,7 @@ export default function Settings({
               type="password"
               className={inputCls}
               value={gh.token}
-              onChange={(e) => setGh({ token: e.target.value })}
+              onChange={(e) => setGh({ token: e.target.value.trim() })}
               placeholder="ghp_…"
             />
           </Field>
@@ -80,38 +98,21 @@ export default function Settings({
             <Field label="Owner" hint="GitHub username">
               <input
                 className={inputCls}
-                value={gh.owner}
-                onChange={(e) => setGh({ owner: e.target.value })}
-                placeholder="your-username"
+                value={dataRepo.owner}
+                onChange={(e) => setDataRepo({ owner: e.target.value.trim() })}
               />
             </Field>
-            <Field label="Repo">
+            <Field label="Data repo" hint="private">
               <input
                 className={inputCls}
-                value={gh.repo}
-                onChange={(e) => setGh({ repo: e.target.value })}
-                placeholder="tocfl-tutor"
+                value={dataRepo.repo}
+                onChange={(e) => setDataRepo({ repo: e.target.value.trim() })}
               />
             </Field>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Branch">
-              <input
-                className={inputCls}
-                value={gh.branch}
-                onChange={(e) => setGh({ branch: e.target.value })}
-                placeholder="main"
-              />
-            </Field>
-            <Field label="File path">
-              <input
-                className={inputCls}
-                value={gh.path}
-                onChange={(e) => setGh({ path: e.target.value })}
-                placeholder="progress.json"
-              />
-            </Field>
-          </div>
+          <p className="font-mono text-xs text-ink/45">
+            file: <span className="text-ink/70">{effectiveGh.owner}/{effectiveGh.repo}:{effectiveGh.path}</span>
+          </p>
 
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -127,7 +128,7 @@ export default function Settings({
               Pull
             </button>
             <button
-              onClick={forcePush}
+              onClick={() => saveNow()}
               className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar"
             >
               Push now
@@ -150,6 +151,23 @@ export default function Settings({
           </p>
         </div>
       </section>
+
+      <DataSection
+        progress={progress}
+        replaceProgress={replaceProgress}
+        forcePush={forcePush}
+        effectiveGh={effectiveGh}
+      />
+
+      <CountingSection
+        progress={progress}
+        baseline={baseline}
+        updateStudySettings={updateStudySettings}
+        updateProgress={updateProgress}
+        itemIndex={itemIndex}
+        effectiveGh={effectiveGh}
+        onRecompute={onRecompute}
+      />
 
       {/* AI tutor provider */}
       <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
@@ -254,38 +272,593 @@ export default function Settings({
         </button>
       </section>
 
+      <SentencesSection progress={progress} itemIndex={itemIndex} markExported={markExported} applyGrades={applyGrades} />
+
+      <AudioSection />
+
       {/* Mic diagnostics */}
       <MicTest />
+    </div>
+  )
+}
 
-      {/* Band selection */}
-      <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
-        <h3 className="mb-3 font-display text-base font-bold text-ink">學習等級 · Study levels</h3>
-        <div className="flex flex-col gap-2">
-          {BANDS.map((band) => {
-            const on = settings.enabledBands.includes(band)
+
+function stamp(withSeconds) {
+  const d = new Date()
+  const p = (n) => String(n).padStart(2, '0')
+  const ymd = `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}`
+  return withSeconds
+    ? `${ymd}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`
+    : `${ymd}-${p(d.getHours())}${p(d.getMinutes())}`
+}
+
+// 資料 · Data: download the in-memory progress, or restore it from a file (DESIGN §15.3).
+const CHAPTERS = (() => {
+  const m = {}
+  for (const r of CCC_VOCAB) {
+    if (r.book == null || r.chapter == null) continue
+    ;(m[r.book] ||= new Set()).add(r.chapter)
+  }
+  return Object.fromEntries(Object.entries(m).map(([b, set]) => [b, [...set].sort((x, y) => x - y)]))
+})()
+const BOOKS = Object.keys(CHAPTERS).map(Number).sort((a, b) => a - b)
+
+function ChapterPicker({ value, onChange }) {
+  const chapters = CHAPTERS[value.book] ?? []
+  return (
+    <div className="flex gap-2">
+      <select
+        className={inputCls}
+        value={value.book}
+        onChange={(e) => {
+          const book = Number(e.target.value)
+          const cs = CHAPTERS[book] ?? []
+          onChange({ book, chapter: cs.includes(value.chapter) ? value.chapter : cs[cs.length - 1] })
+        }}
+      >
+        {BOOKS.map((b) => <option key={b} value={b}>Book {b}</option>)}
+      </select>
+      <select className={inputCls} value={value.chapter} onChange={(e) => onChange({ ...value, chapter: Number(e.target.value) })}>
+        {chapters.map((c) => <option key={c} value={c}>Ch {c}</option>)}
+      </select>
+    </div>
+  )
+}
+
+const chapterCmp = (a, b) => (a.book - b.book) || (a.chapter - b.chapter)
+
+// DESIGN §5.4 / §8: counting settings (synced in progress.studySettings).
+function CountingSection({ progress, baseline, updateStudySettings, updateProgress, itemIndex, effectiveGh, onRecompute }) {
+  const s = countingSettings(progress.studySettings)
+  const [note, setNote] = useState('')
+  const snapCount = (progress.snapshots ?? []).length
+  const setBaseline = (patch) => {
+    const next = { ...s.baseline, ...patch }
+    if (chapterCmp(next.studiedThrough, next.solidThrough) < 0) {
+      setNote('"Studied through" must be at or after "Solid through".')
+      return
+    }
+    setNote('')
+    updateStudySettings({ baseline: next })
+  }
+  const fmt = (n) => n.toLocaleString('en-US')
+  const cr = contextRuleOf(progress.studySettings)
+  const us = understandingOf(progress.studySettings)
+  const setRule = (patch) => updateStudySettings({ contextRule: { ...progress.studySettings?.contextRule, ...cr, ...patch } })
+  const setUnd = (patch) => updateStudySettings({ understanding: { ...us, ...patch } })
+
+  const ch = progress.studySettings?.courseHistory === undefined
+    ? DEFAULT_STUDY_SETTINGS.courseHistory
+    : progress.studySettings.courseHistory
+  const setCourse = (edge, patch) => {
+    const cur = ch ?? DEFAULT_STUDY_SETTINGS.courseHistory
+    updateStudySettings({ courseHistory: { ...cur, [edge]: { ...cur[edge], ...patch } } })
+    setHistPlan(null)
+  }
+  const [histPlan, setHistPlan] = useState(null)
+  const [histBusy, setHistBusy] = useState(false)
+
+  async function previewHistory() {
+    setHistBusy(true)
+    setNote('')
+    try {
+      const log = await loadFullLog(effectiveGh, progress)
+      const tz = s.timeZone
+      const plan = planHistory({
+        log, progress, index: itemIndex, cccEntries: CCC_VOCAB,
+        settings: { ...progress.studySettings, courseHistory: ch },
+        toDate: addDays(localDate(new Date(), tz), -1),
+      })
+      setHistPlan(plan)
+    } catch (e) {
+      setNote(`Build history failed: ${e.message}`)
+    } finally {
+      setHistBusy(false)
+    }
+  }
+
+  function confirmHistory() {
+    const add = [...histPlan.estimate, ...histPlan.backfill]
+    updateProgress((prev) => {
+      const have = new Set((prev.snapshots ?? []).map((x) => x.date))
+      const fresh = add.filter((x) => !have.has(x.date)) // never overwrite an existing snapshot
+      if (!fresh.length) return prev
+      return { ...prev, snapshots: [...(prev.snapshots ?? []), ...fresh].sort((a, b) => a.date.localeCompare(b.date)) }
+    })
+    setNote(`Added ${add.length} snapshot${add.length === 1 ? '' : 's'}.`)
+    setHistPlan(null)
+  }
+
+  const range = (list) => (list.length ? `${list[0].date} to ${list[list.length - 1].date}` : '—')
+
+  function recompute() {
+    if (!window.confirm(`Rewrite ${snapCount} past snapshots with the current settings?`)) return
+    const n = onRecompute()
+    setNote(`Recomputed ${n} snapshot${n === 1 ? '' : 's'}.`)
+  }
+
+  return (
+    <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-1 font-display text-base font-bold text-ink">計算 · Counting</h3>
+      <p className="mb-4 font-sans text-xs text-ink/50">
+        How Seen and Known are counted. Changes update today's numbers at once; past days only change when you press Recompute history.
+      </p>
+      <div className="flex flex-col gap-4">
+        <Field label="Known threshold" hint="One Good on a new card = 3.17 days">
+          <div className="flex items-center gap-2">
+            <select
+              className={inputCls}
+              value={s.knownThreshold}
+              onChange={(e) => updateStudySettings({ knownThreshold: Number(e.target.value) })}
+            >
+              {THRESHOLD_EDGES.map((e) => <option key={e} value={e}>{e}</option>)}
+            </select>
+            <span className="font-mono text-sm text-ink/60">days</span>
+          </div>
+        </Field>
+
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4"
+            checked={s.knownRequiresReviewState}
+            onChange={(e) => updateStudySettings({ knownRequiresReviewState: e.target.checked })}
+          />
+          <span>
+            <span className="font-sans text-sm font-medium text-ink/80">Known also requires graduation (Review state)</span>
+            <span className="mt-0.5 block font-mono text-[11px] text-ink/45">
+              A new word must be recalled again later (or rated Easy) before it counts. One lucky Good isn't enough.
+            </span>
+          </span>
+        </label>
+
+        <label className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            className="h-4 w-4"
+            checked={s.baseline.enabled}
+            onChange={(e) => setBaseline({ enabled: e.target.checked })}
+          />
+          <span className="font-sans text-sm font-medium text-ink/80">Baseline from my course position</span>
+        </label>
+        <Field label="Solid through" hint="counts as Known until you rate it">
+          <ChapterPicker value={s.baseline.solidThrough} onChange={(v) => setBaseline({ solidThrough: v })} />
+        </Field>
+        <Field label="Studied through" hint="counts as Seen until reviewed">
+          <ChapterPicker value={s.baseline.studiedThrough} onChange={(v) => setBaseline({ studiedThrough: v })} />
+        </Field>
+        <p className="font-mono text-[11px] text-ink/55">
+          Solid baseline = {fmt(baseline.solid.size)} words (count as Known) · Studied = {fmt(baseline.studied.size)} words (count as Seen until reviewed)
+        </p>
+
+        <div className="border-t border-ink/10 pt-4">
+          <h4 className="mb-1 font-sans text-sm font-semibold text-ink/80">Context rule</h4>
+          <p className="mb-3 font-mono text-[11px] text-ink/45">
+            A word counts as Context when it passes every line below. Changes update today's Context number at once; past days keep theirs.
+          </p>
+          <div className="flex flex-col gap-3">
+            {[
+              ['minCorrect', 'Min correct', 'How many times you must answer correctly about this word, in total', 1, 20, 1],
+              ['minDistinctExercises', 'Min distinct exercises', 'Those correct answers must come from this many different questions, so repeating one memorized question does not count', 1, 20, 1],
+              ['minRecentAccuracy', 'Min recent accuracy (%)', "Of this word's most recent attempts, the weighted share answered correctly", 0, 100, 5],
+              ['recentWindow', 'Recent window', 'How many recent attempts that accuracy looks at', 1, 50, 1],
+            ].map(([k, label, hint, min, max, step]) => (
+              <Field key={k} label={label} hint={hint}>
+                <input
+                  type="number" className={inputCls} min={min} max={max} step={step}
+                  value={k === 'minRecentAccuracy' ? Math.round(cr.minRecentAccuracy * 100) : cr[k]}
+                  onChange={(e) => {
+                    const v = Number(e.target.value)
+                    if (!Number.isFinite(v) || e.target.value === '') return
+                    setRule({ [k]: k === 'minRecentAccuracy' ? Math.min(100, Math.max(0, v)) / 100 : Math.max(min, Math.floor(v)) })
+                  }}
+                />
+              </Field>
+            ))}
+            <label className="flex items-start gap-3">
+              <input type="checkbox" className="mt-1 h-4 w-4" checked={!!cr.requireDistinctTypes} onChange={(e) => setRule({ requireDistinctTypes: e.target.checked })} />
+              <span>
+                <span className="font-sans text-sm font-medium text-ink/80">Require different types</span>
+                <span className="mt-0.5 block font-mono text-[11px] text-ink/45">The correct answers must also span 2+ exercise types (e.g. cloze + usage)</span>
+              </span>
+            </label>
+            <label className="flex items-start gap-3">
+              <input type="checkbox" className="mt-1 h-4 w-4" checked={!!cr.sentencesCount} onChange={(e) => setRule({ sentencesCount: e.target.checked })} />
+              <span>
+                <span className="font-sans text-sm font-medium text-ink/80">Graded sentences count</span>
+                <span className="mt-0.5 block font-mono text-[11px] text-ink/45">A graded sentence counts as one attempt (correct = the grader's "correct")</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div className="border-t border-ink/10 pt-4">
+          <h4 className="mb-1 font-sans text-sm font-semibold text-ink/80">Understanding score</h4>
+          <p className="mb-3 font-mono text-[11px] text-ink/45">
+            A per-word depth meter. Each correct answer adds its points, up to the max. It does not decide the Context count.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Field label="Max" hint="Top of the bar">
+              <input type="number" className={inputCls} min={1} max={50} step={1} value={us.max}
+                onChange={(e) => { const v = Math.floor(Number(e.target.value)); if (v >= 1) setUnd({ max: v }) }} />
+            </Field>
+            {[['cloze', 'Cloze'], ['fill', 'Fill'], ['usage', 'Usage'], ['listening', 'Listening'], ['sentence', 'Graded sentence'], ['sentenceNaturalBonus', 'Bonus per natural sentence']].map(([k, label]) => (
+              <Field key={k} label={`Points: ${label}`}>
+                <input type="number" className={inputCls} min={0} max={10} step={0.5} value={us.points[k] ?? 0}
+                  onChange={(e) => { const v = Number(e.target.value); if (e.target.value !== '' && v >= 0) setUnd({ points: { ...us.points, [k]: v } }) }} />
+              </Field>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={recompute}
+            className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar"
+          >
+            Recompute history
+          </button>
+          {note && <span className="font-mono text-xs text-ink/60">{note}</span>}
+        </div>
+
+        <div className="border-t border-ink/10 pt-4">
+          <h4 className="mb-1 font-sans text-sm font-semibold text-ink/80">Course history</h4>
+          <p className="mb-3 font-mono text-[11px] text-ink/45">
+            Used to estimate Seen/Known before your review log starts. Chapters are spread evenly between the two dates.
+          </p>
+          {['start', 'end'].map((edge) => {
+            const e = (ch ?? DEFAULT_STUDY_SETTINGS.courseHistory)[edge]
             return (
-              <button
-                key={band}
-                onClick={() => toggleBand(band)}
-                className={`flex items-center justify-between rounded-xl border px-4 py-3 transition ${
-                  on ? 'border-cinnabar bg-cinnabar/5' : 'border-ink/10'
-                }`}
-              >
-                <span className="font-sans text-sm text-ink/80">
-                  {BAND_LABELS[band]} <span className="font-mono text-xs text-ink/40">{band}</span>
-                </span>
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${
-                    on ? 'bg-cinnabar text-paper' : 'border border-ink/20 text-transparent'
-                  }`}
-                >
-                  ✓
-                </span>
-              </button>
+              <Field key={edge} label={edge === 'start' ? 'Started (date, first chapter)' : 'Finished (date, last chapter done)'}>
+                <input
+                  type="date" className={`${inputCls} mb-2`} value={e.date}
+                  onChange={(ev) => ev.target.value && setCourse(edge, { date: ev.target.value })}
+                />
+                <ChapterPicker value={e} onChange={(v) => setCourse(edge, v)} />
+              </Field>
             )
           })}
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button
+              onClick={previewHistory}
+              disabled={histBusy}
+              className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar disabled:opacity-50"
+            >
+              {histBusy ? 'Reading log…' : 'Build history'}
+            </button>
+          </div>
+          {histPlan && (
+            <div className="mt-3 rounded-xl border border-ink/10 bg-white/60 p-3">
+              <p className="font-mono text-xs text-ink/70">
+                Will add {histPlan.estimate.length} course-estimate snapshot{histPlan.estimate.length === 1 ? '' : 's'} ({range(histPlan.estimate)})
+                {' '}and {histPlan.backfill.length} review-log snapshot{histPlan.backfill.length === 1 ? '' : 's'} ({range(histPlan.backfill)}).
+              </p>
+              {histPlan.skippedKeys > 0 && (
+                <p className="mt-1 font-mono text-[11px] text-ink/45">{histPlan.skippedKeys} logged item(s) have no card and were skipped.</p>
+              )}
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={confirmHistory}
+                  disabled={!histPlan.estimate.length && !histPlan.backfill.length}
+                  className="rounded-full bg-cinnabar px-4 py-1.5 font-sans text-sm text-paper disabled:opacity-40"
+                >
+                  Add
+                </button>
+                <button onClick={() => setHistPlan(null)} className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
+  )
+}
+
+function DataSection({ progress, replaceProgress, forcePush, effectiveGh }) {
+  const [pending, setPending] = useState(null) // { data, fileName }
+  const [confirmText, setConfirmText] = useState('')
+  const [status, setStatus] = useState({ kind: 'idle', message: '' })
+  const hasToken = Boolean(effectiveGh.token)
+
+  function download() {
+    const blob = new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `progress-${DATA_MODE}-${stamp(false)}.json`
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
+
+  async function pickFile(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    setConfirmText('')
+    setPending(null)
+    if (!file) return
+    try {
+      const data = JSON.parse(await file.text())
+      if (!data || typeof data.cards !== 'object' || Array.isArray(data.cards) || data.cards === null) {
+        throw new Error('This file has no "cards" object, so it is not a progress file.')
+      }
+      setPending({ data, fileName: file.name })
+      setStatus({ kind: 'idle', message: '' })
+    } catch (err) {
+      setStatus({ kind: 'error', message: `Can't read ${file.name}: ${err.message}` })
+    }
+  }
+
+  async function restore() {
+    if (!pending || confirmText !== 'RESTORE') return
+    setStatus({ kind: 'working', message: 'Backing up the current file…' })
+    try {
+      if (hasToken) {
+        const remote = await fetchProgress(effectiveGh)
+        if (remote.data) {
+          const path = dataPath(`backups/progress-pre-restore-${stamp(true)}.json`)
+          await putTextFile(
+            effectiveGh,
+            path,
+            JSON.stringify(remote.data, null, 2),
+            undefined,
+            `backup before restore: ${path}`
+          )
+        }
+      }
+    } catch (err) {
+      setStatus({ kind: 'error', message: `Backup failed, nothing restored: ${err.message}` })
+      return
+    }
+    const restored = replaceProgress(pending.data)
+    if (!restored) {
+      setStatus({ kind: 'error', message: 'This file is from a newer app version. Reload the app.' })
+      return
+    }
+    if (hasToken) forcePush(restored)
+    setStatus({ kind: 'ok', message: `Restored from ${pending.fileName}.` })
+    setPending(null)
+    setConfirmText('')
+  }
+
+  const cards = pending ? Object.values(pending.data.cards) : []
+  return (
+    <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-1 font-display text-base font-bold text-ink">資料 · Data</h3>
+      <p className="mb-4 font-mono text-xs text-ink/45">
+        mode: <span className="text-ink/70">{DATA_MODE}</span> · {effectiveGh.owner}/{effectiveGh.repo}:
+        {effectiveGh.path}
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={download}
+          className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-jade hover:text-jade"
+        >
+          Download progress.json
+        </button>
+        <label className="cursor-pointer rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar">
+          Restore from file…
+          <input type="file" accept=".json,application/json" className="hidden" onChange={pickFile} />
+        </label>
+      </div>
+
+      {pending && (
+        <div className="mt-4 flex flex-col gap-2 rounded-xl border border-cinnabar/30 bg-cinnabar/5 p-3 font-mono text-xs text-ink/70">
+          <p>
+            {pending.fileName}: {cards.length} cards · {cards.filter((c) => c?.reps > 0).length} reviewed ·
+            log {Array.isArray(pending.data.log) ? pending.data.log.length : 0} · updated{' '}
+            {pending.data.updatedAt || '—'}
+          </p>
+          <p>This replaces your current progress. Type RESTORE to confirm.</p>
+          <input
+            className={inputCls}
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder="RESTORE"
+          />
+          <div className="flex gap-2">
+            <button
+              disabled={confirmText !== 'RESTORE' || status.kind === 'working'}
+              onClick={restore}
+              className="rounded-full bg-cinnabar px-4 py-1.5 font-sans text-sm text-paper disabled:opacity-40"
+            >
+              Restore
+            </button>
+            <button
+              onClick={() => setPending(null)}
+              className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {status.message && (
+        <p
+          className="mt-3 font-mono text-xs"
+          style={{ color: status.kind === 'ok' ? '#2d6a4f' : status.kind === 'error' ? '#c0392b' : '#b8860b' }}
+        >
+          {status.message}
+        </p>
+      )}
+    </section>
+  )
+}
+
+function AudioSection() {
+  const [voices, setVoices] = useState(() => listVoices())
+  const [prefs, setPrefs] = useState(() => getTtsPrefs())
+
+  useEffect(() => {
+    const refresh = () => setVoices(listVoices())
+    window.addEventListener('tts-voices-changed', refresh)
+    refresh()
+    return () => window.removeEventListener('tts-voices-changed', refresh)
+  }, [])
+
+  function update(patch) {
+    const next = { ...prefs, ...patch }
+    setPrefs(next)
+    setTtsPrefs(next)
+  }
+
+  // A saved voice missing on this device shows as the default entry.
+  const selected = voices.some((v) => v.voiceURI === prefs.voiceURI) ? prefs.voiceURI : ''
+
+  return (
+    <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-1 font-display text-base font-bold text-ink">聲音 · Audio</h3>
+      <div className="flex flex-col gap-3">
+        <Field label="Voice">
+          {voices.length === 0 ? (
+            <p className="font-sans text-sm text-ink/50">Loading voices…</p>
+          ) : (
+            <select value={selected} onChange={(e) => update({ voiceURI: e.target.value })} className={inputCls}>
+              <option value="">Default (automatic)</option>
+              {voices.map((v) => (
+                <option key={v.voiceURI} value={v.voiceURI}>
+                  {isBetterVoice(v) ? '★ ' : ''}
+                  {v.name} ({v.lang})
+                </option>
+              ))}
+            </select>
+          )}
+        </Field>
+        <Field label={`Rate: ${prefs.rate.toFixed(2)}`}>
+          <input
+            type="range"
+            min="0.6"
+            max="1.1"
+            step="0.05"
+            value={prefs.rate}
+            onChange={(e) => update({ rate: Number(e.target.value) })}
+            className="w-full"
+          />
+        </Field>
+        <div>
+          <button
+            onClick={() => speak('今天天氣很好，我們去散步吧。')}
+            className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-jade hover:text-jade"
+          >
+            Test
+          </button>
+        </div>
+        <p className="font-sans text-xs text-ink/50">
+          For more natural voices on iPhone: iOS Settings → Accessibility → Spoken Content → Voices →
+          Chinese (Taiwan) → Meijia, and download an Enhanced or Premium version. Reload this page
+          afterwards; such voices are marked ★.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+// The prompt proper is everything below the "---" line (above it are usage notes for Shane).
+const GRADE_PROMPT = gradePromptRaw.includes('\n---\n')
+  ? gradePromptRaw.slice(gradePromptRaw.indexOf('\n---\n') + 5).trim()
+  : gradePromptRaw
+
+// 造句 · Sentences (DESIGN §12, Phase 15): export the queue, import the grader's reply.
+function SentencesSection({ progress, itemIndex, markExported, applyGrades }) {
+  const [msg, setMsg] = useState('')
+  const [text, setText] = useState('')
+  const [report, setReport] = useState(null)
+  const sentences = progress.sentences ?? []
+  const queued = queuedOf(sentences).length
+  const btn = 'rounded-full border border-ink/20 px-3 py-1.5 font-sans text-xs text-ink/70 hover:border-jade hover:text-jade disabled:opacity-40'
+  const tz = progress.studySettings?.timezone
+
+  const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 2500) }
+  const packet = () => buildPacket(sentences, (k) => itemIndex.get(k), { tz })
+  const done = (p) => markExported(p.items.map((i) => i.id))
+
+  const download = () => {
+    const p = packet()
+    if (!p.items.length) return
+    const url = URL.createObjectURL(new Blob([JSON.stringify(p, null, 2)], { type: 'application/json' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = packetFileName(new Date(), tz)
+    a.click()
+    URL.revokeObjectURL(url)
+    done(p)
+  }
+  const copyPacket = async () => {
+    const p = packet()
+    if (!p.items.length) return
+    try { await navigator.clipboard.writeText(JSON.stringify(p, null, 2)); done(p); flash('Packet copied.') } catch { flash('Copy failed. Use Export instead.') }
+  }
+  const copyPrompt = async () => {
+    try { await navigator.clipboard.writeText(GRADE_PROMPT); flash('Prompt copied.') } catch { flash('Copy failed.') }
+  }
+  const onFile = async (e) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setText(await f.text())
+    setReport(null)
+    e.target.value = ''
+  }
+  const importGrades = () => {
+    const parsed = parseGrades(text)
+    if (parsed.error) { setReport({ error: parsed.error }); return }
+    setReport(applyGrades(parsed.results))
+    setText('')
+  }
+
+  return (
+    <section className="rounded-2xl border border-ink/10 bg-white/50 p-5">
+      <h3 className="mb-1 font-display text-base font-bold text-ink">造句 · Sentences</h3>
+      <p className="mb-3 font-mono text-[11px] text-ink/55">
+        {queued} queued · {countBy(sentences, 'exported')} exported · {countBy(sentences, 'graded')} graded
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <button className={btn} disabled={!queued} onClick={download}>Export grading packet</button>
+        <button className={btn} disabled={!queued} onClick={copyPacket}>Copy packet</button>
+        <button className={btn} onClick={copyPrompt}>Copy grading prompt</button>
+      </div>
+      {msg && <p className="mt-2 font-mono text-[11px] text-jade">{msg}</p>}
+
+      <h4 className="mb-1 mt-4 font-sans text-sm font-semibold text-ink/80">Import grades</h4>
+      <textarea
+        className={inputCls} rows={4} value={text}
+        onChange={(e) => { setText(e.target.value); setReport(null) }}
+        placeholder="Paste the grader's JSON reply here"
+      />
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <button className={btn} disabled={!text.trim()} onClick={importGrades}>Import grades</button>
+        <label className={`${btn} cursor-pointer`}>
+          Choose file…
+          <input type="file" accept=".json,application/json" className="hidden" onChange={onFile} />
+        </label>
+      </div>
+      {report?.error && <p className="mt-2 rounded-lg bg-cinnabar/10 px-3 py-2 font-mono text-xs text-seal">{report.error}</p>}
+      {report && !report.error && (
+        <p className="mt-2 font-mono text-xs text-ink/70">
+          {[`${report.graded} graded`, report.unknown ? `${report.unknown} unknown id` : '', report.invalid ? `${report.invalid} invalid` : ''].filter(Boolean).join(', ')}
+        </p>
+      )}
+    </section>
   )
 }

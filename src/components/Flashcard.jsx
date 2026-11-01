@@ -1,3 +1,4 @@
+import UnderstandingBar from './UnderstandingBar.jsx'
 import React, { useEffect, useRef, useState } from 'react'
 import { speak, ttsSupported } from '../lib/speech.js'
 import { startRecording, scoreAgainstTone, primaryTone } from '../lib/pitch.js'
@@ -5,6 +6,13 @@ import { previewIntervals } from '../lib/fsrs.js'
 import { cardKey } from '../lib/fsrs.js'
 import ToneCurve from './ToneCurve.jsx'
 import AITutor from './AITutor.jsx'
+import SentenceBox from './SentenceBox.jsx'
+
+// Small POS chip under the hanzi for words with more than one sense (DESIGN §4.4).
+const POS_LABELS = {
+  N: '名', V: '動', Vs: '狀', Vi: '動', Vst: '動', Vp: '動', 'V-sep': '離',
+  M: '量', Adv: '副', Prep: '介', Conj: '連', Ptc: '助', Det: '定',
+}
 
 const RATINGS = [
   { key: 'again', label: 'Again', color: '#a8201a' },
@@ -13,7 +21,7 @@ const RATINGS = [
   { key: 'easy', label: 'Easy', color: '#1a6b8a' },
 ]
 
-export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig }) {
+export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tutorConfig, understanding, sentences, onAddSentence }) {
   const [revealed, setRevealed] = useState(false)
   const [activeRating, setActiveRating] = useState(null)
   const [recording, setRecording] = useState(false)
@@ -124,11 +132,16 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
       {/* Character face */}
       <div className="relative flex min-h-[180px] w-full flex-col items-center justify-center rounded-3xl border border-ink/10 bg-white/50 px-6 py-10 shadow-sm">
         <span className="absolute right-4 top-3 font-mono text-[10px] uppercase tracking-widest text-ink/30">
-          {word.band}
+          {word.level ?? word.band}
         </span>
         <span className="font-display text-7xl font-bold leading-none text-ink sm:text-8xl">
-          {word.hanzi}
+          {[word.hanzi, ...(word.variants ?? []).map((v) => v.hanzi)].join('／')}
         </span>
+        {(word.senseOf || word.senses?.length) && word.pos && (
+          <span className="mt-3 rounded-full border border-ink/15 px-2.5 py-0.5 font-mono text-[11px] text-ink/60">
+            {POS_LABELS[word.pos] ? `${POS_LABELS[word.pos]} ${word.pos}` : word.pos}
+          </span>
+        )}
 
         {ttsSupported() && (
           <button
@@ -146,6 +159,9 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
           <div className="brush-in rounded-2xl bg-mist/60 px-5 py-4 text-center">
             <div className="font-mono text-lg text-cinnabar">{word.pinyin}</div>
             <div className="mt-1 font-sans text-lg text-ink/80">{word.english}</div>
+            {understanding && (
+              <div className="mt-2 flex justify-center"><UnderstandingBar value={understanding.understanding} max={understanding.max} /></div>
+            )}
           </div>
         ) : (
           <button
@@ -188,6 +204,8 @@ export default function Flashcard({ word, cardState, onRate, onPrev, onNext, tut
           )
         })}
       </div>
+
+      <SentenceBox wordKey={wordKey} sentences={sentences} onAdd={onAddSentence} />
 
       {/* Tone trainer */}
       <div className="mt-5 w-full rounded-2xl border border-ink/10 bg-white/40 p-4">

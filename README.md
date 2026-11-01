@@ -36,7 +36,7 @@ writes its `progress.json` to **a** GitHub repo — it can be this same one.
 
 In your repo: **Settings → Pages → Build and deployment → Source: GitHub Actions.**
 The included workflow (`.github/workflows/deploy.yml`) builds on every push to
-`main` and publishes the `/docs` output. Your app will be live at
+`main` and publishes the `dist/` output. Your app will be live at
 `https://<your-username>.github.io/<repo-name>/`.
 
 ### 3. Run locally (optional)
@@ -44,8 +44,10 @@ The included workflow (`.github/workflows/deploy.yml`) builds on every push to
 ```bash
 npm install
 npm run dev      # local dev server
-npm run build    # outputs static site to /docs
+npm run build    # outputs static site to dist/
 ```
+
+Design docs live in docs/; the build goes to dist/.
 
 ### 4. Create a GitHub Personal Access Token (for sync)
 

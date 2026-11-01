@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { runAudioDiagnostics, measureMicLevel } from '../lib/pitch.js'
+import { runAudioDiagnostics, measureMicLevel, startRecording } from '../lib/pitch.js'
 
 function Row({ label, ok, value }) {
   return (
@@ -18,6 +18,25 @@ export default function MicTest() {
   const [level, setLevel] = useState(0)
   const [testing, setTesting] = useState(false)
   const [micResult, setMicResult] = useState(null)
+
+  const [rec, setRec] = useState(null)
+  const [recording, setRecording] = useState(false)
+
+  // startRecording() must be called synchronously in the tap handler.
+  function recordTwo() {
+    setRecording(true)
+    setRec(null)
+    let ctrl
+    startRecording()
+      .then((c) => {
+        ctrl = c
+        return new Promise((r) => setTimeout(r, 2000))
+      })
+      .then(() => ctrl.stop())
+      .then((r) => setRec(r))
+      .catch((e) => setRec({ error: e.message }))
+      .finally(() => setRecording(false))
+  }
 
   async function check() {
     setReport(await runAudioDiagnostics())
@@ -53,6 +72,13 @@ export default function MicTest() {
         >
           {testing ? 'Listening… speak now' : 'Test mic level'}
         </button>
+        <button
+          onClick={recordTwo}
+          disabled={recording || testing}
+          className="rounded-full border border-ink/20 px-4 py-1.5 font-sans text-sm text-ink/70 hover:border-cinnabar hover:text-cinnabar disabled:opacity-50"
+        >
+          {recording ? 'Recording… speak now' : 'Record 2 s'}
+        </button>
       </div>
 
       {/* Live level meter */}
@@ -82,17 +108,28 @@ export default function MicTest() {
         </div>
       )}
 
+      {rec && (
+        <div className="mt-4 rounded-xl bg-ink/[0.03] p-3 font-mono text-xs text-ink/70">
+          {rec.error ? (
+            <p className="text-seal">Error: {rec.error}</p>
+          ) : (
+            <>
+              <p>sampleRate: {rec.sampleRate}</p>
+              <p>samples: {rec.sampleCount}</p>
+              <p>peak: {rec.peak.toFixed(3)}</p>
+              <p>voiced frames: {rec.voiced ? rec.frames : 0}</p>
+              {!rec.voiced && <p className="text-seal">{rec.reason}</p>}
+            </>
+          )}
+        </div>
+      )}
+
       {report && (
         <div className="mt-4 rounded-xl bg-ink/[0.03] p-3">
           <Row label="HTTPS / secure context" ok={report.secureContext} value={report.secureContext ? 'yes' : 'NO — needs https'} />
           <Row label="getUserMedia" ok={report.getUserMedia} value={report.getUserMedia ? 'available' : 'missing'} />
-          <Row label="MediaRecorder" ok={report.mediaRecorder} value={report.mediaRecorder ? 'available' : 'missing'} />
           <Row label="AudioContext" ok={report.audioContext} value={report.audioContext ? 'available' : 'missing'} />
           <Row label="Mic permission" ok={report.permission !== 'denied'} value={report.permission} />
-          <div className="flex items-center justify-between py-1.5 font-mono text-xs">
-            <span className="text-ink/60">Recording format</span>
-            <span className="text-ink/60">{report.chosenMime}</span>
-          </div>
         </div>
       )}
     </section>

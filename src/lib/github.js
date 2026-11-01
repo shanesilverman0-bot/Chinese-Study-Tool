@@ -5,11 +5,13 @@
 // passed in here. The PAT needs `repo` scope (or `contents:write` for a
 // fine-grained token scoped to the one repository).
 
+import { assertWriteAllowed } from './dataMode.js'
+
 const API = 'https://api.github.com'
 
 function headers(token) {
   return {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${String(token ?? "").trim()}`,
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   }
@@ -30,7 +32,9 @@ function b64decode(str) {
 // CORS preflights when called from a browser.
 export async function fetchProgress({ token, owner, repo, branch = 'main', path = 'progress.json' }) {
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`
-  const res = await fetch(url, { headers: headers(token) })
+  // no-store: GitHub sends max-age=60, and a cached copy would hand the merge a
+  // stale file and sha (every save after another device's save would conflict).
+  const res = await fetch(url, { headers: headers(token), cache: 'no-store' })
   if (res.status === 404) return { data: null, sha: null }
   if (!res.ok) throw new Error(`GitHub fetch failed (${res.status}): ${await res.text()}`)
   const json = await res.json()
@@ -53,53 +57,46 @@ export async function fetchProgress({ token, owner, repo, branch = 'main', path 
   return { data: JSON.parse(text), sha: json.sha }
 }
 
-// Commit progress back. Always fetches the current sha from GitHub before
-// writing so the request never fails with 422 "sha wasn't supplied" on an
-// existing file. The caller may pass a cached sha, but it is not used — the
-// fresh GET is the authoritative source to handle concurrent pushes from
-// multiple devices.
+// Commit progress back with the sha of the version we merged against (no
+// internal refetch: a stale sha must fail so the caller re-merges, DESIGN §7).
+// Compact JSON. Returns { ok: true, sha } or { ok: false, conflict: true } when
+// GitHub reports the sha is stale (409, or 422 "does not match"). Anything
+// else throws. `sha` is null/undefined only when the file doesn't exist yet.
 export async function saveProgress(
   { token, owner, repo, branch = 'main', path = 'progress.json' },
   data,
-  _sha  // ignored — we always fetch fresh to avoid 422 on existing file
+  sha
 ) {
+  assertWriteAllowed({ owner, repo, path })
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`
-
-  async function fetchCurrentSha() {
-    const r = await fetch(`${url}?ref=${branch}`, { headers: headers(token) })
-    if (r.status === 404) return undefined
-    if (!r.ok) throw new Error(`GitHub fetch failed (${r.status}): ${await r.text()}`)
-    return (await r.json()).sha
+  const body = {
+    message: `chore: update study progress ${new Date().toISOString()}`,
+    content: b64encode(JSON.stringify(data)),
+    branch,
   }
+  if (sha) body.sha = sha
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { ...headers(token), 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
 
-  async function putFile(sha) {
-    const body = {
-      message: `chore: update study progress ${new Date().toISOString()}`,
-      content: b64encode(JSON.stringify(data, null, 2)),
-      branch,
-    }
-    if (sha) body.sha = sha
-    return fetch(url, {
-      method: 'PUT',
-      headers: { ...headers(token), 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
+  if (res.status === 409) return { ok: false, conflict: true }
+  if (res.status === 422) {
+    const text = await res.text()
+    // 422 also covers "sha wasn't supplied" (file exists, we thought it didn't)
+    // and "does not match": both mean our view of the file is stale.
+    if (/does not match|wasn't supplied|sha/i.test(text)) return { ok: false, conflict: true }
+    throw new Error(`GitHub save failed (422): ${text}`)
   }
-
-  const sha = await fetchCurrentSha()
-  let res = await putFile(sha)
-
-  // 409 = our sha is already stale (another device pushed between our GET and
-  // PUT). Re-fetch the latest sha and retry once; if it still fails, surface
-  // the error clearly rather than silently dropping the write.
-  if (res.status === 409) {
-    const freshSha = await fetchCurrentSha()
-    res = await putFile(freshSha)
+  if (res.status === 404) {
+    throw new Error(
+      `Data repo ${owner}/${repo} not found, or the token has no access to it. See WORKFLOW §1 step 5.`
+    )
   }
-
   if (!res.ok) throw new Error(`GitHub save failed (${res.status}): ${await res.text()}`)
   const json = await res.json()
-  return { sha: json.content.sha }
+  return { ok: true, sha: json.content.sha }
 }
 
 // Quick credential check for the settings screen.
@@ -134,6 +131,7 @@ export async function putTextFile(
   sha,
   message
 ) {
+  assertWriteAllowed({ owner, repo, path })
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`
   const body = {
     message: message || `chore: write ${path}`,
@@ -152,13 +150,14 @@ export async function putTextFile(
 
 // Upload a File/Blob (any type) using its base64 contents.
 export async function uploadFile(cfg, dirPath, file) {
-  const base64 = await fileToBase64(file)
   const path = dirPath ? `${dirPath.replace(/\/$/, '')}/${file.name}` : file.name
+  assertWriteAllowed({ owner: cfg.owner, repo: cfg.repo, path })
+  const base64 = await fileToBase64(file)
   const url = `${API}/repos/${cfg.owner}/${cfg.repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`
   // If the file already exists we need its sha to overwrite.
   let sha
   try {
-    const existing = await fetch(`${url}?ref=${cfg.branch || 'main'}`, { headers: headers(cfg.token) })
+    const existing = await fetch(`${url}?ref=${cfg.branch || 'main'}`, { headers: headers(cfg.token), cache: 'no-store' })
     if (existing.ok) sha = (await existing.json()).sha
   } catch {}
   const body = {
@@ -179,11 +178,13 @@ export async function uploadFile(cfg, dirPath, file) {
 // Git has no empty folders, so a "folder" is created by adding a .gitkeep file.
 export async function createFolder(cfg, dirPath) {
   const path = `${dirPath.replace(/\/$/, '')}/.gitkeep`
+  assertWriteAllowed({ owner: cfg.owner, repo: cfg.repo, path })
   return putTextFile(cfg, path, '', undefined, `chore: create folder ${dirPath}`)
 }
 
 // Delete a file (needs its sha). The caller confirms with the user first.
 export async function deleteFile({ token, owner, repo, branch = 'main' }, path, sha) {
+  assertWriteAllowed({ owner, repo, path })
   const url = `${API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replace(/%2F/g, '/')}`
   const res = await fetch(url, {
     method: 'DELETE',

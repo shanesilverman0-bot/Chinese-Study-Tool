@@ -3,8 +3,8 @@
 // Mandarin tone contour. Shape is compared (not absolute pitch) so high and
 // low voices both score fairly.
 //
-// Recording uses MediaRecorder -> Blob -> decodeAudioData, which is far more
-// robust and widely supported than the deprecated ScriptProcessorNode.
+// Recording captures raw PCM through a ScriptProcessorNode (deprecated, but
+// works in WebKit and Chrome); see DESIGN §14.2.
 
 import { YIN } from 'pitchfinder'
 
@@ -33,17 +33,10 @@ function clamp01(x) {
   return Math.max(0, Math.min(1, x))
 }
 
-// Pick a MediaRecorder mime type the current browser supports.
-function pickMime() {
-  const candidates = ['audio/webm', 'audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg']
-  if (typeof MediaRecorder === 'undefined' || !MediaRecorder.isTypeSupported) return ''
-  for (const c of candidates) {
-    if (MediaRecorder.isTypeSupported(c)) return c
-  }
-  return ''
-}
-
 // Begin recording from the mic. Returns a controller with stop() -> contour.
+// Captures raw PCM (no MediaRecorder / decodeAudioData: WebKit cannot decode
+// the webm it advertises). The AudioContext is created before the first
+// await so iOS treats it as started by the user's tap.
 // Throws a descriptive error if anything is unavailable so the UI can surface it.
 export async function startRecording() {
   if (!window.isSecureContext) {
@@ -52,62 +45,83 @@ export async function startRecording() {
   if (!navigator.mediaDevices?.getUserMedia) {
     throw new Error('This browser does not expose getUserMedia.')
   }
-  if (typeof MediaRecorder === 'undefined') {
-    throw new Error('This browser does not support MediaRecorder.')
-  }
+  const AudioCtx = window.AudioContext || window.webkitAudioContext
+  if (!AudioCtx) throw new Error('This browser does not support AudioContext.')
 
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
-  })
-
-  const mime = pickMime()
-  const mr = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream)
+  const ctx = new AudioCtx() // synchronous, inside the user gesture
+  let stream
+  let source
+  let proc
+  let mute
   const chunks = []
-  mr.ondataavailable = (e) => {
-    if (e.data && e.data.size > 0) chunks.push(e.data)
+
+  const teardown = () => {
+    try { proc?.disconnect() } catch {}
+    try { source?.disconnect() } catch {}
+    try { mute?.disconnect() } catch {}
+    if (proc) proc.onaudioprocess = null
+    stream?.getTracks().forEach((t) => t.stop())
   }
-  mr.start()
+
+  try {
+    const resumed = ctx.resume()
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+    })
+    await resumed
+    if (ctx.state !== 'running') await ctx.resume()
+
+    source = ctx.createMediaStreamSource(stream)
+    proc = ctx.createScriptProcessor(4096, 1, 1)
+    mute = ctx.createGain()
+    mute.gain.value = 0
+    proc.onaudioprocess = (e) => {
+      chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)))
+    }
+    source.connect(proc)
+    proc.connect(mute)
+    mute.connect(ctx.destination)
+  } catch (err) {
+    teardown()
+    try { ctx.close() } catch {}
+    if (err && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) {
+      throw new Error('Microphone permission denied. iOS Settings → Chrome → Microphone.')
+    }
+    throw err
+  }
 
   return {
     cancel() {
-      try {
-        mr.stop()
-      } catch {}
-      stream.getTracks().forEach((t) => t.stop())
+      teardown()
+      try { ctx.close() } catch {}
     },
-    stop() {
-      return new Promise((resolve, reject) => {
-        mr.onerror = (e) => reject(new Error('Recorder error: ' + (e.error?.message || 'unknown')))
-        mr.onstop = async () => {
-          stream.getTracks().forEach((t) => t.stop())
-          try {
-            const blob = new Blob(chunks, { type: mr.mimeType || mime || 'audio/webm' })
-            if (blob.size === 0) {
-              resolve({ points: [], voiced: false, reason: 'No audio captured.' })
-              return
-            }
-            const arrayBuf = await blob.arrayBuffer()
-            const AudioCtx = window.AudioContext || window.webkitAudioContext
-            const ctx = new AudioCtx()
-            // Safari sometimes only supports the callback form of decodeAudioData.
-            const audioBuf = await new Promise((res, rej) => {
-              const p = ctx.decodeAudioData(arrayBuf, res, rej)
-              if (p && typeof p.then === 'function') p.then(res).catch(rej)
-            })
-            const samples = audioBuf.getChannelData(0)
-            const sr = audioBuf.sampleRate
-            await ctx.close()
-            resolve(analyzeContour(samples, sr))
-          } catch (err) {
-            reject(new Error('Could not decode the recording: ' + err.message))
-          }
+    async stop() {
+      teardown()
+      const sampleRate = ctx.sampleRate
+      try { await ctx.close() } catch {}
+      let total = 0
+      for (const c of chunks) total += c.length
+      const samples = new Float32Array(total)
+      let off = 0
+      for (const c of chunks) {
+        samples.set(c, off)
+        off += c.length
+      }
+      let peak = 0
+      for (let i = 0; i < samples.length; i++) {
+        const v = Math.abs(samples[i])
+        if (v > peak) peak = v
+      }
+      const stats = { sampleRate, sampleCount: total, peak }
+      if (total === 0 || peak < 0.01) {
+        return {
+          points: [],
+          voiced: false,
+          reason: "Didn't hear anything — check the mic isn't muted.",
+          ...stats,
         }
-        try {
-          mr.stop()
-        } catch (err) {
-          reject(err)
-        }
-      })
+      }
+      return { ...analyzeContour(samples, sampleRate), ...stats }
     },
   }
 }
@@ -206,9 +220,7 @@ export async function runAudioDiagnostics() {
   const report = {
     secureContext: !!window.isSecureContext,
     getUserMedia: !!navigator.mediaDevices?.getUserMedia,
-    mediaRecorder: typeof MediaRecorder !== 'undefined',
     audioContext: !!(window.AudioContext || window.webkitAudioContext),
-    chosenMime: pickMime() || '(default)',
     permission: 'unknown',
     micWorks: false,
     peakLevel: 0,

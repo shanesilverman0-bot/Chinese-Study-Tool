@@ -1,14 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
-// Build output goes to /docs so GitHub Pages can serve it directly.
+// Build output goes to /dist (docs/ holds design docs and must never be emptied).
+// GitHub Actions uploads dist/ to Pages.
 // base './' makes asset paths relative, which works for project pages
 // hosted at https://<user>.github.io/<repo>/ without extra config.
-export default defineConfig({
-  plugins: [react()],
+// `--mode phone` serves over https (self-signed) so the iPhone gets mic access.
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), ...(mode === 'phone' ? [basicSsl()] : [])],
+  // No live reload on the phone: iOS refuses the self-signed wss:// socket. Reload by hand.
+  server: mode === 'phone' ? { hmr: false } : {},
   base: './',
   build: {
-    outDir: 'docs',
+    outDir: 'dist',
     emptyOutDir: true,
   },
-})
+}))
