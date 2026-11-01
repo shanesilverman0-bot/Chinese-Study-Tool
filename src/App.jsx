@@ -21,6 +21,8 @@ import RepoFiles from './components/RepoFiles.jsx'
 import SessionTimer from './components/SessionTimer.jsx'
 import ManualEntryForm from './components/ManualEntryForm.jsx'
 import DataBanner from './components/DataBanner.jsx'
+import ExercisePlayer from './components/ExercisePlayer.jsx'
+import { loadExerciseFile } from './lib/exerciseStore.js'
 import { DATA_MODE, assertWriteAllowed, dataPath } from './lib/dataMode.js'
 import { WideContext, useWideLayout } from './lib/layout.js'
 
@@ -43,6 +45,7 @@ export default function App() {
     updateProgress,
     updateStudySettings,
     addSession,
+    addAttempt,
     upsertManualEntry,
     upsertList,
     deleteList,
@@ -116,6 +119,8 @@ export default function App() {
   const [queue, setQueue] = useState([]) // holds composite card keys
   const [pos, setPos] = useState(0)
   const [stillLearning, setStillLearning] = useState(null) // keys, at the end of the queue
+  const [practice, setPractice] = useState(null) // { refs, listIds } for the exercise player
+  const [pickerTab, setPickerTab] = useState('flash')
 
   // Look up the word behind a card key. Keyed by hanzi+pinyin so homographs
   // resolve to the correct word.
@@ -173,6 +178,26 @@ export default function App() {
     setPos(0)
     setStillLearning(null)
     setView(q.length ? 'review' : 'home')
+  }
+
+  const loadFile = useMemo(
+    () => (fileId) => {
+      const meta = progressRef.current.exerciseFiles?.[fileId]
+      return meta ? loadExerciseFile(gh, meta) : Promise.resolve(null)
+    },
+    [gh]
+  )
+
+  function startPractice(p) {
+    setPractice(p)
+    setView(p.refs.length ? 'practice' : 'home')
+  }
+
+  function practiceList(id) {
+    setSelection((sel) => ({ ...sel, listIds: [id], tocflLevels: [] }))
+    setPickerTab('mixed')
+    setView('home')
+    setTimeout(() => document.getElementById('study-picker')?.scrollIntoView({ behavior: 'smooth' }), 50)
   }
 
   function studyList(id) {
@@ -265,6 +290,7 @@ export default function App() {
                 vocab={vocab}
                 pickerProps={{
                   selection, setSelection, lists: allLists, index: itemIndex, progress, baseline, onStart: startReview,
+                  onStartPractice: startPractice, loadFile, tab: pickerTab, setTab: setPickerTab,
                 }}
                 onAddManual={() => setManualOpen(true)}
               />
@@ -282,6 +308,7 @@ export default function App() {
                 updateProgress={updateProgress}
                 deviceSettings={settings}
                 onStudyList={studyList}
+                onPractice={practiceList}
               />
             )}
 
@@ -317,6 +344,18 @@ export default function App() {
                   tutorConfig={tutorConfig}
                 />
               </div>
+            )}
+
+            {view === 'practice' && practice && (
+              <ExercisePlayer
+                refs={practice.refs}
+                loadFile={loadFile}
+                mode="practice"
+                index={itemIndex}
+                onAttempt={(a) => addAttempt(a, [progress.exerciseFiles?.[a.fileId]?.listId].filter(Boolean))}
+                onFinish={() => { setPractice(null); setView('home') }}
+                onExit={() => { setPractice(null); setView('home') }}
+              />
             )}
 
             {view === 'files' && (

@@ -14,6 +14,7 @@ import { retirePlaceholderGoals } from '../lib/goals.js'
 import { localDate } from '../lib/dates.js'
 import { noteActivity } from '../lib/sessions.js'
 import { deleteList as tombstoneList } from '../lib/lists.js'
+import { recordAttempt } from '../lib/context.js'
 
 const SAVE_DEBOUNCE_MS = 4000
 const MAX_SAVE_TRIES = 3
@@ -406,6 +407,16 @@ export function useProgress(vocab = SEED_VOCAB) {
     [apply, scheduleSync]
   )
 
+  // Append a context-exercise Attempt (DESIGN §5.12); no cap until Phase 13's rollup.
+  const addAttempt = useCallback(
+    (a, listIds = []) => {
+      apply((prev) => recordAttempt(prev, a))
+      noteActivity(a.type, listIds, 'attempt')
+      scheduleSync()
+    },
+    [apply, scheduleSync]
+  )
+
   // Retire the old June / Jul–Dec placeholder goals on load (DESIGN §5.5); a no-op once done.
   // Runs again after the first pull, since a remote file may still carry them.
   useEffect(() => {
@@ -483,6 +494,7 @@ export function useProgress(vocab = SEED_VOCAB) {
     updateProgress,
     updateStudySettings,
     addSession,
+    addAttempt,
     upsertManualEntry,
     upsertList,
     deleteList,

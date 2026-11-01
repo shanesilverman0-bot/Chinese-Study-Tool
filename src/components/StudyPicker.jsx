@@ -1,16 +1,77 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { LEVELS } from '../data/vocab.js'
 import { buildFlashcardQueue } from '../lib/queue.js'
+import { questionRefs, pickPracticeQuestions } from '../lib/context.js'
+import { listVoices, ttsSupported } from '../lib/speech.js'
+
+const PRACTICE_SIZES = [10, 20, 50]
+const TABS = [
+  ['flash', '閃卡 Flashcards', null],
+  ['cloze', 'Cloze', ['cloze']],
+  ['fill', 'Fill', ['fill']],
+  ['usage', 'Usage', ['usage']],
+  ['listening', 'Listening', ['listening']],
+  ['mixed', 'Mixed', null],
+]
 
 const SIZES = [20, 50, 100]
 const fmt = (n) => n.toLocaleString('en-US')
 
 // Study picker (DESIGN §9.3–9.4): TOCFL levels, CCC books/chapters/parts, Pleco and
 // custom lists, the baseline switch, session size, and the exact queue length.
-export default function StudyPicker({ selection, setSelection, lists, index, progress, baseline, onStart }) {
+export default function StudyPicker({ selection, setSelection, lists, index, progress, baseline, onStart, onStartPractice, loadFile, tab: tabProp, setTab: setTabProp }) {
+  const [tabLocal, setTabLocal] = useState('flash')
+  const tab = tabProp ?? tabLocal
+  const setTab = setTabProp ?? setTabLocal
+  const [pCount, setPCount] = useState(20)
+  const [loaded, setLoaded] = useState({}) // fileId -> parsed file | null
+  const [hasVoice, setHasVoice] = useState(() => ttsSupported() && listVoices().length > 0)
   const [openBooks, setOpenBooks] = useState({})
   const [openChapters, setOpenChapters] = useState({})
   const sel = selection
+
+  useEffect(() => {
+    const f = () => setHasVoice(ttsSupported() && listVoices().length > 0)
+    window.addEventListener('tts-voices-changed', f)
+    return () => window.removeEventListener('tts-voices-changed', f)
+  }, [])
+
+  // Exercise files of the selected lists (loaded lazily, cached in `loaded`).
+  const metas = useMemo(
+    () => Object.values(progress.exerciseFiles ?? {}).filter((m) => m && !m.deleted && selection.listIds.includes(m.listId)),
+    [progress.exerciseFiles, selection.listIds]
+  )
+  useEffect(() => {
+    if (!loadFile) return
+    let alive = true
+    for (const m of metas) {
+      if (m.id in loaded) continue
+      loadFile(m.id).then((j) => { if (alive) setLoaded((p) => (m.id in p ? p : { ...p, [m.id]: j })) })
+    }
+    return () => { alive = false }
+  }, [metas]) // eslint-disable-line react-hooks/exhaustive-deps
+  const failedFiles = metas.filter((m) => m.id in loaded && !loaded[m.id]).length
+  const refs = useMemo(
+    () => questionRefs(metas.filter((m) => loaded[m.id]).map((m) => ({ meta: m, json: loaded[m.id] })), progress.exerciseFlags),
+    [metas, loaded, progress.exerciseFlags]
+  )
+  const typeCount = useMemo(() => {
+    const c = {}
+    for (const r of refs) c[r.type] = (c[r.type] ?? 0) + 1
+    return c
+  }, [refs])
+  const tabTypes = (id) => {
+    const t = TABS.find((x) => x[0] === id)
+    return t[2] ?? ['cloze', 'fill', 'usage', ...(hasVoice ? ['listening'] : [])]
+  }
+  const tabCount = (id) => tabTypes(id).reduce((n, t) => n + (typeCount[t] ?? 0), 0)
+  const tabDisabled = (id) => (id === 'listening' && !hasVoice) || (id !== 'flash' && tabCount(id) === 0)
+  const practiceMode = tab !== 'flash'
+
+  const startPractice = () => {
+    const picked = pickPracticeQuestions({ refs, progress, types: tabTypes(tab), count: pCount })
+    onStartPractice?.({ refs: picked, listIds: selection.listIds })
+  }
 
   const run = (s) => buildFlashcardQueue({ selection: s, lists, index, progress, baseline })
   const patch = (p) => setSelection({ ...sel, ...p })
@@ -87,9 +148,22 @@ export default function StudyPicker({ selection, setSelection, lists, index, pro
 
   return (
     <div className="rounded-2xl border border-ink/10 bg-white/50 p-5">
-      <div className="mb-3 flex gap-2 border-b border-ink/10">
-        <button className="border-b-2 border-cinnabar px-3 py-2 font-sans text-sm font-semibold text-ink">閃卡 Flashcards</button>
+      <div className="mb-1 flex gap-1 overflow-x-auto border-b border-ink/10">
+        {TABS.map(([id, label]) => (
+          <button
+            key={id} onClick={() => setTab(id)}
+            className={`whitespace-nowrap border-b-2 px-3 py-2 font-sans text-sm ${tab === id ? 'border-cinnabar font-semibold text-ink' : 'border-transparent text-ink/55'} ${tabDisabled(id) ? 'opacity-45' : ''}`}
+          >{label}</button>
+        ))}
       </div>
+      {practiceMode && tabDisabled(tab) && (
+        <p className="mb-2 mt-2 rounded-lg bg-ink/5 px-3 py-2 font-sans text-xs text-ink/65">
+          {tab === 'listening' && !hasVoice
+            ? 'No Chinese voice on this device'
+            : 'No exercises yet — import in Lists → Exercises'}
+        </p>
+      )}
+      <div className="mb-2" />
 
       <h4 className="mb-2 font-display text-xs font-bold tracking-wide text-ink/60">TOCFL 等級 · Levels</h4>
       <div className="mb-4 flex flex-wrap gap-2">
@@ -161,6 +235,26 @@ export default function StudyPicker({ selection, setSelection, lists, index, pro
           : stored('custom').map((l) => <Row key={l.id} id={l.id} label={`${l.name} (${l.itemKeys.length})`} />)}
       </div>
 
+      {practiceMode ? (
+        <>
+          <h4 className="mb-2 font-display text-xs font-bold tracking-wide text-ink/60">How many questions</h4>
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            {PRACTICE_SIZES.map((n) => <button key={n} onClick={() => setPCount(n)} className={chip(pCount === n)}>{n}</button>)}
+            <button onClick={() => setPCount(null)} className={chip(pCount == null)}>All</button>
+          </div>
+          <p className="mb-3 font-mono text-xs text-ink/55">
+            {fmt(tabCount(tab))} questions available{failedFiles ? ` · ${failedFiles} file${failedFiles > 1 ? 's' : ''} couldn't load` : ''}
+          </p>
+          <button
+            disabled={tabDisabled(tab) || tabCount(tab) === 0}
+            onClick={startPractice}
+            className={`w-full rounded-xl py-3 font-display font-bold transition ${tabDisabled(tab) || tabCount(tab) === 0 ? 'cursor-not-allowed bg-ink/20 text-ink/60' : 'bg-cinnabar text-paper hover:bg-seal'}`}
+          >
+            {nothing ? 'Nothing selected' : `Start ${fmt(pCount == null ? tabCount(tab) : Math.min(pCount, tabCount(tab)))} questions`}
+          </button>
+        </>
+      ) : (
+      <>
       <label className="mb-4 flex cursor-pointer items-center justify-between rounded-xl border border-ink/10 px-4 py-3">
         <span className="font-sans text-sm text-ink/80">Include baseline words</span>
         <input type="checkbox" className="h-5 w-5" checked={sel.includeBaseline} onChange={(e) => patch({ includeBaseline: e.target.checked })} />
@@ -202,6 +296,8 @@ export default function StudyPicker({ selection, setSelection, lists, index, pro
             ? `Nothing due${stats.freshAvailable ? ` — ${fmt(stats.freshAvailable)} new available` : ''}`
             : `Start ${fmt(queue.length)} cards`}
       </button>
+      </>
+      )}
     </div>
   )
 }

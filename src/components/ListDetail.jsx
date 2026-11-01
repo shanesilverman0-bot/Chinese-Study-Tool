@@ -9,7 +9,7 @@ const CHIP = {
   baseline: 'bg-[#b8860b]/15 text-[#b8860b]',
 }
 
-export default function ListDetail({ list, index, progress, baseline, upsertList, updateProgress, deviceSettings, onBack, onDelete, onStudy }) {
+export default function ListDetail({ list, index, progress, baseline, upsertList, updateProgress, deviceSettings, onBack, onDelete, onStudy, onPractice }) {
   const custom = list.sourceType === 'custom'
   const [q, setQ] = useState('')
   const [tab, setTab] = useState('items')
@@ -58,6 +58,11 @@ export default function ListDetail({ list, index, progress, baseline, upsertList
         ))}
       </div>
 
+      {tab === 'ex' && (
+        <button onClick={onPractice} className="self-start rounded-full bg-cinnabar px-4 py-1.5 font-display text-sm font-bold text-paper">
+          Practice
+        </button>
+      )}
       {tab === 'ex' && (
         <ExerciseImport list={list} index={index} progress={progress} updateProgress={updateProgress} settings={deviceSettings} />
       )}
