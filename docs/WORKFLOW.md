@@ -198,7 +198,7 @@ git add progress.json
 git commit -m "Cutover: live progress moves to the private data repo"
 git push
 ```
-Then on `v2-update`, ask Claude Code: *"Remove progress.json from the app repo with git rm, commit 'Cutover: progress now lives in Chinese-Study-Data', and push."* After the merge, every device needs the `tocfl-app` token pasted into Settings → Data repo once (the old token field is replaced).
+Do **not** delete `progress.json` on `v2-update` before merging: `main` keeps changing that file, so deleting it on the branch causes a merge conflict. Instead, **after** the merge and step 7 below: on GitHub open the app repo → `progress.json` → ⋯ → **Delete file** → "Commit directly to the main branch" → message "Cutover: progress now lives in Chinese-Study-Data". (`progress.json` is in the deploy's `paths-ignore`, so this doesn't redeploy.) After the merge, every device needs the `tocfl-app` token pasted into Settings → Data repo once.
 
 The old public `progress.json` stays visible in the app repo's git **history** (review data only: words and dates). Purging it is possible but rewrites history; ask if you want that later.
 
