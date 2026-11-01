@@ -23,6 +23,9 @@ import ManualEntryForm from './components/ManualEntryForm.jsx'
 import DataBanner from './components/DataBanner.jsx'
 import ExercisePlayer from './components/ExercisePlayer.jsx'
 import { loadExerciseFile } from './lib/exerciseStore.js'
+import { variantFiles } from './lib/lists.js'
+import { questionRefs } from './lib/context.js'
+import { newId } from './lib/ids.js'
 import { DATA_MODE, assertWriteAllowed, dataPath } from './lib/dataMode.js'
 import { WideContext, useWideLayout } from './lib/layout.js'
 
@@ -46,6 +49,9 @@ export default function App() {
     updateStudySettings,
     addSession,
     addAttempt,
+    startTestRun,
+    finishTestRun,
+    abandonTestRun,
     upsertManualEntry,
     upsertList,
     deleteList,
@@ -120,6 +126,7 @@ export default function App() {
   const [pos, setPos] = useState(0)
   const [stillLearning, setStillLearning] = useState(null) // keys, at the end of the queue
   const [practice, setPractice] = useState(null) // { refs, listIds } for the exercise player
+  const [test, setTest] = useState(null) // { runId, variant, listId, refs } for a list test
   const [pickerTab, setPickerTab] = useState('flash')
 
   // Look up the word behind a card key. Keyed by hanzi+pinyin so homographs
@@ -191,6 +198,22 @@ export default function App() {
   function startPractice(p) {
     setPractice(p)
     setView(p.refs.length ? 'practice' : 'home')
+  }
+
+  // DESIGN §11.3: all enabled questions of one variant across the list's batches, in file order.
+  async function takeTest(listId, variant) {
+    const metas = variantFiles(listId, variant, progressRef.current.exerciseFiles)
+    const loaded = await Promise.all(metas.map(async (meta) => ({ meta, json: await loadFile(meta.id) })))
+    const refs = questionRefs(loaded.filter((f) => f.json), progressRef.current.exerciseFlags)
+    if (!refs.length) { window.alert('No questions could be loaded for this test.'); return }
+    const now = new Date().toISOString()
+    const runId = newId('t')
+    startTestRun({
+      id: runId, listId, variant, fileIds: metas.map((m) => m.id), questionCount: refs.length,
+      startedAt: now, finishedAt: null, correct: 0, total: 0, status: 'in-progress', updatedAt: now,
+    })
+    setTest({ runId, variant, listId, refs })
+    setView('test')
   }
 
   function practiceList(id) {
@@ -309,6 +332,7 @@ export default function App() {
                 deviceSettings={settings}
                 onStudyList={studyList}
                 onPractice={practiceList}
+                onTakeTest={takeTest}
               />
             )}
 
@@ -355,6 +379,26 @@ export default function App() {
                 onAttempt={(a) => addAttempt(a, [progress.exerciseFiles?.[a.fileId]?.listId].filter(Boolean))}
                 onFinish={() => { setPractice(null); setView('home') }}
                 onExit={() => { setPractice(null); setView('home') }}
+              />
+            )}
+
+            {view === 'test' && test && (
+              <ExercisePlayer
+                key={test.runId}
+                refs={test.refs}
+                loadFile={loadFile}
+                mode="test"
+                runId={test.runId}
+                variant={test.variant}
+                index={itemIndex}
+                onAttempt={(a) => addAttempt(a, [test.listId])}
+                onComplete={(r) => finishTestRun(test.runId, r)}
+                onFinish={() => { setTest(null); setView('lists') }}
+                onExit={(r) => {
+                  if (!r?.finished) abandonTestRun(test.runId, r)
+                  setTest(null)
+                  setView('lists')
+                }}
               />
             )}
 

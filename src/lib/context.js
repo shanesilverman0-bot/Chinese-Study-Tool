@@ -39,3 +39,52 @@ export function pickPracticeQuestions({ refs, progress, types, count = 20 }) {
 export function recordAttempt(progress, attempt) {
   return { ...progress, attempts: [...(progress.attempts ?? []), attempt] }
 }
+
+const DAY = 86400000
+const ROLLUP_KEEP_DAYS = 60
+const ROLLUP_HEADROOM = 500
+
+// DESIGN §11.4. Pure. When attempts exceed attemptLogMax, fold attempts older than 60 days
+// (oldest first) into contextArchive until length <= max - 500 or none that old remain.
+export function rollupAttempts(progress, now = new Date()) {
+  const attempts = progress?.attempts ?? []
+  const max = progress?.studySettings?.attemptLogMax ?? 3000
+  if (attempts.length <= max) return progress
+  const cutoff = new Date(now).getTime() - ROLLUP_KEEP_DAYS * DAY
+  const sorted = [...attempts].sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0))
+  const target = max - ROLLUP_HEADROOM
+  let n = 0
+  while (n < sorted.length && sorted.length - n > target && new Date(sorted[n].at).getTime() < cutoff) n++
+  if (n === 0) return progress
+  // The watermark drops everything at or before it, so never split a run of equal timestamps.
+  while (n < sorted.length && sorted[n].at === sorted[n - 1].at) n++
+  const folded = sorted.slice(0, n)
+
+  const prev = progress.contextArchive ?? { watermark: null, items: {} }
+  const items = { ...prev.items }
+  for (const a of folded) {
+    const it = items[a.key] = items[a.key] ? cloneItem(items[a.key]) : { n: 0, c: 0, byType: {}, exCorrect: [] }
+    it.n++
+    const bt = it.byType[a.type] ?? (it.byType[a.type] = [0, 0])
+    bt[0]++
+    if (a.correct) {
+      it.c++
+      bt[1]++
+      const ex = `${a.fileId}#${a.exId}`
+      if (it.exCorrect.length < 10 && !it.exCorrect.includes(ex)) it.exCorrect.push(ex)
+    }
+  }
+  return {
+    ...progress,
+    attempts: sorted.slice(n),
+    contextArchive: { watermark: folded[folded.length - 1].at, items },
+  }
+}
+
+function cloneItem(it) {
+  return {
+    n: it.n, c: it.c,
+    byType: Object.fromEntries(Object.entries(it.byType ?? {}).map(([t, v]) => [t, [...v]])),
+    exCorrect: [...(it.exCorrect ?? [])],
+  }
+}

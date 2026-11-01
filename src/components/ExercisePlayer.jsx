@@ -22,7 +22,7 @@ function Passage({ text, active, filled }) {
 }
 
 // DESIGN §11.1. refs: [{ref,fileId,exId,q,type,key}]; loadFile(fileId) → parsed file | null.
-export default function ExercisePlayer({ refs, loadFile, mode, runId = null, index, onAttempt, onFinish, onExit }) {
+export default function ExercisePlayer({ refs, loadFile, mode, runId = null, variant = null, index, onAttempt, onComplete, onFinish, onExit }) {
   const [files, setFiles] = useState(null) // fileId -> parsed file
   const [pos, setPos] = useState(0)
   const [chosen, setChosen] = useState(null)
@@ -32,6 +32,8 @@ export default function ExercisePlayer({ refs, loadFile, mode, runId = null, ind
   const answered = useRef(false)
   const loadRef = useRef(loadFile)
   loadRef.current = loadFile
+  const completed = useRef(false)
+  const isTest = mode === 'test'
 
   useEffect(() => {
     let alive = true
@@ -61,6 +63,18 @@ export default function ExercisePlayer({ refs, loadFile, mode, runId = null, ind
     window.speechSynthesis?.cancel()
   }, [pos, files])
   useEffect(() => () => window.speechSynthesis?.cancel(), [])
+  const ended = files != null && playable.length > 0 && pos >= playable.length
+  useEffect(() => {
+    if (!ended || completed.current) return
+    completed.current = true
+    onComplete?.({ correct: results.filter((x) => x.correct).length, total: results.length })
+  }, [ended]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function leave() {
+    if (isTest && ended) return onExit?.({ correct: 0, total: 0, finished: true })
+    if (isTest && !window.confirm("Abandon test? It won't count.")) return
+    onExit?.({ correct: results.filter((x) => x.correct).length, total: results.length })
+  }
 
   if (!files) return <p className="py-10 text-center font-sans text-sm text-ink/50">Loading exercises…</p>
 
@@ -74,6 +88,7 @@ export default function ExercisePlayer({ refs, loadFile, mode, runId = null, ind
         ) : (
           <>
             <p className="text-center font-display text-2xl font-bold text-ink">{correct} / {results.length} correct</p>
+            {isTest && <p className="mt-1 text-center font-mono text-xs text-ink/50">Saved as latest score for Test {variant}</p>}
             {misses.length > 0 && (
               <div className="mt-5 flex flex-col gap-2">
                 <h4 className="font-display text-xs font-bold tracking-wide text-ink/60">Misses</h4>
@@ -136,8 +151,10 @@ export default function ExercisePlayer({ refs, loadFile, mode, runId = null, ind
   return (
     <div className="mx-auto max-w-lg">
       <div className="mb-4 flex items-center justify-between">
-        <button onClick={onExit} className="font-mono text-xs text-ink/50 hover:text-ink">← 結束</button>
-        <span className="font-mono text-xs text-ink/45">{pos + 1} / {playable.length}</span>
+        <button onClick={leave} className="font-mono text-xs text-ink/50 hover:text-ink">← 結束</button>
+        <span className="font-mono text-xs text-ink/45">
+          {isTest ? `Test · Variant ${variant} · ${pos + 1}/${playable.length}` : `${pos + 1} / ${playable.length}`}
+        </span>
       </div>
       {failed > 0 && <p className="mb-2 font-mono text-xs text-ink/50">{failed} file{failed > 1 ? 's' : ''} couldn't load</p>}
 

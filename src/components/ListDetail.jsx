@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import ExerciseImport from './ExerciseImport.jsx'
-import { addItems, removeItems, renameList, searchItems, itemStatus } from '../lib/lists.js'
+import { addItems, removeItems, renameList, searchItems, itemStatus, variantsOf, variantFiles, latestScore, nextVariant } from '../lib/lists.js'
+import { batchesOf } from '../lib/exerciseInput.js'
 
 const CHIP = {
   new: 'bg-ink/10 text-ink/60',
@@ -9,11 +10,25 @@ const CHIP = {
   baseline: 'bg-[#b8860b]/15 text-[#b8860b]',
 }
 
-export default function ListDetail({ list, index, progress, baseline, upsertList, updateProgress, deviceSettings, onBack, onDelete, onStudy, onPractice }) {
+export default function ListDetail({ list, index, progress, baseline, upsertList, updateProgress, deviceSettings, onBack, onDelete, onStudy, onPractice, onTakeTest }) {
   const custom = list.sourceType === 'custom'
   const [q, setQ] = useState('')
   const [tab, setTab] = useState('items')
   const settings = progress.studySettings
+
+  const tz = settings?.timeZone
+  const fmtDate = (iso) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: tz || undefined })
+  const variants = useMemo(() => variantsOf(list.id, progress.exerciseFiles), [list.id, progress.exerciseFiles])
+  const nextV = useMemo(() => nextVariant(list.id, progress.exerciseFiles, progress.testRuns), [list.id, progress.exerciseFiles, progress.testRuns])
+  const totalBatches = useMemo(() => batchesOf(list).length, [list])
+  const [chooseV, setChooseV] = useState(false)
+  const history = useMemo(
+    () => (progress.testRuns ?? [])
+      .filter((r) => !r.deleted && r.listId === list.id && r.status === 'finished')
+      .sort((a, b) => String(b.finishedAt).localeCompare(String(a.finishedAt))),
+    [progress.testRuns, list.id]
+  )
+  const unfinished = (progress.testRuns ?? []).filter((r) => !r.deleted && r.listId === list.id && r.status !== 'finished').length
 
   const results = useMemo(() => (custom ? searchItems(index, q, 50) : []), [custom, index, q])
   const inList = useMemo(() => new Set(list.itemKeys), [list.itemKeys])
@@ -62,6 +77,52 @@ export default function ListDetail({ list, index, progress, baseline, upsertList
         <button onClick={onPractice} className="self-start rounded-full bg-cinnabar px-4 py-1.5 font-display text-sm font-bold text-paper">
           Practice
         </button>
+      )}
+      {tab === 'ex' && (
+        <div className="rounded-2xl border border-ink/10 bg-white/50 p-4">
+          <h4 className="font-display text-sm font-bold text-ink">測驗 · Tests</h4>
+          {variants.length === 0 ? (
+            <p className="mt-2 font-sans text-xs text-ink/50">Import exercise files to unlock tests.</p>
+          ) : (
+            <>
+              <div className="mt-2 flex flex-col">
+                {variants.map((v) => {
+                  const r = latestScore(list.id, v, progress.testRuns)
+                  const have = new Set(variantFiles(list.id, v, progress.exerciseFiles).map((f) => f.batch)).size
+                  return (
+                    <div key={v} className="flex min-h-[36px] flex-wrap items-center gap-x-2 border-b border-ink/5 py-1 font-sans text-sm text-ink">
+                      <span>
+                        Test {v} — {r ? `${r.correct}/${r.total} (${r.total ? Math.round((100 * r.correct) / r.total) : 0}%) · ${fmtDate(r.finishedAt)}` : 'not taken'}
+                      </span>
+                      {have < totalBatches && <span className="font-mono text-[10px] text-ink/45">({have} of {totalBatches} batches)</span>}
+                      {chooseV && <button onClick={() => { setChooseV(false); onTakeTest(list.id, v) }} className="ml-auto rounded-full border border-ink/20 px-3 py-1 text-xs text-ink/70 hover:border-cinnabar">Take</button>}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="mt-3 flex items-center gap-3">
+                <button onClick={() => onTakeTest(list.id, nextV)} className="rounded-full bg-cinnabar px-4 py-1.5 font-display text-sm font-bold text-paper">
+                  Take test{nextV != null ? ` ${nextV}` : ''}
+                </button>
+                {variants.length > 1 && (
+                  <button onClick={() => setChooseV((x) => !x)} className="font-sans text-xs text-ink/50 underline">choose variant</button>
+                )}
+              </div>
+              <details className="mt-3">
+                <summary className="cursor-pointer font-mono text-xs text-ink/50">History ({history.length})</summary>
+                <div className="mt-1 flex flex-col">
+                  {history.length === 0 && <p className="py-1 font-sans text-xs text-ink/45">No finished tests yet.</p>}
+                  {history.map((r) => (
+                    <p key={r.id} className="border-b border-ink/5 py-1 font-sans text-xs text-ink/70">
+                      {fmtDate(r.finishedAt)} · Test {r.variant} · {r.correct}/{r.total}
+                    </p>
+                  ))}
+                  {unfinished > 0 && <p className="pt-1 font-mono text-[10px] text-ink/40">{unfinished} abandoned or unfinished run{unfinished > 1 ? 's' : ''} not counted</p>}
+                </div>
+              </details>
+            </>
+          )}
+        </div>
       )}
       {tab === 'ex' && (
         <ExerciseImport list={list} index={index} progress={progress} updateProgress={updateProgress} settings={deviceSettings} />

@@ -14,7 +14,7 @@ import { retirePlaceholderGoals } from '../lib/goals.js'
 import { localDate } from '../lib/dates.js'
 import { noteActivity } from '../lib/sessions.js'
 import { deleteList as tombstoneList } from '../lib/lists.js'
-import { recordAttempt } from '../lib/context.js'
+import { recordAttempt, rollupAttempts } from '../lib/context.js'
 
 const SAVE_DEBOUNCE_MS = 4000
 const MAX_SAVE_TRIES = 3
@@ -271,6 +271,7 @@ export function useProgress(vocab = SEED_VOCAB) {
             ),
           }
         }
+        merged = rollupAttempts(merged, new Date()) // DESIGN §7, §11.4
         // Move old log entries to log/YYYY-MM.json (guarded writes). Any failure leaves `merged`
         // untouched; the PUT still goes ahead and archiving retries on a later save.
         const tz = merged.studySettings?.timeZone
@@ -417,6 +418,28 @@ export function useProgress(vocab = SEED_VOCAB) {
     [apply, scheduleSync]
   )
 
+  // Test runs (DESIGN §5.14). Latest score = the most recent finished run.
+  const patchRun = useCallback(
+    (id, patch) => updateProgress((prev) => {
+      const runs = prev.testRuns ?? []
+      if (!runs.some((r) => r.id === id)) return prev
+      return { ...prev, testRuns: runs.map((r) => (r.id === id ? { ...r, ...patch, updatedAt: new Date().toISOString() } : r)) }
+    }),
+    [updateProgress]
+  )
+  const startTestRun = useCallback(
+    (run) => updateProgress((prev) => ({ ...prev, testRuns: [...(prev.testRuns ?? []), run] })),
+    [updateProgress]
+  )
+  const finishTestRun = useCallback(
+    (id, { correct, total }) => patchRun(id, { status: 'finished', finishedAt: new Date().toISOString(), correct, total }),
+    [patchRun]
+  )
+  const abandonTestRun = useCallback(
+    (id, { correct, total }) => patchRun(id, { status: 'abandoned', finishedAt: new Date().toISOString(), correct, total }),
+    [patchRun]
+  )
+
   // Retire the old June / Jul–Dec placeholder goals on load (DESIGN §5.5); a no-op once done.
   // Runs again after the first pull, since a remote file may still carry them.
   useEffect(() => {
@@ -495,6 +518,9 @@ export function useProgress(vocab = SEED_VOCAB) {
     updateStudySettings,
     addSession,
     addAttempt,
+    startTestRun,
+    finishTestRun,
+    abandonTestRun,
     upsertManualEntry,
     upsertList,
     deleteList,

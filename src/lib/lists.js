@@ -145,3 +145,45 @@ export function statusSummary(keys, { index, cards, baseline, settings }, now = 
   }
   return out
 }
+
+// ---- Test variants (DESIGN §9.2, §11.3) ----
+
+const filesOf = (listId, exerciseFiles) =>
+  Object.values(exerciseFiles ?? {}).filter((f) => f && !f.deleted && f.listId === listId)
+
+// Sorted distinct variant numbers among the list's files.
+export function variantsOf(listId, exerciseFiles) {
+  return [...new Set(filesOf(listId, exerciseFiles).map((f) => f.variant))].sort((a, b) => a - b)
+}
+
+// The list's files for one variant, in file order (batch, then id).
+export function variantFiles(listId, variant, exerciseFiles) {
+  return filesOf(listId, exerciseFiles)
+    .filter((f) => f.variant === variant)
+    .sort((a, b) => a.batch - b.batch || String(a.id).localeCompare(String(b.id)))
+}
+
+// Most recent finished run for (list, variant), or null.
+export function latestScore(listId, variant, testRuns) {
+  let best = null
+  for (const r of testRuns ?? []) {
+    if (r.deleted || r.listId !== listId || r.variant !== variant || r.status !== 'finished') continue
+    if (!best || String(r.finishedAt ?? r.startedAt) > String(best.finishedAt ?? best.startedAt)) best = r
+  }
+  return best
+}
+
+// The variant never finished, else the one whose latest finished run is oldest; null if no files.
+export function nextVariant(listId, exerciseFiles, testRuns) {
+  const vs = variantsOf(listId, exerciseFiles)
+  if (!vs.length) return null
+  let pick = null
+  let pickAt = ''
+  for (const v of vs) {
+    const r = latestScore(listId, v, testRuns)
+    if (!r) return v
+    const at = String(r.finishedAt ?? r.startedAt)
+    if (pick == null || at < pickAt) { pick = v; pickAt = at }
+  }
+  return pick
+}
